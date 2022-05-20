@@ -1,0 +1,428 @@
+import React from 'react'
+import { CONSTANTS, LINKS } from '../../../../Utils';
+import { Multiselect } from 'multiselect-react-dropdown'
+import {
+  Button,
+  Card,
+  CardGroup,
+  Table,
+  Container,
+  Modal,
+  Navbar,
+  Nav,
+  NavDropdown,
+  Form,
+  FormControl,
+  
+  Dropdown,
+  DropdownButton,
+  ButtonGroup,
+} from 'react-bootstrap'
+import NavBar from '../../../../Component/Global/Navbar';
+import {Attachment, Summary,General,Competitors,Partner,Stages,Potential} from '../../../../Component/SalesOpportunities';
+
+import { InputR, DIV3, DIV4, InputD, TableHead, TD } from './Style'
+//import { ContextMenu, MenuItem, ContextMenuTrigger } from 'react-contextmenu'
+
+import Select from 'react-select'
+import { Logo, TextInput, Alert, } from "../../../../Component/Global";
+
+const axios = require('axios')
+
+export default function PurchaseRequest () {
+  const [show, setShow] = React.useState(false)
+  const [UpdatePurchaseRequest, setUpdatePurchaseRequest] = React.useState()
+  const [PRDocumentLines, setPRDocumentLines] = React.useState()
+
+  const [SearchPR, setSearchPR] = React.useState()
+
+  const [TextItemChangedObject, setTextItemChangedObject] = React.useState({})
+
+  const [ItemsDropDown, setItemsDropDown] = React.useState()
+  const [ItemsDetails, setItemsDetails] = React.useState()
+  const [DropDownItemsDetails, setDropDownItemsDetails] = React.useState()
+  
+
+  const [TaxCode, setTaxCode] = React.useState()
+  const [Frieght, setFrieght] = React.useState()
+  const [PrBuyer, setPrBuyer] = React.useState()
+  const [PrOwner, setPrOwner] = React.useState()
+  const [PrWhse, setPrWhse] = React.useState()
+  const [TodayDate, setTodayDate] = React.useState()
+  const [SelectedPRDocEntry, setSelectedPRDocEntry] = React.useState()
+  const [PrRe, setPrRe] = React.useState()
+  const [OwnerPrRe, setOwnerPrRe] = React.useState()
+  const [Disply, setDisply] = React.useState(false)
+  const [CP,setCP]=React.useState();
+  const [SP,setSP]=React.useState();
+
+  const [PQDocumentLines, setPQDocumentLines] = React.useState([])
+
+  const [VendorCodeDropdown, setVendorCodeDropdown] = React.useState()
+  const [ContactPersonDropdown, setContactPersonDropdown] = React.useState()
+  const [SalesPersonDropdown, setSalesPersonDropdown] = React.useState()
+  const [GroupNoDropdown, setGroupNoDropdown] = React.useState()
+ 
+  const [DiscountTotal, setDiscountTotal] = React.useState()
+  const [ButtonDropdown, setButtonDropdown]= React.useState()
+
+  const [SelectedBranch, setSelectedBranch] = React.useState()
+  const API_TYPES = {
+    GET: `${LINKS.api}/GetApi`,
+    POST: `${LINKS.api}/POSTApi`,
+    PATCH: `${LINKS.api}/PATCHApi`
+  }
+
+  React.useEffect(async () => {
+    let cook = await localStorage.getItem('cookie')
+  
+   
+    ContactP(cook)
+    SalesP(cook)
+  
+    
+    
+  }, [])
+
+  const ContactP = async cookie => {
+    // -------------------------    Items API GET DATA   ------------------------------------------------------
+    await axios
+      .post(
+        API_TYPES.GET,
+
+        { api: LINKS.sap.PurchaseQuotation.ContactPerson, cookie: cookie }
+      )
+      .then(function (res) {
+        setCP(res.data.value)
+        if (res.data.value) {
+          let ItemsDropDown = []
+
+          res.data.value.forEach(element => {
+            ItemsDropDown.push({
+              value: element.ContactPerson,
+              label: element.ContactPerson
+            })
+          })
+          setContactPersonDropdown(ItemsDropDown)
+        }
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
+  }
+
+  const SalesP = async cookie => {
+    // -------------------------    Items API GET DATA   ------------------------------------------------------
+    await axios
+      .post(
+        API_TYPES.GET,
+
+        { api: LINKS.sap.PurchaseQuotation.salesEmployee, cookie: cookie }
+      )
+      .then(function (res) {
+        setSP(res.data.value)
+        console.log(res.data.value)
+        if (res.data.value) {
+          let ItemsDropDown = []
+
+          res.data.value.forEach(element => {
+            ItemsDropDown.push({
+              value: element.SalesEmployeeCode,
+              label: element.SalesEmployeeName,
+            })
+          })
+          setSalesPersonDropdown(ItemsDropDown)
+        }
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
+  }
+
+  const onevent=(e,name)=>{
+    setButtonDropdown("You Clicked On",name);
+    console.log(ButtonDropdown)
+    console.log(name)
+
+   
+   
+  }
+ 
+  return (
+    <>
+
+      <NavBar />
+      <div >
+      <form>
+         
+          <div class="row" >
+          <h3 style={{width:'40rem' ,color:'darkorange'}}><u>Opportunity Type</u></h3>
+          <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1"/>
+          <label class="form-check-label" for="inlineRadio1"><b>Sales</b></label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2"/>
+          <label class="form-check-label" for="inlineRadio2"><b>Purchasing</b></label>
+        </div>
+          </div>
+        </form>
+        <br/>
+
+      {/* Upper Side++++++++ */}
+
+     
+      <CardGroup>
+        <DIV3> 
+          <Container fluid>
+          <div style={{ width: '23.5rem', height: 'auto' }}>
+          <label>Business Partner Code</label>
+          <input
+            //value={SelectedPRDocEntry && SelectedPRDocEntry.RequesterEmail}
+            type='text'
+            class='form-control'
+            id='exampleInputEmail1'
+            aria-describedby='emailHelp'
+            placeholder=''
+          ></input>
+        </div>
+            
+            <div style={{ width: '23.5rem', height: 'auto' }}>
+            <label>Business Partner Name</label>
+            <input
+              //value={SelectedPRDocEntry && SelectedPRDocEntry.RequesterEmail}
+              type='text'
+              class='form-control'
+              id='exampleInputEmail1'
+              aria-describedby='emailHelp'
+              placeholder=''
+            ></input>
+          </div>
+            
+           
+            <label>Contact Person</label>
+            <div>
+            {/* {ContactPersonDropdown && ( */}
+              <Select
+              // value={ContactPersonDropdown.filter(
+              //   option => option.value === SelectedPRDocEntry && SelectedPRDocEntry.ContactPerson
+              // )}
+                placeholder='Contact Person'
+                options={ContactPersonDropdown} // Options to display in the dropdown
+                // onSelect={GroupNo} // Function will trigger on select event
+                // onRemove={GroupNo} Function will trigger on remove event
+                displayValue='name' // Property name to display in the dropdown options
+              />
+            {/* )} */}
+            </div>
+
+           
+            <div style={{ width: '23.5rem', height: 'auto' }}>
+              <label>Total Amount Invoiced</label>
+              <input
+                //value={SelectedPRDocEntry && SelectedPRDocEntry.RequesterEmail}
+                type='text'
+                class='form-control'
+                id='exampleInputEmail1'
+                aria-describedby='emailHelp'
+                placeholder=''
+              ></input>
+            </div>
+            
+
+            <div style={{ width: '23.5rem', height: 'auto' }}>
+            <label>Business Partner Territory</label>
+            <input
+              //value={SelectedPRDocEntry && SelectedPRDocEntry.RequesterEmail}
+              type='text'
+              class='form-control'
+              id='exampleInputEmail1'
+              aria-describedby='emailHelp'
+              placeholder=''
+            ></input>
+          </div>
+
+            
+              
+            <label>Sales Employees</label>
+            <div>
+            {/* {ContactPersonDropdown && ( */}
+              <Select
+              // value={ContactPersonDropdown.filter(
+              //   option => option.value === SelectedPRDocEntry && SelectedPRDocEntry.ContactPerson
+              // )}
+                placeholder='Sales Employees'
+                options={SalesPersonDropdown} // Options to display in the dropdown
+                // onSelect={GroupNo} // Function will trigger on select event
+                // onRemove={GroupNo} Function will trigger on remove event
+                displayValue='name' // Property name to display in the dropdown options
+              />
+            {/* )} */}
+            </div>
+            <div style={{ width: '23.5rem', height: 'auto' }}>
+            <label>Owner</label>
+            <input
+              //value={SelectedPRDocEntry && SelectedPRDocEntry.RequesterEmail}
+              type='text'
+              class='form-control'
+              id='exampleInputEmail1'
+              aria-describedby='emailHelp'
+              placeholder=''
+            ></input>
+          </div>
+          <br/>
+          <div class="form-check form-check-inline">
+  <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1"/>
+  <label class="form-check-label" for="inlineCheckbox1">Display in System Currency</label>
+</div>
+          
+          </Container>
+        </DIV3>
+        <DIV4></DIV4>
+        <DIV3>
+          <Container>
+          <div style={{ width: '23.5rem', height: 'auto' }}>
+          <label>Opportunity Name</label>
+          <input
+            //value={SelectedPRDocEntry && SelectedPRDocEntry.RequesterEmail}
+            type='text'
+            class='form-control'
+            id='exampleInputEmail1'
+            aria-describedby='emailHelp'
+            placeholder=''
+            onChange={e => {
+              console.log(e.target.value)
+            }}
+          ></input>
+        </div>
+            
+            <div style={{ width: '23.5rem', height: 'auto' }}>
+            <label>Opportunity No</label>
+            <input
+              //value={SelectedPRDocEntry && SelectedPRDocEntry.RequesterEmail}
+              type='text'
+              class='form-control'
+              id='exampleInputEmail1'
+              aria-describedby='emailHelp'
+              placeholder=''
+            ></input>
+          </div>
+           
+           
+            <div style={{ width: '23.5rem', height: 'auto' }}>
+            <label>Status</label>
+            <input
+              //value={SelectedPRDocEntry && SelectedPRDocEntry.RequesterEmail}
+              type='text'
+              class='form-control'
+              id='exampleInputEmail1'
+              aria-describedby='emailHelp'
+              placeholder=''
+            ></input>
+          </div>
+           
+            <div style={{ width: '23.5rem', height: 'auto' }}>
+            <label>Start Date</label>
+            <input
+              //value={SelectedPRDocEntry && SelectedPRDocEntry.RequesterEmail}
+              type='Date'
+              class='form-control'
+              id='date'
+              aria-describedby='date'
+              placeholder='date'
+            ></input>
+          </div>
+            
+            
+            <div style={{ width: '23.5rem', height: 'auto' }}>
+            <label>Closing Date</label>
+            <input
+              //value={SelectedPRDocEntry && SelectedPRDocEntry.RequesterEmail}
+              type='date'
+              class='form-control'
+              id='date'
+              aria-describedby='date'
+              placeholder='date'
+            ></input>
+          </div>
+            
+            <div style={{ width: '23.5rem', height: 'auto' }}>
+            <label>Open Activities</label>
+            <input
+              //value={SelectedPRDocEntry && SelectedPRDocEntry.RequesterEmail}
+              type='text'
+              class='form-control'
+              id='Number'
+              aria-describedby='emailHelp'
+              placeholder=''
+            ></input>
+          </div>
+            
+            <div style={{ width: '23.5rem', height: 'auto' }}>
+            <label>Closing%</label>
+            <input
+              //value={SelectedPRDocEntry && SelectedPRDocEntry.RequesterEmail}
+              type='text'
+              class='form-control'
+              id='Percentage'
+              aria-describedby='emailHelp'
+              placeholder=''
+            ></input>
+          </div>
+            
+          </Container>
+        </DIV3>
+      </CardGroup>
+     
+      <Navbar  expand="lg" style={{backgroundColor:'dodgerblue'}}>
+      <Navbar.Brand ><button  onClick={e => {
+        setButtonDropdown('Potential')
+      }}>Potential</button></Navbar.Brand>
+      <Navbar.Brand ><button  onClick={e => {
+        setButtonDropdown('General')
+      }}>General</button></Navbar.Brand>
+      <Navbar.Brand ><button  onClick={e => {
+        setButtonDropdown('Stages')
+      }}>Stages</button></Navbar.Brand>
+      <Navbar.Brand ><button  onClick={e => {
+        setButtonDropdown('Partner')
+      }}>Partners</button></Navbar.Brand>
+      <Navbar.Brand ><button  onClick={e => {
+        setButtonDropdown('Competitors')
+      }}>Competitors</button></Navbar.Brand>
+      <Navbar.Brand ><button  onClick={e => {
+        setButtonDropdown('Summary')
+      }}>Summary</button></Navbar.Brand>
+      <Navbar.Brand ><button  onClick={e => {
+        setButtonDropdown('Attachments')
+      }}>Attachments</button></Navbar.Brand>
+    
+    </Navbar>
+
+    {ButtonDropdown == 'Attachments' && <Attachment/> }
+    
+    {ButtonDropdown == 'Summary' && <Summary/> }
+
+    {ButtonDropdown == 'General' && <General/> }
+
+    {ButtonDropdown == 'Competitors' && <Competitors/> }
+
+    {ButtonDropdown == 'Partner' && <Partner/> }
+
+    {ButtonDropdown == 'Potential' && <Potential/> }
+
+    {ButtonDropdown == 'Stages' && <Stages/> }
+
+
+
+
+<br/>
+<br/>
+<br/>
+
+     
+      </div>
+         
+    </>
+  )
+}

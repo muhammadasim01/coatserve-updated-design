@@ -1,0 +1,43 @@
+.username, .password {
+    overflow: hidden;
+    height:2.4rem;
+    background: white;
+    
+    border:1px solid;
+    border-radius: 5px;
+  
+  }
+  .username1{
+    overflow: hidden;
+    background: none;
+    border-radius: 25px;
+    box-shadow: inset 8px 8px 8px #cbced1,
+                inset -8px -8px 8px #ffffff;
+  }
+  .fields svg {
+    height: 22px;
+    margin-left: 1rem;
+    margin-top: -0.8rem;
+}
+
+  .fields .svg-icon1 {
+    height: 29px;
+    width:8rem;
+    float: right;
+    margin: 24px 14px -3px 25px;
+    float: right;
+    
+  }
+  .svg-icon1 {
+    width: 1.5em;
+    height: 1.5em;
+    margin: 4px 2px;
+    float: right;
+  
+  }
+  .form-control1{
+      width:7rem;
+      height: 2.2rem;
+      border:none;
+      outline: none;
+  }

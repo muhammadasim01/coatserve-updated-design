@@ -1,0 +1,66 @@
+.Modal-big .modal-lg {
+    max-width: 100%;
+    height: 100vh;
+    margin: 0 ;
+    
+    
+  }
+  .Modal-big .modal-body {
+    /* max-width: 100%; */
+    min-height: 100vh;
+    /* margin: 0 auto; */
+  }
+  .Modal-big {
+    padding-left: 0px !important;
+  }
+  @keyframes spinning {
+    from { transform: rotate(0deg) }
+    to { transform: rotate(360deg) }
+  }
+  .spin {
+    animation-name: spinning;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+    /* linear | ease | ease-in | ease-out | ease-in-out */
+    animation-timing-function: linear;
+    justify-content:center
+  }
+  .inside
+{
+  position:absolute;
+  top: 25px;
+  left: 25px;
+  z-index: 2;
+} 
+.spine {
+  animation-name: spinee;
+  animation-duration: 3s;
+  animation-iteration-count: infinite;
+  /* linear | ease | ease-in | ease-out | ease-in-out */
+  animation-timing-function: linear;
+}
+@keyframes spinee {
+  from { transform: rotate(360deg) }
+  to { transform: rotate(0deg) }
+}
+.Quotation{
+  overflow: hidden;
+  height:2.4rem;
+  background: white;
+ 
+ 
+
+}
+.svg-icon12 {
+  width: 1.5em;
+  height: 1.5em;
+  margin: 4px 5px;
+  float: right;
+
+}
+.form-control12  {
+    width:21rem;
+    height: 2.2rem;
+    border:none;
+    outline: none;
+}

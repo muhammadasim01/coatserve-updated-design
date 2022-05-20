@@ -1,0 +1,21 @@
+.OIGP{
+    overflow: hidden;
+    height:2.4rem;
+    background: white;
+   
+   
+  
+  }
+  .svg-icon15 {
+    width: 1.5em;
+    height: 1.5em;
+    margin: 4px 5px;
+    float: right;
+  
+  }
+  .form-control15  {
+      width:21rem;
+      height: 2.2rem;
+      border:none;
+      outline: none;
+  }
