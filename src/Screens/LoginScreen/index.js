@@ -111,6 +111,7 @@ export default function Login() {
     await axios
       .post(api, body)
       .then(async function (response) {
+        console.log(response)
         if (!response) return;
         if (response.data.body.SessionId) {
           var resp = response.data.headers["set-cookie"];
