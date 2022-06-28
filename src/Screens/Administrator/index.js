@@ -3,6 +3,7 @@ import Projects from './Projects'
 import ChartOfAccounts from './ChartOfAccounts'
 import Banks from './Banks'
 import ExchangeRates from './ExchangeRates'
+import Authorization from './Authorization'
 
 
 
@@ -12,6 +13,7 @@ export {
     Projects,
     Banks,
     ExchangeRates,
+    Authorization,
    
 }
 
