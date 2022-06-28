@@ -1173,6 +1173,9 @@ export default function Invoice() {
     let DocLines = [];
     let SecondDB = [];
     let body = PRBody;
+    let arraydata = PQDocumentLines;
+    let arraydata2 = PQDocumentLines;
+    let arraydata3 = PQDocumentLines;
     let body2 = {};
     let docLines2 = [];
     if (getcopyfromvalue === "SO" && valuechacker) {
@@ -1190,7 +1193,7 @@ export default function Invoice() {
           });
         });
       });
-      PQDocumentLines.forEach(async (element) => {
+      arraydata.forEach(async (element) => {
         if (element.isSelected) {
           element.DocumentLines.forEach((element2) => {
             if (element2.isSelected && element2.LineStatus === "bost_Open") {
@@ -1226,14 +1229,14 @@ export default function Invoice() {
         }
       });
     } else {
-      PQDocumentLines.forEach(async (element) => {
+      arraydata2.forEach(async (element) => {
         if (element.isSelected) {
-          element.DocumentLines.forEach((element) => {
-            if (element.isSelected && element.LineStatus === "bost_Open") {
+          element.DocumentLines.forEach((element2) => {
+            if (element2.isSelected && element2.LineStatus === "bost_Open") {
               DocLines.push({
                 BaseEntry: element.DocEntry,
                 BaseType: 15,
-                BaseLine: element.LineNum,
+                BaseLine: element2.LineNum,
               });
               body["DocDueDate"] = getdocduedate;
               body["DocDate"] = getdocdate;
@@ -1250,21 +1253,24 @@ export default function Invoice() {
           });
         }
       });
-      PQDocumentLines.forEach(async (element) => {
+
+      arraydata3.forEach(async (element) => {
+        console.log("element", element);
         if (element.isSelected) {
-          element.DocumentLines.forEach((element) => {
-            if (element.isSelected && element.LineStatus === "bost_Open") {
+          element.DocumentLines.forEach((element2) => {
+            if (element2.isSelected && element2.LineStatus === "bost_Open") {
+              console.log("element", element2);
               SecondDB.push({
                 BaseEntry: getpurchaseordersdocentry[element.DocNum].DocEntry,
                 BaseType: 15,
-                BaseLine: element.LineNum,
+                BaseLine: element2.LineNum,
               });
               body2["DocDueDate"] = getdocduedate;
               body2["DocDate"] = getdocdate;
               body2["TaxDate"] = gettaxdate;
               body2["DocumentLines"] = SecondDB;
               body2["CardCode"] = SelectedVendor;
-              body["U_CreatedBy"] = "Web UI";
+              body2["U_CreatedBy"] = "Web UI";
               body2["Series"] = getseriesvalue;
               body2["DiscountPercent"] = disc;
               body2["AttachmentEntry"] = attachmentresponse;
@@ -1276,7 +1282,7 @@ export default function Invoice() {
       });
     }
     console.log("body", JSON.stringify(body));
-    console.log("body", JSON.stringify(body2));
+    console.log("body2", JSON.stringify(body2));
     if (bothbodies) {
       PostInSecondDB(body2, body);
     } else {
@@ -2607,10 +2613,10 @@ export default function Invoice() {
                             <th>Item No.</th>
                             <th>Item Description</th>
                             <th>UoM Name</th>
-                            {Array.isArray(getbatchnumbers) &&
+                            {/* {Array.isArray(getbatchnumbers) &&
                             getbatchnumbers.length > 0 ? (
                               <th>Batch</th>
-                            ) : null}
+                            ) : null} */}
                             <th>Free Text</th>
                             <th>Quantity</th>
                             {/* <th>Variance</th>
@@ -2649,7 +2655,7 @@ export default function Invoice() {
                                       <TD>{item.ItemCode}</TD>
                                       <TD>{item.ItemDescription}</TD>
                                       <TD>{item.MeasureUnit}</TD>
-                                      {Array.isArray(getbatchnumbers) &&
+                                      {/* {Array.isArray(getbatchnumbers) &&
                                       getbatchnumbers.length > 0 ? (
                                         <TD>
                                           <Button
@@ -2661,7 +2667,7 @@ export default function Invoice() {
                                             Batch{" "}
                                           </Button>
                                         </TD>
-                                      ) : null}
+                                      ) : null} */}
                                       <TD>
                                         <div
                                           style={{

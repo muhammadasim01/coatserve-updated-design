@@ -1003,6 +1003,7 @@ export default function PurchaseOrder() {
     let DocLines = [];
     let SecondDB = [];
     let docLines2 = [];
+    let docLines3 = [];
     let body = PRBody;
     let body2 = {};
     console.log("seletedBatchnumber2", seletedBatchnumber2);
@@ -1085,12 +1086,15 @@ export default function PurchaseOrder() {
         }
       });
     }
+    var filtered2 = seletedBatchnumber2.filter(function (el) {
+      return (el == el.length) == 0;
+    });
     if (valuechacker) {
       console.log("AAAAAA");
-      filtered.forEach((Docelement) => {
+      filtered2.forEach((Docelement) => {
         Docelement.forEach((Docelement2) => {
-          console.log("Docelement2", Docelement2);
-          docLines2.push({
+          console.log("Docelement23", Docelement2);
+          docLines3.push({
             Quantity: Docelement2.SelectedQty,
             BaseLineNumber: Docelement2.BaseLineNumber,
             ItemCode: Docelement2.ItemCode,
@@ -1111,7 +1115,7 @@ export default function PurchaseOrder() {
                 ItemCode: item.ItemCode,
                 Quantity: item.Quantity,
                 ShipDate: item.ShipDate,
-                BatchNumbers: docLines2.filter(function (i) {
+                BatchNumbers: docLines3.filter(function (i) {
                   return i.ItemCode == item.ItemCode;
                 }),
               });
@@ -2652,7 +2656,7 @@ export default function PurchaseOrder() {
                     type="text"
                     value={
                       totalbforeDiscount
-                        ? totalbforeDiscount - DiscountTotal + gettaxtotal
+                        ? totalbforeDiscount - DiscountTotal + Number(gettaxtotal)
                         : HeaderData && HeaderData.DocTotal
                     }
                     placeholder=""
