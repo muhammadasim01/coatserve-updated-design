@@ -1,0 +1,25 @@
+.main {
+  background-image: linear-gradient(to right, #eaf5fe, #306798);
+  height: 222vh;
+  width: 100vw;
+  position: relative;
+  top: -41rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.logincontainer {
+  border: 1px solid;
+  position: relative;
+  top: 12rem;
+  background-color: white;
+  border-radius: 8px;
+  padding: 0rem 2rem;
+  width: 35rem;
+  height: 35rem;
+  box-shadow: -2px 3px #89a4bf;
+}
+.btn-secondary {
+  background-image: linear-gradient(to right, #eaf5fe, #306798) !important;
+  color: black;
+}

@@ -22,6 +22,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import { Backdrop } from "@material-ui/core";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { useAlert } from "react-alert";
+import { useSelector } from "react-redux";
+
 import "./index.css";
 const axios = require("axios");
 const useStyles = makeStyles((theme) => ({
@@ -31,6 +33,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 export default function DownPaymentRequest() {
+  const redux_response = useSelector((state) => state.colorReducer);
+
   const alert = useAlert();
   const classes = useStyles();
   const [SaleEmployee, setSaleEmployee] = React.useState();
@@ -975,6 +979,20 @@ export default function DownPaymentRequest() {
   };
   return (
     <>
+      <style>{`
+            .nav-tabs .nav-link{
+              color: white !important;
+              background-color: ${
+                redux_response.color ? redux_response.color : "rgb(69 70 73)"
+              } !important;  
+              width: 12rem  !important;
+              height: 24px !important;
+              padding: 0 !important;
+              text-align: center !important;
+            }
+           
+               
+          `}</style>
       <Navbar
         setgetserviceseries={setgetserviceseries}
         getdocumenttype={getdocumenttype}
@@ -990,531 +1008,497 @@ export default function DownPaymentRequest() {
           <h1 style={{ textAlign: "center" }}>A/R DownPayment Request</h1>
           <Form onSubmit={handleSubmitted}>
             {/* Upper Side++++++++ */}
-            <CardGroup>
-              <DIV3>
-                <Container fluid>
+            <div className="main_container">
+              <div className="left">
+                <div className="header_items_container">
                   <label>Customer</label>
-                  <div
-                    style={{ width: "23.5rem", height: "auto" }}
-                    variant="primary"
-                    onClick={BusinessPartners}
-                  >
-                    <Select
-                      placeholder={HeaderData && HeaderData.CardCode}
-                      options={VendorCodeDropdown} // Options to display in the dropdown
-                      onChange={(e) => {
-                        VendorChange(e);
-                      }} // Function will trigger on select event
-                      // onRemove={BusinessPartners} Function will trigger on remove event
-                      displayValue="name" // Property name to display in the dropdown options
-                    />
-                  </div>
+
+                  <Select
+                    placeholder={HeaderData && HeaderData.CardCode}
+                    options={VendorCodeDropdown} // Options to display in the dropdown
+                    onChange={(e) => {
+                      VendorChange(e);
+                    }} // Function will trigger on select event
+                    // onRemove={BusinessPartners} Function will trigger on remove event
+                    displayValue="name" // Property name to display in the dropdown options
+                  />
+                </div>
+                <div className="header_items_container">
                   <label>Contact Person</label>
-                  <div
-                    style={{ width: "23.5rem", height: "auto" }}
-                    variant="primary"
-                    onClick={ContactPerson}
-                  >
-                    {/* {ContactPersonDropdown && ( */}
-                    <Select
-                      // value={ContactPersonDropdown.filter(
-                      //   option => option.value === SelectedPRDocEntry && SelectedPRDocEntry.ContactPerson
-                      // )}
-                      placeholder={HeaderData && HeaderData.ContactPersonCode}
-                      options={ContactPersonDropdown} // Options to display in the dropdown
-                      // onSelect={GroupNo} // Function will trigger on select event
-                      // onRemove={GroupNo} Function will trigger on remove event
-                      displayValue="name" // Property name to display in the dropdown options
-                    />
-                    {/* )} */}
-                  </div>
-                  <br />
 
-                  <Button variant="primary" onClick={handleShow}>
-                    Copy From
-                  </Button>
+                  {/* {ContactPersonDropdown && ( */}
+                  <Select
+                    // value={ContactPersonDropdown.filter(
+                    //   option => option.value === SelectedPRDocEntry && SelectedPRDocEntry.ContactPerson
+                    // )}
+                    placeholder={HeaderData && HeaderData.ContactPersonCode}
+                    options={ContactPersonDropdown} // Options to display in the dropdown
+                    // onSelect={GroupNo} // Function will trigger on select event
+                    // onRemove={GroupNo} Function will trigger on remove event
+                    displayValue="name" // Property name to display in the dropdown options
+                  />
+                  {/* )} */}
+                </div>
 
-                  <Modal
-                    show={show}
-                    onHide={handleClose}
-                    className="Modal-big"
-                    size="lg"
-                  >
-                    <Modal.Header closeButton>
-                      <Modal.Title id="example-modal-sizes-title-lg">
-                        Open Orders List
-                      </Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                      {PrRe && (
-                        <Table responsive>
-                          <TableHead>
-                            <tr>
-                              <th>#</th>
-                              <th>Document No.</th>
-                              <th>Customer Code</th>
-                              <th>Customer Name</th>
-                              <th>Posting Date</th>
-                            </tr>
-                          </TableHead>
-                          <tbody>
-                            {PrRe.map((item, index) => (
-                              <tr key={`${index}`}>
-                                <TD>
-                                  {index + 1}
-                                  <input
-                                    type="checkbox"
-                                    onChange={() => {
-                                      checkboxSelect(item, index);
-                                    }}
-                                    checked={item.isSelected}
-                                  />
-                                </TD>
-                                <TD>{item.DocNum}</TD>
-                                <TD>{item.CardCode}</TD>
-                                <TD>{item.CardName}</TD>
-                                <TD>{item.DocDate}</TD>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </Table>
-                      )}
-                    </Modal.Body>
-
-                    <Modal.Footer>
-                      <Button
-                        variant="secondary"
-                        onClick={() => {
-                          handleShowModalTwo();
-                          handleClose();
-                        }}
-                      >
-                        Choose
-                      </Button>
-                      <Button variant="primary" onClick={handleClose}>
-                        Cancel
-                      </Button>
-                    </Modal.Footer>
-                  </Modal>
-
-                  <Modal
-                    show={modalTwo === "modal-two"}
-                    onHide={handleClose}
-                    className="Modal-big"
-                    size="lg"
-                  >
-                    <Modal.Header closeButton>
-                      <Modal.Title id="example-modal-sizes-title-lg">
-                        Open Orders List
-                      </Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                      <Table responsive striped bordered hover>
+                <Modal
+                  show={show}
+                  onHide={handleClose}
+                  className="Modal-big"
+                  size="lg"
+                >
+                  <Modal.Header closeButton>
+                    <Modal.Title id="example-modal-sizes-title-lg">
+                      Open Orders List
+                    </Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                    {PrRe && (
+                      <Table responsive>
                         <TableHead>
                           <tr>
                             <th>#</th>
-                            <th>Bar Code</th>
-                            <th>Item No.</th>
-                            <th>Item Description</th>
-                            <th>UoM Name</th>
-                            <th>Free Text</th>
-                            <th>Quantity</th>
-                            <th>Open Qty</th>
-                            <th>Whse</th>
-                            <th>Unit Price</th>
-                            <th>Project</th>
-                            <th>Buyer</th>
-                            <th>Cost Centre</th>
+                            <th>Document No.</th>
+                            <th>Customer Code</th>
+                            <th>Customer Name</th>
+                            <th>Posting Date</th>
                           </tr>
                         </TableHead>
                         <tbody>
-                          {PQDocumentLines &&
-                            PQDocumentLines.map(
-                              (PrReItem, PrReIndex) =>
-                                PrReItem.isSelected &&
-                                PrReItem.DocumentLines.map(
-                                  (item, index) =>
-                                    item.LineStatus === "bost_Open" && (
-                                      <tr key={`${index}`}>
-                                        <TD>
-                                          {index + 1}
-                                          <input
-                                            type="checkbox"
-                                            onChange={() => {
-                                              docLineSelectedSwitch(
-                                                PrReIndex,
-                                                item,
-                                                index
-                                              );
-                                            }}
-                                            checked={item.isSelected}
-                                          />
-                                        </TD>
-                                        <TD> </TD>
-                                        <TD>{item.ItemCode}</TD>
-                                        <TD>{item.ItemDescription}</TD>
-                                        <TD>{item.MeasureUnit}</TD>
-                                        <TD>
-                                          <div
-                                            style={{
-                                              width: "14rem",
-                                              height: "auto",
-                                            }}
-                                          >
-                                            <input
-                                              type="text"
-                                              name="FreeText"
-                                              class="form-control"
-                                              readOnly
-                                              aria-describedby="Requesterid"
-                                              defaultValue={item.FreeText}
-                                              onChange={(e) => {
-                                                ontextChanged(e, index);
-                                              }}
-                                            />
-                                          </div>
-                                        </TD>
-                                        <TD>
-                                          <div
-                                            style={{
-                                              width: "14rem",
-                                              height: "auto",
-                                            }}
-                                          >
-                                            <input
-                                              type="number"
-                                              name="QuotedQty"
-                                              readOnly="readOnly"
-                                              class="form-control"
-                                              aria-describedby="Requesterid"
-                                              defaultValue={
-                                                item.RemainingOpenQuantity
-                                              }
-                                              // onChange={e=>OpenQtyFunction(e, index)
-                                              // setOpenQty(e.target.value)
-                                              // }
-                                              // onChange={e => {
-                                              //   OpenQtyFunction(e, index)
-                                              //   setOpenQty(e.target.value)
-                                              // }}
-                                            />
-                                          </div>
-                                        </TD>
-                                        <TD>{item.RemainingOpenQuantity} </TD>
-                                        <TD>
-                                          <div style={{ width: "15em" }}>
-                                            {PrWhse && (
-                                              <Select
-                                                menuPortalTarget={document.body}
-                                                value={PrWhse.filter(
-                                                  (option) =>
-                                                    option.value ===
-                                                    item.WarehouseCode
-                                                )}
-                                                placeholder="Select.."
-                                                options={PrWhse} // Options to display in the dropdown
-                                                onChange={(e) => {
-                                                  DocLinesDropDownOnChange(
-                                                    e,
-                                                    index,
-                                                    "WarehouseCode"
-                                                  );
-                                                }}
-                                                // onSelect={CostCentre} // Function will trigger on select event
-                                                // onRemove={CostCentre} //Function will trigger on remove event
-                                                displayValue="name" // Property name to display in the dropdown options
-                                              />
-                                            )}
-                                          </div>
-                                        </TD>
-                                        <TD>{item.UnitPrice}</TD>
-
-                                        <TD>
-                                          <div style={{ width: "14rem" }}>
-                                            <Select
-                                              menuPortalTarget={document.body}
-                                              placeholder={item.ProjectCode}
-                                              // options={Frieght} // Options to display in the dropdown
-                                              // onChange={e => {
-                                              //   FreightDropDownOnChange(e, index, 'Freight')
-                                              // }}
-                                              // onSelect={CostCentre} // Function will trigger on select event
-                                              // onRemove={CostCentre} //Function will trigger on remove event
-                                              displayValue="name" // Property name to display in the dropdown options
-                                            />
-                                          </div>
-                                        </TD>
-                                        <TD>
-                                          <div style={{ width: "14rem" }}>
-                                            <Select
-                                              menuPortalTarget={document.body}
-                                              placeholder={item.SalesPersonCode}
-                                              // options={Frieght} // Options to display in the dropdown
-                                              // onChange={e => {
-                                              //   FreightDropDownOnChange(e, index, 'Freight')
-                                              // }}
-                                              // onSelect={CostCentre} // Function will trigger on select event
-                                              // onRemove={CostCentre} //Function will trigger on remove event
-                                              displayValue="name" // Property name to display in the dropdown options
-                                            />
-                                          </div>
-                                        </TD>
-                                        <TD>
-                                          <div style={{ width: "14rem" }}>
-                                            <Select
-                                              menuPortalTarget={document.body}
-                                              placeholder={item.CostingCode}
-                                              // options={Frieght} // Options to display in the dropdown
-                                              // onChange={e => {
-                                              //   FreightDropDownOnChange(e, index, 'Freight')
-                                              // }}
-                                              // onSelect={CostCentre} // Function will trigger on select event
-                                              // onRemove={CostCentre} //Function will trigger on remove event
-                                              displayValue="name" // Property name to display in the dropdown options
-                                            />
-                                          </div>
-                                        </TD>
-                                      </tr>
-                                    )
-                                )
-                            )}
+                          {PrRe.map((item, index) => (
+                            <tr key={`${index}`}>
+                              <TD>
+                                {index + 1}
+                                <input
+                                  type="checkbox"
+                                  onChange={() => {
+                                    checkboxSelect(item, index);
+                                  }}
+                                  checked={item.isSelected}
+                                />
+                              </TD>
+                              <TD>{item.DocNum}</TD>
+                              <TD>{item.CardCode}</TD>
+                              <TD>{item.CardName}</TD>
+                              <TD>{item.DocDate}</TD>
+                            </tr>
+                          ))}
                         </tbody>
                       </Table>
-                    </Modal.Body>
-                    <Modal.Footer>
-                      <Button
-                        variant="secondary"
-                        onClick={() => {
-                          getvaluesformula();
-                          handleCloseee();
-                        }}
-                      >
-                        Choose
-                      </Button>
-                    </Modal.Footer>
-                  </Modal>
-                  <Modal show={show1} onHide={handleClose2}>
-                    <Modal.Header closeButton>
-                      <Modal.Title>DownPayment Request List</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                      {ModalHeaderData && (
-                        <Table responsive>
-                          <TableHead>
-                            <tr>
-                              <th>#</th>
-                              <th>Document Status</th>
-                              <th>DocNum</th>
-                              <th>DocEntry</th>
-                              <th>Code</th>
-                              <th>Name</th>
-                              <th>Posting Date</th>
-                            </tr>
-                          </TableHead>
-                          <tbody>
-                            {ModalHeaderData.map((item, index) => (
-                              <tr
-                                key={`${index}`}
-                                onClick={(e) => {
-                                  selectPR(item);
-                                  handleClose2();
-                                }}
-                              >
-                                <TD>{index + 1}</TD>
-                                <TD>
-                                  {item.DocumentStatus === "bost_Open" ? (
-                                    <p
-                                      style={{
-                                        background: "gray",
-                                        color: "white",
-                                      }}
-                                    >
-                                      Open
-                                    </p>
-                                  ) : item.DocumentStatus === "bost_Close" ? (
-                                    <p
-                                      style={{
-                                        background: "red",
-                                        color: "white",
-                                      }}
-                                    >
-                                      Closed
-                                    </p>
-                                  ) : null}
-                                </TD>
+                    )}
+                  </Modal.Body>
 
-                                <TD>{item.DocNum}</TD>
-                                <TD>{item.DocEntry}</TD>
-                                <TD>{item.CardCode}</TD>
-                                <TD>{item.CardName}</TD>
-                                <TD>{item.DocDate}</TD>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </Table>
-                      )}
-                    </Modal.Body>
-
-                    <Modal.Footer>
-                      <Button variant="secondary" onClick={handleClose2}>
-                        Close
-                      </Button>
-                      <Button variant="primary" onClick={handleClose2}>
-                        Cancel
-                      </Button>
-                    </Modal.Footer>
-                  </Modal>
-
-                  <div style={{ width: "23.5rem", height: "auto" }}>
-                    <label>Customer Ref.No</label>
-                    <input
-                      defaultValue={HeaderData && HeaderData.NumAtCard}
-                      onChange={(e) => {
-                        setCustomerRefNo(e.target.value);
+                  <Modal.Footer>
+                    <Button
+                      variant="secondary"
+                      onClick={() => {
+                        handleShowModalTwo();
+                        handleClose();
                       }}
-                      type="text"
-                      class="form-control"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                    ></input>
-                  </div>
-                </Container>
-              </DIV3>
-              <DIV4></DIV4>
-              <DIV3>
-                <Container>
-                  <div style={{ marginLeft: "3rem" }}>
-                    <label>No.</label>
-                    <CardGroup>
-                      <br />
-                      <div style={{ width: "11.5rem", height: "auto" }}>
-                        <Select
-                          // placeholder={HeaderData && HeaderData.RequesterName}
-                          options={getserviceseries} // Options to display in the dropdown
-                          onChange={(e) => {
-                            getseriesvaluefunction(e);
-                            // TableTaxCode(e.item.Name)
-                            Whse(e.item.Name);
-                          }} // Function will trigger on select event
-                          // onRemove={RequesterCodeDropdownfunc} // Function will trigger on remove event
-                          displayValue="name" // Property name to display in the dropdown options
-                        />
-                      </div>
-                      <div style={{ width: "11.5rem", height: "auto" }}>
-                        <input
-                          type="number"
-                          name="Discount"
-                          readOnly
-                          value={getnextnumber}
-                          placeholder=""
-                          class="form-control"
-                        />{" "}
-                        <br />
-                      </div>
-                    </CardGroup>
-                  </div>
-                  <div style={{ width: "23.5rem", marginLeft: "3rem" }}>
-                    <label> Status</label>
-                    <Select
-                      placeholder={DocStatus}
-                      isDisabled={DocStatus ? true : false}
-                      options={[
-                        { label: "Open", value: "bost_Open" },
-                        { label: "Close", value: "bost_Close" },
-                        { label: "All", value: null },
-                        // { label: 'Draft', value: 'bost_Draft' }
-                      ]} // Options to display in the dropdown
-                      onChange={(e) => {
-                        setgetdocumentstatus(e.value);
-                      }} // Function will trigger on select event
-                      // onRemove={BusinessPartners} Function will trigger on remove event
-                      displayValue="name" // Property name to display in the dropdown options
-                    />
-                  </div>
-                  <br />
-                  <div
-                    className="Down"
-                    style={{
-                      width: "23.5rem",
-                      height: "auto",
-                      marginLeft: "3rem",
-                      border: "1px solid",
-                      borderColor: "lightgray",
-                      borderRadius: "4px",
-                    }}
-                  >
-                    <a
-                      onClick={(e) => {
-                        SearchAll_Filter_Data();
-                      }}
-                      style={{ cursor: "pointer" }}
                     >
-                      {" "}
-                      <svg class="svg-icon5" viewBox="0 0 20 20">
-                        <path d="M18.125,15.804l-4.038-4.037c0.675-1.079,1.012-2.308,1.01-3.534C15.089,4.62,12.199,1.75,8.584,1.75C4.815,1.75,1.982,4.726,2,8.286c0.021,3.577,2.908,6.549,6.578,6.549c1.241,0,2.417-0.347,3.44-0.985l4.032,4.026c0.167,0.166,0.43,0.166,0.596,0l1.479-1.478C18.292,16.234,18.292,15.968,18.125,15.804 M8.578,13.99c-3.198,0-5.716-2.593-5.733-5.71c-0.017-3.084,2.438-5.686,5.74-5.686c3.197,0,5.625,2.493,5.64,5.624C14.242,11.548,11.621,13.99,8.578,13.99 M16.349,16.981l-3.637-3.635c0.131-0.11,0.721-0.695,0.876-0.884l3.642,3.639L16.349,16.981z"></path>
-                      </svg>
-                    </a>
-                    <input
-                      name={"SearchPRNumber"}
-                      type="Number"
-                      placeholder="Number"
-                      class="form-control5"
-                      onChange={(e) => {
-                        setSearchNumber(e.target.value);
-                      }}
-                    />
-                  </div>
+                      Choose
+                    </Button>
+                    <Button variant="primary" onClick={handleClose}>
+                      Cancel
+                    </Button>
+                  </Modal.Footer>
+                </Modal>
 
-                  <div
-                    style={{
-                      width: "23.5rem",
-                      height: "auto",
-                      marginLeft: "3rem",
-                    }}
-                  >
-                    <label> Posting Date</label>
-                    <input
-                      type="date"
-                      name="DocDate"
-                      readOnly
-                      class="form-control"
-                      defaultValue={
-                        HeaderData && HeaderData.DocDate
-                          ? HeaderData && HeaderData.DocDate
-                          : currentDate
-                      }
-                    />
-                  </div>
-                  <div
-                    style={{
-                      width: "23.5rem",
-                      height: "auto",
-                      marginLeft: "3rem",
-                    }}
-                  >
-                    <label> Document Date</label>
-                    <input
-                      type="date"
-                      name="DocDueDate"
-                      class="form-control"
-                      defaultValue={
-                        HeaderData && HeaderData.DocDueDate
-                          ? HeaderData && HeaderData.DocDueDate
-                          : currentDate
-                      }
-                      onChange={(e) => {
-                        DocDateChange(e);
+                <Modal
+                  show={modalTwo === "modal-two"}
+                  onHide={handleClose}
+                  className="Modal-big"
+                  size="lg"
+                >
+                  <Modal.Header closeButton>
+                    <Modal.Title id="example-modal-sizes-title-lg">
+                      Open Orders List
+                    </Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                    <Table responsive striped bordered hover>
+                      <TableHead>
+                        <tr>
+                          <th>#</th>
+                          <th>Bar Code</th>
+                          <th>Item No.</th>
+                          <th>Item Description</th>
+                          <th>UoM Name</th>
+                          <th>Free Text</th>
+                          <th>Quantity</th>
+                          <th>Open Qty</th>
+                          <th>Whse</th>
+                          <th>Unit Price</th>
+                          <th>Project</th>
+                          <th>Buyer</th>
+                          <th>Cost Centre</th>
+                        </tr>
+                      </TableHead>
+                      <tbody>
+                        {PQDocumentLines &&
+                          PQDocumentLines.map(
+                            (PrReItem, PrReIndex) =>
+                              PrReItem.isSelected &&
+                              PrReItem.DocumentLines.map(
+                                (item, index) =>
+                                  item.LineStatus === "bost_Open" && (
+                                    <tr key={`${index}`}>
+                                      <TD>
+                                        {index + 1}
+                                        <input
+                                          type="checkbox"
+                                          onChange={() => {
+                                            docLineSelectedSwitch(
+                                              PrReIndex,
+                                              item,
+                                              index
+                                            );
+                                          }}
+                                          checked={item.isSelected}
+                                        />
+                                      </TD>
+                                      <TD> </TD>
+                                      <TD>{item.ItemCode}</TD>
+                                      <TD>{item.ItemDescription}</TD>
+                                      <TD>{item.MeasureUnit}</TD>
+                                      <TD>
+                                        <div
+                                          style={{
+                                            width: "14rem",
+                                            height: "auto",
+                                          }}
+                                        >
+                                          <input
+                                            type="text"
+                                            name="FreeText"
+                                            class="form-control"
+                                            readOnly
+                                            aria-describedby="Requesterid"
+                                            defaultValue={item.FreeText}
+                                            onChange={(e) => {
+                                              ontextChanged(e, index);
+                                            }}
+                                          />
+                                        </div>
+                                      </TD>
+                                      <TD>
+                                        <div
+                                          style={{
+                                            width: "14rem",
+                                            height: "auto",
+                                          }}
+                                        >
+                                          <input
+                                            type="number"
+                                            name="QuotedQty"
+                                            readOnly="readOnly"
+                                            class="form-control"
+                                            aria-describedby="Requesterid"
+                                            defaultValue={
+                                              item.RemainingOpenQuantity
+                                            }
+                                            // onChange={e=>OpenQtyFunction(e, index)
+                                            // setOpenQty(e.target.value)
+                                            // }
+                                            // onChange={e => {
+                                            //   OpenQtyFunction(e, index)
+                                            //   setOpenQty(e.target.value)
+                                            // }}
+                                          />
+                                        </div>
+                                      </TD>
+                                      <TD>{item.RemainingOpenQuantity} </TD>
+                                      <TD>
+                                        <div style={{ width: "15em" }}>
+                                          {PrWhse && (
+                                            <Select
+                                              menuPortalTarget={document.body}
+                                              value={PrWhse.filter(
+                                                (option) =>
+                                                  option.value ===
+                                                  item.WarehouseCode
+                                              )}
+                                              placeholder="Select.."
+                                              options={PrWhse} // Options to display in the dropdown
+                                              onChange={(e) => {
+                                                DocLinesDropDownOnChange(
+                                                  e,
+                                                  index,
+                                                  "WarehouseCode"
+                                                );
+                                              }}
+                                              // onSelect={CostCentre} // Function will trigger on select event
+                                              // onRemove={CostCentre} //Function will trigger on remove event
+                                              displayValue="name" // Property name to display in the dropdown options
+                                            />
+                                          )}
+                                        </div>
+                                      </TD>
+                                      <TD>{item.UnitPrice}</TD>
+
+                                      <TD>
+                                        <div style={{ width: "14rem" }}>
+                                          <Select
+                                            menuPortalTarget={document.body}
+                                            placeholder={item.ProjectCode}
+                                            // options={Frieght} // Options to display in the dropdown
+                                            // onChange={e => {
+                                            //   FreightDropDownOnChange(e, index, 'Freight')
+                                            // }}
+                                            // onSelect={CostCentre} // Function will trigger on select event
+                                            // onRemove={CostCentre} //Function will trigger on remove event
+                                            displayValue="name" // Property name to display in the dropdown options
+                                          />
+                                        </div>
+                                      </TD>
+                                      <TD>
+                                        <div style={{ width: "14rem" }}>
+                                          <Select
+                                            menuPortalTarget={document.body}
+                                            placeholder={item.SalesPersonCode}
+                                            // options={Frieght} // Options to display in the dropdown
+                                            // onChange={e => {
+                                            //   FreightDropDownOnChange(e, index, 'Freight')
+                                            // }}
+                                            // onSelect={CostCentre} // Function will trigger on select event
+                                            // onRemove={CostCentre} //Function will trigger on remove event
+                                            displayValue="name" // Property name to display in the dropdown options
+                                          />
+                                        </div>
+                                      </TD>
+                                      <TD>
+                                        <div style={{ width: "14rem" }}>
+                                          <Select
+                                            menuPortalTarget={document.body}
+                                            placeholder={item.CostingCode}
+                                            // options={Frieght} // Options to display in the dropdown
+                                            // onChange={e => {
+                                            //   FreightDropDownOnChange(e, index, 'Freight')
+                                            // }}
+                                            // onSelect={CostCentre} // Function will trigger on select event
+                                            // onRemove={CostCentre} //Function will trigger on remove event
+                                            displayValue="name" // Property name to display in the dropdown options
+                                          />
+                                        </div>
+                                      </TD>
+                                    </tr>
+                                  )
+                              )
+                          )}
+                      </tbody>
+                    </Table>
+                  </Modal.Body>
+                  <Modal.Footer>
+                    <Button
+                      variant="secondary"
+                      onClick={() => {
+                        getvaluesformula();
+                        handleCloseee();
                       }}
-                    />
+                    >
+                      Choose
+                    </Button>
+                  </Modal.Footer>
+                </Modal>
+                <Modal show={show1} onHide={handleClose2}>
+                  <Modal.Header closeButton>
+                    <Modal.Title>DownPayment Request List</Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                    {ModalHeaderData && (
+                      <Table responsive>
+                        <TableHead>
+                          <tr>
+                            <th>#</th>
+                            <th>Document Status</th>
+                            <th>DocNum</th>
+                            <th>DocEntry</th>
+                            <th>Code</th>
+                            <th>Name</th>
+                            <th>Posting Date</th>
+                          </tr>
+                        </TableHead>
+                        <tbody>
+                          {ModalHeaderData.map((item, index) => (
+                            <tr
+                              key={`${index}`}
+                              onClick={(e) => {
+                                selectPR(item);
+                                handleClose2();
+                              }}
+                            >
+                              <TD>{index + 1}</TD>
+                              <TD>
+                                {item.DocumentStatus === "bost_Open" ? (
+                                  <p
+                                    style={{
+                                      background: "gray",
+                                      color: "white",
+                                    }}
+                                  >
+                                    Open
+                                  </p>
+                                ) : item.DocumentStatus === "bost_Close" ? (
+                                  <p
+                                    style={{
+                                      background: "red",
+                                      color: "white",
+                                    }}
+                                  >
+                                    Closed
+                                  </p>
+                                ) : null}
+                              </TD>
+
+                              <TD>{item.DocNum}</TD>
+                              <TD>{item.DocEntry}</TD>
+                              <TD>{item.CardCode}</TD>
+                              <TD>{item.CardName}</TD>
+                              <TD>{item.DocDate}</TD>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </Table>
+                    )}
+                  </Modal.Body>
+
+                  <Modal.Footer>
+                    <Button variant="secondary" onClick={handleClose2}>
+                      Close
+                    </Button>
+                    <Button variant="primary" onClick={handleClose2}>
+                      Cancel
+                    </Button>
+                  </Modal.Footer>
+                </Modal>
+
+                <div className="header_items_container">
+                  <label>Customer Ref.No</label>
+                  <input
+                    defaultValue={HeaderData && HeaderData.NumAtCard}
+                    onChange={(e) => {
+                      setCustomerRefNo(e.target.value);
+                    }}
+                    type="text"
+                    class="input"
+                    id="exampleInputEmail1"
+                    aria-describedby="emailHelp"
+                  ></input>
+                </div>
+              </div>
+              <div className="right">
+                <div className="header_items_container">
+                  <label>No.</label>
+                  <div className="innerpart">
+                    <select
+                      className="select_inner"
+                      name=""
+                      id=""
+                      onChange={(e) => {
+                        getseriesvaluefunction(e);
+                        Whse(e.item.Name);
+                      }}
+                      displayValue="name"
+                    >
+                      {getserviceseries
+                        ? getserviceseries.map((e) => (
+                            <option value={e.value}>{e.label}</option>
+                          ))
+                        : ""}
+                    </select>
+                    <div className="number_inner">
+                      <input
+                        type="number"
+                        name="Discount"
+                        readOnly
+                        value={
+                          getnextnumber
+                            ? getnextnumber
+                            : HeaderData && HeaderData.DocNum
+                        }
+                        placeholder=""
+                        class=""
+                      />
+                    </div>
                   </div>
-                  {/* <br/>
+                </div>
+                <div className="header_items_container">
+                  <label> Status</label>
+                  <Select
+                    placeholder={DocStatus}
+                    isDisabled={DocStatus ? true : false}
+                    options={[
+                      { label: "Open", value: "bost_Open" },
+                      { label: "Close", value: "bost_Close" },
+                      { label: "All", value: null },
+                      // { label: 'Draft', value: 'bost_Draft' }
+                    ]} // Options to display in the dropdown
+                    onChange={(e) => {
+                      setgetdocumentstatus(e.value);
+                    }} // Function will trigger on select event
+                    // onRemove={BusinessPartners} Function will trigger on remove event
+                    displayValue="name" // Property name to display in the dropdown options
+                  />
+                </div>
+                <div className="header_items_container">
+                  <a
+                    onClick={(e) => {
+                      SearchAll_Filter_Data();
+                    }}
+                    style={{ cursor: "pointer" }}
+                  >
+                    {" "}
+                    <svg class="svg-icon5" viewBox="0 0 20 20">
+                      <path d="M18.125,15.804l-4.038-4.037c0.675-1.079,1.012-2.308,1.01-3.534C15.089,4.62,12.199,1.75,8.584,1.75C4.815,1.75,1.982,4.726,2,8.286c0.021,3.577,2.908,6.549,6.578,6.549c1.241,0,2.417-0.347,3.44-0.985l4.032,4.026c0.167,0.166,0.43,0.166,0.596,0l1.479-1.478C18.292,16.234,18.292,15.968,18.125,15.804 M8.578,13.99c-3.198,0-5.716-2.593-5.733-5.71c-0.017-3.084,2.438-5.686,5.74-5.686c3.197,0,5.625,2.493,5.64,5.624C14.242,11.548,11.621,13.99,8.578,13.99 M16.349,16.981l-3.637-3.635c0.131-0.11,0.721-0.695,0.876-0.884l3.642,3.639L16.349,16.981z"></path>
+                    </svg>
+                  </a>
+                  <input
+                    name={"SearchPRNumber"}
+                    type="Number"
+                    placeholder="Number"
+                    class="input"
+                    onChange={(e) => {
+                      setSearchNumber(e.target.value);
+                    }}
+                  />
+                </div>
+
+                <div className="header_items_container">
+                  <label> Posting Date</label>
+                  <input
+                    type="date"
+                    name="DocDate"
+                    readOnly
+                    class="input"
+                    defaultValue={
+                      HeaderData && HeaderData.DocDate
+                        ? HeaderData && HeaderData.DocDate
+                        : currentDate
+                    }
+                  />
+                </div>
+                <div className="header_items_container">
+                  <label> Document Date</label>
+                  <input
+                    type="date"
+                    name="DocDueDate"
+                    class="input"
+                    defaultValue={
+                      HeaderData && HeaderData.DocDueDate
+                        ? HeaderData && HeaderData.DocDueDate
+                        : currentDate
+                    }
+                    onChange={(e) => {
+                      DocDateChange(e);
+                    }}
+                  />
+                </div>
+                {/* <br/>
             <div class="form-check form-check-inline" style={{marginLeft:'3rem'}}>
           <input class="form-check-input" checked={bothbodies} name='Sync' onChange={e => setbothbodies(!bothbodies)} type="checkbox" id="inlineCheckbox1" value="option1" />
           <label class="form-check-label" for="inlineCheckbox1">Sync A</label>
         </div> */}
-                </Container>
-              </DIV3>
-            </CardGroup>
+              </div>
+            </div>
             {/* Table+++++++++ */}
             <Tabs
               defaultActiveKey="Contents"
@@ -1528,28 +1512,72 @@ export default function DownPaymentRequest() {
                     PQDocumentLines.length > 0 ? (
                       <TableHead>
                         <tr>
-                          <th>#</th>
-                          <th>Bar Code</th>
-                          <th>Item No.</th>
-                          <th>Item Description</th>
-                          <th>UoM Name</th>
-                          <th>Free Text</th>
-                          <th>Quantity</th>
-                          <th>Open Qty</th>
-                          <th>Whse</th>
-                          <th>Unit Price</th>
-                          <th>Discount</th>
-                          <th>Price after Discount</th>
-                          <th>Tax Code : Rate</th>
-                          <th>Tax Amount(LC)</th>
-                          <th>Gross Price After Disc.</th>
-                          <th>Freight 1</th>
-                          <th>Freight 1 (LC)</th>
-                          <th>Line Total</th>
-                          <th>Gross Total(LC)</th>
-                          <th>Project</th>
-                          <th>Buyer</th>
-                          <th>Cost Centre</th>
+                          <th>
+                            <div className="first_column">#</div>
+                          </th>
+                          <th>
+                            <div>Bar Code</div>
+                          </th>
+                          <th>
+                            <div>Item No.</div>
+                          </th>
+                          <th>
+                            <div>Item Description</div>
+                          </th>
+                          <th>
+                            <div>UoM Name</div>
+                          </th>
+                          <th>
+                            <div>Free Text</div>
+                          </th>
+                          <th>
+                            <div>Quantity</div>
+                          </th>
+                          <th>
+                            <div>Open Qty</div>
+                          </th>
+                          <th>
+                            <div>Whse</div>
+                          </th>
+                          <th>
+                            <div>Unit Price</div>
+                          </th>
+                          <th>
+                            <div>Discount</div>
+                          </th>
+                          <th>
+                            <div>Price after Discount</div>
+                          </th>
+                          <th>
+                            <div>Tax Code : Rate</div>
+                          </th>
+                          <th>
+                            <div>Tax Amount(LC)</div>
+                          </th>
+                          <th>
+                            <div>Gross Price After Disc.</div>
+                          </th>
+                          <th>
+                            <div>Freight 1</div>
+                          </th>
+                          <th>
+                            <div>Freight 1 (LC)</div>
+                          </th>
+                          <th>
+                            <div>Line Total</div>
+                          </th>
+                          <th>
+                            <div>Gross Total(LC)</div>
+                          </th>
+                          <th>
+                            <div>Project</div>
+                          </th>
+                          <th>
+                            <div>Buyer</div>
+                          </th>
+                          <th>
+                            <div>Cost Centre</div>
+                          </th>
                         </tr>
                       </TableHead>
                     ) : null}
@@ -1563,127 +1591,199 @@ export default function DownPaymentRequest() {
                                 item.isSelected &&
                                 item.LineStatus === "bost_Open" && (
                                   <tr key={`${index}`}>
-                                    <TD>{index + 1}</TD>
-                                    <TD></TD>
-                                    <TD>{item.ItemCode}</TD>
-                                    <TD>{item.ItemDescription}</TD>
-                                    <TD>{item.MeasureUnit}</TD>
-                                    <TD>
-                                      <div
-                                        style={{
-                                          width: "14rem",
-                                          height: "auto",
-                                        }}
-                                      >
-                                        <input
-                                          type="text"
-                                          name="FreeText"
-                                          class="form-control"
-                                          aria-describedby="Requesterid"
-                                          defaultValue={item.FreeText}
-                                          onChange={(e) => {
-                                            ontextChanged(e, index, PrReIndex);
+                                    <td>
+                                      <div className="inside_td">
+                                        {index + 1}
+                                      </div>
+                                    </td>
+                                    <td>
+                                      <div className="inside_td"></div>
+                                    </td>
+                                    <td>
+                                      <div className="inside_td">
+                                        {item.ItemCode}
+                                      </div>
+                                    </td>
+                                    <td>
+                                      <div className="inside_td">
+                                        {item.ItemDescription}
+                                      </div>
+                                    </td>
+                                    <td>
+                                      <div className="inside_td">
+                                        {item.MeasureUnit}
+                                      </div>
+                                    </td>
+                                    <td>
+                                      <div className="inside_td">
+                                        <div
+                                          style={{
+                                            width: "14rem",
+                                            height: "auto",
                                           }}
-                                        />
+                                        >
+                                          <input
+                                            type="text"
+                                            name="FreeText"
+                                            class="form-control"
+                                            aria-describedby="Requesterid"
+                                            defaultValue={item.FreeText}
+                                            onChange={(e) => {
+                                              ontextChanged(
+                                                e,
+                                                index,
+                                                PrReIndex
+                                              );
+                                            }}
+                                          />
+                                        </div>
                                       </div>
-                                    </TD>
-                                    <TD>
-                                      <div
-                                        style={{
-                                          width: "14rem",
-                                          height: "auto",
-                                        }}
-                                      >
-                                        <input
-                                          type="number"
-                                          name="QuotedQty"
-                                          readOnly="readOnly"
-                                          class="form-control"
-                                          aria-describedby="Requesterid"
-                                          defaultValue={
-                                            item.RemainingOpenQuantity
-                                          }
-                                        />
+                                    </td>
+                                    <td>
+                                      <div className="inside_td">
+                                        <div
+                                          style={{
+                                            width: "14rem",
+                                            height: "auto",
+                                          }}
+                                        >
+                                          <input
+                                            type="number"
+                                            name="QuotedQty"
+                                            readOnly="readOnly"
+                                            class="form-control"
+                                            aria-describedby="Requesterid"
+                                            defaultValue={
+                                              item.RemainingOpenQuantity
+                                            }
+                                          />
+                                        </div>
                                       </div>
-                                    </TD>
-                                    <TD>{item.RemainingOpenQuantity} </TD>
-                                    <TD>
-                                      <div style={{ width: "15em" }}>
-                                        {PrWhse && (
+                                    </td>
+                                    <td>
+                                      <div className="inside_td">
+                                        {item.RemainingOpenQuantity}{" "}
+                                      </div>
+                                    </td>
+                                    <td>
+                                      <div className="inside_td">
+                                        <div style={{ width: "15em" }}>
+                                          {PrWhse && (
+                                            <Select
+                                              menuPortalTarget={document.body}
+                                              value={PrWhse.filter(
+                                                (option) =>
+                                                  option.value ===
+                                                  item.WarehouseCode
+                                              )}
+                                              placeholder="Select.."
+                                              options={PrWhse}
+                                              displayValue="name"
+                                            />
+                                          )}
+                                        </div>
+                                      </div>
+                                    </td>
+                                    <td>
+                                      <div className="inside_td">
+                                        {item.UnitPrice}
+                                      </div>
+                                    </td>
+                                    <td>
+                                      <div className="inside_td">
+                                        {item.DiscountPercent}
+                                      </div>
+                                    </td>
+                                    <td>
+                                      <div className="inside_td">
+                                        {item.Price}
+                                      </div>
+                                    </td>
+                                    <td>
+                                      <div className="inside_td">
+                                        <div style={{ width: "14rem" }}>
                                           <Select
                                             menuPortalTarget={document.body}
-                                            value={PrWhse.filter(
-                                              (option) =>
-                                                option.value ===
-                                                item.WarehouseCode
-                                            )}
-                                            placeholder="Select.."
-                                            options={PrWhse}
-                                            displayValue="name"
+                                            placeholder={
+                                              item.VatGroup +
+                                              "  : " +
+                                              item.TaxPercentagePerRow +
+                                              "%"
+                                            }
+                                            displayValue="name" // Property name to display in the dropdown options
                                           />
-                                        )}
+                                        </div>
                                       </div>
-                                    </TD>
-                                    <TD>{item.UnitPrice}</TD>
-                                    <TD>{item.DiscountPercent}</TD>
-                                    <TD>{item.Price}</TD>
-                                    <TD>
-                                      <div style={{ width: "14rem" }}>
-                                        <Select
-                                          menuPortalTarget={document.body}
-                                          placeholder={
-                                            item.VatGroup +
-                                            "  : " +
-                                            item.TaxPercentagePerRow +
-                                            "%"
-                                          }
-                                          displayValue="name" // Property name to display in the dropdown options
-                                        />
+                                    </td>
+                                    <td>
+                                      <div className="inside_td">
+                                        {item.TaxTotal}
                                       </div>
-                                    </TD>
-                                    <TD>{item.TaxTotal}</TD>
-                                    <TD>{item.GrossTotalSC}</TD>
-                                    <TD>
-                                      <div style={{ width: "14rem" }}>
-                                        <Select
-                                          menuPortalTarget={document.body}
-                                          options={Frieght} // Options to display in the dropdown
-                                          displayValue="name" // Property name to display in the dropdown options
-                                        />
+                                    </td>
+                                    <td>
+                                      <div className="inside_td">
+                                        {item.GrossTotalSC}
                                       </div>
-                                    </TD>
-                                    <TD>
-                                      {/* {item.DocumentLineAdditionalExpenses[0].LineTotal || 0} */}
-                                    </TD>
-                                    <TD>{item.LineTotal}</TD>
-                                    <TD>{item.GrossTotal}</TD>
-                                    <TD>
-                                      <div style={{ width: "14rem" }}>
-                                        <Select
-                                          menuPortalTarget={document.body}
-                                          placeholder={item.ProjectCode}
-                                          displayValue="name" // Property name to display in the dropdown options
-                                        />
+                                    </td>
+                                    <td>
+                                      <div className="inside_td">
+                                        <div style={{ width: "14rem" }}>
+                                          <Select
+                                            menuPortalTarget={document.body}
+                                            options={Frieght} // Options to display in the dropdown
+                                            displayValue="name" // Property name to display in the dropdown options
+                                          />
+                                        </div>
                                       </div>
-                                    </TD>
-                                    <TD>
-                                      <div style={{ width: "14rem" }}>
-                                        <Select
-                                          menuPortalTarget={document.body}
-                                          placeholder={item.SalesPersonCode}
-                                          displayValue="name" // Property name to display in the dropdown options
-                                        />
+                                    </td>
+                                    <td>
+                                      <div className="inside_td">
+                                        {/* {item.DocumentLineAdditionalExpenses[0].LineTotal || 0} */}
                                       </div>
-                                    </TD>
-                                    <TD>
-                                      <div style={{ width: "14rem" }}>
-                                        <Select
-                                          menuPortalTarget={document.body}
-                                          placeholder={item.CostingCode}
-                                          displayValue="name" // Property name to display in the dropdown options
-                                        />
+                                    </td>
+                                    <td>
+                                      <div className="inside_td">
+                                        {item.LineTotal}
                                       </div>
-                                    </TD>
+                                    </td>
+                                    <td>
+                                      <div className="inside_td">
+                                        {item.GrossTotal}
+                                      </div>
+                                    </td>
+                                    <td>
+                                      <div className="inside_td">
+                                        <div style={{ width: "14rem" }}>
+                                          <Select
+                                            menuPortalTarget={document.body}
+                                            placeholder={item.ProjectCode}
+                                            displayValue="name" // Property name to display in the dropdown options
+                                          />
+                                        </div>
+                                      </div>
+                                    </td>
+                                    <td>
+                                      <div className="inside_td">
+                                        <div style={{ width: "14rem" }}>
+                                          <Select
+                                            menuPortalTarget={document.body}
+                                            placeholder={item.SalesPersonCode}
+                                            displayValue="name" // Property name to display in the dropdown options
+                                          />
+                                        </div>
+                                      </div>
+                                    </td>
+                                    <td>
+                                      <div className="inside_td">
+                                        <div style={{ width: "14rem" }}>
+                                          <Select
+                                            menuPortalTarget={document.body}
+                                            placeholder={item.CostingCode}
+                                            displayValue="name" // Property name to display in the dropdown options
+                                          />
+                                        </div>
+                                      </div>
+                                    </td>
                                   </tr>
                                 )
                             )
@@ -1852,161 +1952,110 @@ export default function DownPaymentRequest() {
               </Tab>
             </Tabs>
             {/* Bottom Side+++++++++ */}
-            <CardGroup>
-              <DIV3>
-                <Container fluid>
-                  <div style={{ width: "23.5rem" }}>
-                    <label>Sales Employee</label>
-                    <Select
-                      placeholder={HeaderData && HeaderData.SalesPersonCode}
-                      onChange={(e) => setSaleEmployee(e.value)}
-                      options={PrBuyer} // Options to display in the dropdown
-                      displayValue="name" // Property name to display in the dropdown options
-                    />
-                  </div>
-                  <div style={{ width: "23.5rem", height: "auto" }}>
-                    <label>Owner</label>
-                    <Select
-                      placeholder={HeaderData && HeaderData.DocumentsOwner}
-                      options={PrOwner} // Options to display in the dropdown
-                      onChange={(e) => setSelectedOwner(e.value)}
-                      displayValue="name" // Property name to display in the dropdown options
-                    />
-                  </div>
-                  <br />
-                  <div class="form-group">
-                    <label for="exampleFormControlTextarea1">Remarks</label>
-                    <div style={{ width: "23.5rem" }}>
-                      <textarea
-                        type="text"
-                        placeholder=" "
-                        class="form-control rounded-0"
-                        id="exampleFormControlTextarea1"
-                        name="Comments"
-                        rows="3"
-                        onChange={(e) => {
-                          setCommentsValue(e.target.value);
-                        }}
-                        defaultValue={
-                          HeaderData &&
-                          HeaderData.Comments + ":" + HeaderData.DocEntry
+            <div className="main_container">
+              <div className="left">
+                <div className="header_items_container">
+                  <label>Sales Employee</label>
+                  <Select
+                    placeholder={HeaderData && HeaderData.SalesPersonCode}
+                    onChange={(e) => setSaleEmployee(e.value)}
+                    options={PrBuyer} // Options to display in the dropdown
+                    displayValue="name" // Property name to display in the dropdown options
+                  />
+                </div>
+                <div className="header_items_container">
+                  <label>Owner</label>
+                  <Select
+                    placeholder={HeaderData && HeaderData.DocumentsOwner}
+                    options={PrOwner} // Options to display in the dropdown
+                    onChange={(e) => setSelectedOwner(e.value)}
+                    displayValue="name" // Property name to display in the dropdown options
+                  />
+                </div>
+                <div className="header_items_container">
+                  <label for="exampleFormControlTextarea1">Remarks</label>
+                  <textarea
+                    type="text"
+                    placeholder=" "
+                    class="textArea"
+                    id="exampleFormControlTextarea1"
+                    name="Comments"
+                    rows="3"
+                    onChange={(e) => {
+                      setCommentsValue(e.target.value);
+                    }}
+                    defaultValue={
+                      HeaderData &&
+                      HeaderData.Comments + ":" + HeaderData.DocEntry
+                    }
+                  />
+                </div>
+              </div>
+              <div className="right">
+                <div className="header_items_container">
+                  <label>Net Total </label>
+                  <input
+                    readOnly="readOnly"
+                    type="number"
+                    value={getnetTotal || totalbforeDiscount}
+                    // defaultValue={PQDocumentLines[0] && PQDocumentLines[0].Price}
+                    // placeholder={PQFindDocumentLines && PQFindDocumentLines.DocumentsOwner}
+                    class="input"
+                  />
+                </div>
+                <div className="header_items_container">
+                  <label>DPM</label>
+                  <div className="innerpart">
+                    <div className="discountfirst">
+                      <input
+                        type="number"
+                        name="DPM%"
+                        value={
+                          disc ||
+                          (HeaderData && HeaderData.DownPaymentPercentage)
                         }
+                        onChange={(e) => {
+                          setdisc(e.target.value);
+                          setdownpayment(
+                            (e.target.value *
+                              (getnetTotal || totalbforeDiscount)) /
+                              100
+                          );
+                        }}
+                        placeholder="%"
+                      />
+                    </div>
+                    <div className="discountsecond">
+                      <input
+                        type="number"
+                        name="DPMPKR"
+                        value={
+                          downpayment ||
+                          (HeaderData && HeaderData.DownPaymentAmountSC)
+                        }
+                        placeholder="PKR"
+                        style={{ width: "7rem" }}
+                        onChange={(e) => {
+                          setdownpayment(e.target.value);
+                          setdisc(
+                            (e.target.value /
+                              (getnetTotal || totalbforeDiscount)) *
+                              100
+                          );
+                        }}
                       />
                     </div>
                   </div>
-                  <br />
-                  <br />
-                  <br />
-                  <br />
-                  {localStorage.getItem("documentcontroller") === "R" ? (
-                    <div>
-                      <Button
-                        style={{ marginLeft: "5%" }}
-                        onClick={() => {
-                          window.location.href = "/Home";
-                        }}
-                      >
-                        OK
-                      </Button>
-                      <Button
-                        variant="secondary"
-                        style={{ marginLeft: "5%" }}
-                        onClick={() => {
-                          window.location.href = "/Home";
-                        }}
-                      >
-                        Cancel
-                      </Button>
-                    </div>
-                  ) : (
-                    <div>
-                      <br />
-                      <Button
-                        style={{ marginLeft: "5%" }}
-                        type="reset"
-                        onClick={() => {
-                          Submit_PatchFunc();
-                        }}
-                      >
-                        {ButtonName}
-                      </Button>
-                      <Button
-                        style={{ marginLeft: "5%" }}
-                        onClick={() => {
-                          window.location.href = "/Home";
-                        }}
-                      >
-                        Cancel
-                      </Button>
-                    </div>
-                  )}
-                </Container>
-              </DIV3>
-              <DIV4></DIV4>
-              <DIV3>
-                <div>
-                  <div style={{ width: "23.5rem", marginLeft: "4rem" }}>
-                    <label style={{ marginTop: "10%" }}>Net Total </label>
-                    <input
-                      readOnly="readOnly"
-                      type="number"
-                      value={getnetTotal || totalbforeDiscount}
-                      // defaultValue={PQDocumentLines[0] && PQDocumentLines[0].Price}
-                      // placeholder={PQFindDocumentLines && PQFindDocumentLines.DocumentsOwner}
-                      class="form-control"
-                    />
-                  </div>
-                  <div style={{ marginLeft: "4rem" }}>
-                    <label>DPM</label>
-                    <CardGroup>
-                      <div style={{ width: "11.75rem" }}>
-                        <input
-                          type="number"
-                          name="DPM%"
-                          class="form-control"
-                          defaultValue={
-                            disc ||
-                            (HeaderData && HeaderData.DownPaymentPercentage)
-                          }
-                          onChange={(e) => {
-                            setdisc(e.target.value);
-                            setdownpayment(
-                              (e.target.value * getnetTotal) / 100
-                            );
-                          }}
-                          placeholder="%"
-                        />
-                      </div>
-                      <div style={{ width: "11.75rem" }}>
-                        <input
-                          type="number"
-                          name="DPMPKR"
-                          class="form-control"
-                          defaultValue={
-                            downpayment ||
-                            (HeaderData && HeaderData.DownPaymentAmountSC)
-                          }
-                          // onChange={e => setBottomDiscount(e.target.value)}
-                          placeholder="PKR"
-                          onChange={(e) => {
-                            setdownpayment(e.target.value);
-                            setdisc((e.target.value / getnetTotal) * 100);
-                          }}
-                        />
-                      </div>
-                    </CardGroup>
-                  </div>
                 </div>
-                <div style={{ width: "23.5rem", marginLeft: "4rem" }}>
+                <div className="header_items_container">
                   <label>Freight</label>
-                  <input defaultValue={totalFreight} class="form-control" />
+                  <input defaultValue={totalFreight} class="input" />
                 </div>
-                <br />
-                <div style={{ width: "23.5rem", marginLeft: "4rem" }}>
+                <div className="header_items_container">
                   <label>Tax</label>
                   <input
                     type="number"
-                    class="form-control"
+                    class="input"
                     // onChange={e => setBottomTax(+e.target.value)}
                     value={gettaxtotal || (HeaderData && HeaderData.VatSumSys)}
                     // defaultValue={(disc*(PQDocumentLines[0] && PQDocumentLines[0].TaxTotal))/100}
@@ -2014,7 +2063,7 @@ export default function DownPaymentRequest() {
                     placeholder="Tax"
                   />
                 </div>
-                <div style={{ width: "23.5rem", marginLeft: "4rem" }}>
+                <div className="header_items_container">
                   <label>Total</label>
                   <input
                     type="number"
@@ -2023,10 +2072,10 @@ export default function DownPaymentRequest() {
                       (HeaderData && HeaderData.DocTotal)
                     }
                     placeholder=""
-                    class="form-control"
+                    class="input"
                   />
                 </div>
-                <div style={{ width: "23.5rem", marginLeft: "4rem" }}>
+                <div className="header_items_container">
                   <label>Blanace Due:</label>
                   <input
                     type="number"
@@ -2035,11 +2084,90 @@ export default function DownPaymentRequest() {
                       (HeaderData && HeaderData.DocTotalSys)
                     }
                     placeholder=""
-                    class="form-control"
+                    class="input"
                   />
                 </div>
-              </DIV3>
-            </CardGroup>
+              </div>
+            </div>
+            {localStorage.getItem("documentcontroller") === "R" ? (
+              <div className="button_main_container">
+                <div className="button_container">
+                  <button
+                    onClick={() => {
+                      window.location.href = "/Home";
+                    }}
+                    className="form_button"
+                    style={{ backgroundColor: `${redux_response.color}` }}
+                  >
+                    OK
+                  </button>
+                  <button
+                    variant="secondary"
+                    onClick={() => {
+                      window.location.href = "/Home";
+                    }}
+                    className="form_button"
+                    style={{ backgroundColor: `${redux_response.color}` }}
+                  >
+                    Cancel
+                  </button>
+                </div>
+                <div className="button_container">
+                  <button
+                    style={{ backgroundColor: `${redux_response.color}` }}
+                    className="form_button"
+                    onClick={handleShow}
+                  >
+                    Copy From
+                  </button>{" "}
+                  <button
+                    style={{ backgroundColor: `${redux_response.color}` }}
+                    className="form_button"
+                  >
+                    Copy To
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="button_main_container">
+                <div className="button_container">
+                  <button
+                    onClick={() => {
+                      Submit_PatchFunc();
+                    }}
+                    className="form_button"
+                    style={{ backgroundColor: `${redux_response.color}` }}
+                  >
+                    {ButtonName}
+                  </button>
+                  <button
+                    variant="secondary"
+                    onClick={() => {
+                      window.location.href = "/Home";
+                    }}
+                    className="form_button"
+                    style={{ backgroundColor: `${redux_response.color}` }}
+                  >
+                    Cancel
+                  </button>
+                </div>
+                <div className="button_container">
+                  <button
+                    style={{ backgroundColor: `${redux_response.color}` }}
+                    className="form_button"
+                    onClick={handleShow}
+                  >
+                    Copy From
+                  </button>
+                  <button
+                    style={{ backgroundColor: `${redux_response.color}` }}
+                    className="form_button"
+                  >
+                    Copy To
+                  </button>
+                </div>
+              </div>
+            )}
           </Form>
         </>
       )}

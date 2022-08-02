@@ -31,6 +31,8 @@ import { useAlert } from "react-alert";
 import { input, DIV3, DIV4, DIV6, DIV7, InputD, TableHead, TD } from "./Style";
 import "./index.css";
 import Switch from "react-switch";
+import { useSelector } from "react-redux";
+
 const axios = require("axios");
 const useStyles = makeStyles((theme) => ({
   backdrop: {
@@ -40,6 +42,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Invoice() {
+  const redux_response = useSelector((state) => state.colorReducer);
+
   const alert = useAlert();
   const [loading, setLoading] = React.useState(false);
   const [getseriesnumbring, setgetseriesnumbring] = React.useState();
@@ -1420,6 +1424,20 @@ export default function Invoice() {
   };
   return (
     <>
+     <style>{`
+            .nav-tabs .nav-link{
+              color: white !important;
+              background-color: ${
+                redux_response.color ? redux_response.color : "rgb(69 70 73)"
+              } !important;  
+              width: 12rem  !important;
+              height: 24px !important;
+              padding: 0 !important;
+              text-align: center !important;
+            }
+           
+               
+          `}</style>
       <Navbar
         setgetserviceseries={setgetserviceseries}
         getdocumenttype={getdocumenttype}
@@ -1435,14 +1453,11 @@ export default function Invoice() {
           {/* Upper Side++++++++ */}
           <Form onSubmit={handleSubmitted}>
             <ContextMenuTrigger id="contextmenu">
-              <CardGroup>
-                <DIV3>
-                  <Container fluid>
+              <div className="main_container">
+                <div className="left">
+                    <div className="header_items_container">
                     <label>Copy From</label>
-                    <div
-                      style={{ width: "23.5rem", height: "auto" }}
-                      variant="primary"
-                    >
+
                       <Select
                         placeholder="Select"
                         options={[
@@ -1456,11 +1471,9 @@ export default function Invoice() {
                         displayValue="name" // Property name to display in the dropdown options
                       />
                     </div>
+                    <div className="header_items_container">
                     <label>Customer</label>
-                    <div
-                      style={{ width: "23.5rem", height: "auto" }}
-                      variant="primary"
-                    >
+
                       <Select
                         placeholder={HeaderData && HeaderData.CardName}
                         options={VendorCodeDropdown} // Options to display in the dropdown
@@ -1471,12 +1484,9 @@ export default function Invoice() {
                         displayValue="name" // Property name to display in the dropdown options
                       />
                     </div>
+                    <div className="header_items_container">
                     <label>Contact Person</label>
-                    <div
-                      style={{ width: "23.5rem", height: "auto" }}
-                      variant="primary"
-                      onClick={ContactPerson}
-                    >
+
                       {/* {ContactPersonDropdown && ( */}
                       <Select
                         // value={ContactPersonDropdown.filter(
@@ -1829,7 +1839,6 @@ export default function Invoice() {
                       <Modal.Footer></Modal.Footer>
                     </Modal>
                     {/* --------------------End Journal Entry Modal------------------ */}
-                    <br />
                     {getseriesvalue ? (
                       <Button variant="primary" onClick={handleShow}>
                         Copy From
@@ -2239,13 +2248,12 @@ export default function Invoice() {
                         </Button>
                       </Modal.Footer>
                     </Modal>
-                    <br />
-                    <div style={{ width: "23.5rem", height: "auto" }}>
+                    <div className="header_items_container">
                       <label>Customer Ref.No</label>
                       <input
                         value={HeaderData && HeaderData.NumAtCard}
                         type="text"
-                        class="form-control"
+                        class="input"
                         id="exampleInputEmail1"
                         aria-describedby="emailHelp"
                         placeholder=""
@@ -2266,13 +2274,8 @@ export default function Invoice() {
                   displayValue='name' // Property name to display in the dropdown options
                 />
               </div> */}
-                    <div
-                      style={{
-                        marginTop: "5%",
-                        marginLeft: "47%",
-                        width: "50%",
-                      }}
-                    >
+                                 <div className="header_items_container">
+
                       {RequesterCodeDropdown && (
                         <Select
                           placeholder=""
@@ -2283,46 +2286,44 @@ export default function Invoice() {
                         />
                       )}
                     </div>
-                  </Container>
-                </DIV3>
-                <DIV4></DIV4>
-                <DIV3>
-                  <Container>
-                    <div style={{ marginLeft: "3rem" }}>
-                      <label>No.</label>
-                      <CardGroup>
-                        <br />
-                        <div style={{ width: "11.5rem", height: "auto" }}>
-                          <Select
-                            // placeholder={HeaderData && HeaderData.RequesterName}
-                            options={getserviceseries} // Options to display in the dropdown
-                            onChange={(e) => {
-                              getseriesvaluefunction(e);
-                              // TableTaxCode(e.item.Name)
-                              Whse(e.item.Name);
-                            }} // Function will trigger on select event
-                            // onRemove={RequesterCodeDropdownfunc} // Function will trigger on remove event
-                            displayValue="name" // Property name to display in the dropdown options
-                          />
-                        </div>
-                        <div style={{ width: "11.5rem", height: "auto" }}>
-                          <input
-                            type="number"
-                            name="Discount"
-                            readOnly
-                            value={
-                              getnextnumber
-                                ? getnextnumber
-                                : HeaderData && HeaderData.DocNum
-                            }
-                            placeholder=""
-                            class="form-control"
-                          />{" "}
-                          <br />
-                        </div>
-                      </CardGroup>
-                    </div>
-                    <div style={{ width: "23.5rem", marginLeft: "3rem" }}>
+                </div>
+                <div className="right">
+                <div className="header_items_container">
+                <label>No.</label>
+                <div className="innerpart">
+                  <select
+                    className="select_inner"
+                    name=""
+                    id=""
+                    onChange={(e) => {
+                      getseriesvaluefunction(e);
+                      Whse(e.item.Name);
+                    }}
+                    displayValue="name"
+                  >
+                    {getserviceseries
+                      ? getserviceseries.map((e) => (
+                          <option value={e.value}>{e.label}</option>
+                        ))
+                      : ""}
+                  </select>
+                  <div className="number_inner">
+                    <input
+                      type="number"
+                      name="Discount"
+                      readOnly
+                      value={
+                        getnextnumber
+                          ? getnextnumber
+                          : HeaderData && HeaderData.DocNum
+                      }
+                      placeholder=""
+                      class=""
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="header_items_container">
                       <label> Status</label>
                       <Select
                         placeholder={DocStatus}
@@ -2340,18 +2341,8 @@ export default function Invoice() {
                         displayValue="name" // Property name to display in the dropdown options
                       />
                     </div>
-                    <br />
-                    <div
-                      className="invoice"
-                      style={{
-                        width: "23.5rem",
-                        height: "auto",
-                        marginLeft: "3rem",
-                        border: "1px solid",
-                        borderColor: "lightgray",
-                        borderRadius: "4px",
-                      }}
-                    >
+                    <div className="header_items_container">
+
                       <a
                         onClick={(e) => {
                           SearchAll_Filter_Data();
@@ -2367,7 +2358,7 @@ export default function Invoice() {
                         name={"SearchPRNumber"}
                         type="Number"
                         placeholder="Number"
-                        class="form-control13"
+                        class="input"
                         onKeyDown={keyHandler}
                         style={{
                           backgroundColor: isfocused ? "#fce8a7" : "",
@@ -2378,7 +2369,6 @@ export default function Invoice() {
                         }}
                       />
                     </div>
-                    <br />
                     {/* <Button
             style={{marginLeft:'3rem'}}
               onClick={e => {
@@ -2397,7 +2387,7 @@ export default function Invoice() {
               class='form-control' />
             </div> */}
 
-                    <div style={{ width: "23.5rem", marginLeft: "3rem" }}>
+<div className="header_items_container">
                       <label>Posting Date</label>
 
                       <input
@@ -2406,7 +2396,7 @@ export default function Invoice() {
                         onChange={(e) => {
                           setgetdocdate(e.target.value);
                         }}
-                        class="form-control"
+                        class="input"
                         defaultValue={
                           HeaderData && HeaderData.DocDate
                             ? HeaderData && HeaderData.DocDate
@@ -2414,12 +2404,12 @@ export default function Invoice() {
                         }
                       />
                     </div>
-                    <div style={{ width: "23.5rem", marginLeft: "3rem" }}>
+                    <div className="header_items_container">
                       <label> Due Date</label>
                       <input
                         type="date"
                         name="DocDueDate"
-                        class="form-control"
+                        class="input"
                         onChange={(e) => {
                           setgetdocduedate(e.target.value);
                         }}
@@ -2430,12 +2420,12 @@ export default function Invoice() {
                         }
                       />
                     </div>
-                    <div style={{ width: "23.5rem", marginLeft: "3rem" }}>
+                    <div className="header_items_container">
                       <label> Document Date</label>
                       <input
                         type="date"
                         name="TaxDate"
-                        class="form-control"
+                        class="input"
                         defaultValue={
                           HeaderData && HeaderData.TaxDate
                             ? HeaderData && HeaderData.TaxDate
@@ -2451,9 +2441,8 @@ export default function Invoice() {
           <input class="form-check-input" checked={bothbodies} name='Sync' onChange={e => setbothbodies(!bothbodies)} type="checkbox" id="inlineCheckbox1" value="option1" />
           <label class="form-check-label" for="inlineCheckbox1">Sync A</label>
         </div> */}
-                  </Container>
-                </DIV3>
-              </CardGroup>
+                </div>
+              </div>
               {/* Table+++++++++ */}
               <Tabs
                 defaultActiveKey="Contents"
@@ -3203,10 +3192,9 @@ export default function Invoice() {
                 </Tab>
               </Tabs>
               {/* Bottom Side+++++++++ */}
-              <CardGroup>
-                <DIV3>
-                  <Container fluid>
-                    <div style={{ width: "23.5em", height: "auto" }}>
+              <div className="main_container">
+                <div className="left">
+                <div className="header_items_container">
                       <label>Sales Employee</label>
                       {/* <input
                 type='text'
@@ -3220,7 +3208,7 @@ export default function Invoice() {
                         displayValue="name" // Property name to display in the dropdown options
                       />
                     </div>
-                    <div style={{ width: "23.5rem", height: "auto" }}>
+                    <div className="header_items_container">
                       <label>Owner</label>
                       <Select
                         placeholder={HeaderData && HeaderData.DocumentsOwner}
@@ -3231,9 +3219,8 @@ export default function Invoice() {
                         displayValue="name" // Property name to display in the dropdown options
                       />
                     </div>
-                    <div class="form-group">
+                      <div className="header_items_container">
                       <label for="exampleFormControlTextarea1">Remarks</label>
-                      <div style={{ width: "23.5rem" }}>
                         <textarea
                           defaultValue={
                             HeaderData &&
@@ -3243,7 +3230,7 @@ export default function Invoice() {
                               HeaderData.Comments
                           }
                           type="text"
-                          class="form-control rounded-0"
+                          class="textArea"
                           id="exampleFormControlTextarea1"
                           name="Comments"
                           rows="3"
@@ -3252,59 +3239,12 @@ export default function Invoice() {
                           }}
                         />
                       </div>
-                    </div>
-                    <br />
-                    <br />
-                    <br />
-                    <br />
-                    {localStorage.getItem("documentcontroller") === "R" ? (
-                      <div>
-                        <Button
-                          style={{ marginLeft: "5%" }}
-                          onClick={() => {
-                            window.location.href = "/Home";
-                          }}
-                        >
-                          OK
-                        </Button>
-                        <Button
-                          variant="secondary"
-                          style={{ marginLeft: "5%" }}
-                          onClick={() => {
-                            window.location.href = "/Home";
-                          }}
-                        >
-                          Cancel
-                        </Button>
-                      </div>
-                    ) : (
-                      <div>
-                        <Button
-                          style={{ marginLeft: "5%" }}
-                          onClick={() => {
-                            Submit_PatchFunc();
-                          }}
-                        >
-                          {ButtonName}
-                        </Button>
-
-                        <Button
-                          style={{ marginLeft: "5%" }}
-                          onClick={() => {
-                            window.location.href = "/Home";
-                          }}
-                        >
-                          Cancel
-                        </Button>
-                      </div>
-                    )}
-                  </Container>
-                </DIV3>
-                <DIV4></DIV4>
-                <DIV3>
-                  <div>
-                    <div style={{ width: "23.5rem", marginLeft: "4rem" }}>
-                      <label style={{ marginTop: "10%" }}>Net Total </label>
+                
+                 
+                </div>
+                <div className="right">
+                <div className="header_items_container">
+                      <label >Net Total </label>
                       <input
                         readOnly="readOnly"
                         type="number"
@@ -3324,13 +3264,13 @@ export default function Invoice() {
 
                         //value={((SelectedPRDocEntry && SelectedPRDocEntry.DocTotal ||  HeaderData && HeaderData.DocTotal || 0) + (SelectedPRDocEntry && SelectedPRDocEntry.TotalDiscountSC || HeaderData && HeaderData.TotalDiscountSC || 0)) - ((PQDocumentLines[0] && PQDocumentLines[0].DocumentLineAdditionalExpenses[0].LineTotal || 0) + (SelectedPRDocEntry && SelectedPRDocEntry.VatSumSys || HeaderData && HeaderData.VatSumSys || 0))}
                         // placeholder={PQFindDocumentLines && PQFindDocumentLines.DocumentsOwner}
-                        class="form-control"
+                        class="input"
                       />
                     </div>
-                    <div style={{ marginLeft: "4rem" }}>
+                    <div className="header_items_container">
                       <label>Discount</label>
-                      <CardGroup>
-                        <div style={{ width: "11.75rem" }}>
+                      <div className="innerpart">
+                        <div className="discountfirst">
                           <input
                             type="number"
                             onChange={(e) => {
@@ -3339,14 +3279,13 @@ export default function Invoice() {
                                 (e.target.value * totalbforeDiscount) / 100
                               );
                             }}
-                            class="form-control"
                             name="TaxAmount(LC)"
                             defaultValue={
                               disc || (HeaderData && HeaderData.DiscountPercent)
                             }
                           />
                         </div>
-                        <div style={{ width: "11.75rem" }}>
+                        <div className="discountsecond">
                           <input
                             type="number"
                             onChange={(e) => {
@@ -3355,8 +3294,9 @@ export default function Invoice() {
                                 (e.target.value / totalbforeDiscount) * 100
                               );
                             }}
-                            class="form-control"
                             name="TaxAmount(LC)"
+                            style={{ width: "7rem" }}
+
                             value={
                               DiscountTotal ||
                               (HeaderData &&
@@ -3367,27 +3307,25 @@ export default function Invoice() {
                             // defaultValue={DiscountTotal || HeaderData && HeaderData.TotalDiscountSC}
                           />
                         </div>
-                      </CardGroup>
+                      </div>
                     </div>
-                  </div>
-                  <div style={{ width: "23.5rem", marginLeft: "4rem" }}>
+                    <div className="header_items_container">
                     <label>Freight</label>
                     <input
                       // placeholder={totalFreight}
                       readOnly="readOnly"
-                      class="form-control"
+                      class="input"
                       //value={PQDocumentLines[0] && PQDocumentLines[0].DocumentLineAdditionalExpenses[0].LineTotal || "null"}
                       // value={PQDocumentLines && PQDocumentLines.DocumentLineAdditionalExpenses[0].LineTotal}
                     />
                   </div>
-                  <br />
-                  <div style={{ width: "23.5rem", marginLeft: "4rem" }}>
+                  <div className="header_items_container">
                     <label>Tax</label>
                     <input
                       type="number"
                       // onChange={e => setBottomTax(+e.target.value)}
                       // value={BottomTax}
-                      class="form-control"
+                      class="input"
                       name="TaxAmount(LC)"
                       readOnly="readOnly"
                       value={
@@ -3400,7 +3338,7 @@ export default function Invoice() {
                       // value={gettaxtotal || HeaderData && HeaderData.VatSumSys}
                     />
                   </div>
-                  <div style={{ width: "23.5rem", marginLeft: "4rem" }}>
+                  <div className="header_items_container">
                     <label>Total Payment Due:</label>
                     <input
                       type="text"
@@ -3414,11 +3352,89 @@ export default function Invoice() {
                       //  value={((totalbforeDiscount - DiscountTotal) + gettaxtotal) || HeaderData && HeaderData.DocTotal}
                       placeholder=""
                       readOnly="readOnly"
-                      class="form-control"
+                      class="input"
                     />
                   </div>
-                </DIV3>
-              </CardGroup>
+                </div>
+             
+              </div>
+              {localStorage.getItem("documentcontroller") === "R" ? (
+            <div className="button_main_container">
+              <div className="button_container">
+                <button
+                  onClick={() => {
+                    window.location.href = "/Home";
+                  }}
+                  className="form_button"
+                  style={{ backgroundColor: `${redux_response.color}` }}
+                >
+                  OK
+                </button>
+                <button
+                  variant="secondary"
+                  onClick={() => {
+                    window.location.href = "/Home";
+                  }}
+                  className="form_button"
+                  style={{ backgroundColor: `${redux_response.color}` }}
+                >
+                  Cancel
+                </button>
+              </div>
+              <div className="button_container">
+                <button
+                  style={{ backgroundColor: `${redux_response.color}` }}
+                  className="form_button"
+                >
+                  Copy From
+                </button>{" "}
+                <button
+                  style={{ backgroundColor: `${redux_response.color}` }}
+                  className="form_button"
+                >
+                  Copy To
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="button_main_container">
+              <div className="button_container">
+                <button
+                  onClick={() => {
+                    Submit_PatchFunc();
+                  }}
+                  className="form_button"
+                  style={{ backgroundColor: `${redux_response.color}` }}
+                >
+                  {ButtonName}
+                </button>
+                <button
+                  variant="secondary"
+                  onClick={() => {
+                    window.location.href = "/Home";
+                  }}
+                  className="form_button"
+                  style={{ backgroundColor: `${redux_response.color}` }}
+                >
+                  Cancel
+                </button>
+              </div>
+              <div className="button_container">
+                <button
+                  style={{ backgroundColor: `${redux_response.color}` }}
+                  className="form_button"
+                >
+                  Copy From
+                </button>
+                <button
+                  style={{ backgroundColor: `${redux_response.color}` }}
+                  className="form_button"
+                >
+                  Copy To
+                </button>
+              </div>
+            </div>
+          )}
             </ContextMenuTrigger>
             {cancelbutton ? (
               <>

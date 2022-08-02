@@ -1,7 +1,4 @@
-
-  
-  
-  /* .menu-bars {
+/* .menu-bars {
     margin-left: 1rem;
     font-size: 1.5rem;
     background:none;
@@ -33,8 +30,8 @@
     list-style: none;
     height: 40px;
   } */
-  
-  /* .nav-text a {
+
+/* .nav-text a {
     text-decoration: none;
     color: #070707;
     font-size: 18px;
@@ -46,11 +43,11 @@
     border-radius: 4px;
   }
    */
-  a:hover {
-        text-decoration: none;
-  }
-  
-  /* .nav-icon a { 
+a:hover {
+  text-decoration: none;
+}
+
+/* .nav-icon a { 
     background-color: #d61b1b;
     color: #ffffff;
     text-decoration: none;
@@ -77,10 +74,13 @@
   ol, ul {
     padding-left: 0rem; */
 /* } */
-.download-table-xls-button{
- border: none;
- background: none; 
+.download-table-xls-button {
+  border: none;
+  background: none;
 }
-.download-table-xls-button:focus{
- outline: none;
- }
+.download-table-xls-button:focus {
+  outline: none;
+}
+.ui_navbar {
+  background-color: #535b62;
+}

@@ -28,6 +28,8 @@ import ReactHTMLTableToExcel from "react-html-table-to-excel";
 import XLSX from "xlsx";
 import { MdDelete } from "react-icons/md";
 import { PurchaseRequests } from "..";
+import { useSelector } from "react-redux";
+
 const axios = require("axios");
 const useStyles = makeStyles((theme) => ({
   backdrop: {
@@ -36,6 +38,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 export default function PurchaseRequest() {
+  const redux_response = useSelector((state) => state.colorReducer);
+
   const alert = useAlert();
   const [loading, setloading] = React.useState(false);
   const [getautounitprice, setgetautounitprice] = React.useState();
@@ -1112,6 +1116,20 @@ export default function PurchaseRequest() {
   };
   return (
     <>
+      <style>{`
+            .nav-tabs .nav-link{
+              color: white !important;
+              background-color: ${
+                redux_response.color ? redux_response.color : "rgb(69 70 73)"
+              } !important;  
+              width: 12rem  !important;
+              height: 24px !important;
+              padding: 0 !important;
+              text-align: center !important;
+            }
+           
+               
+          `}</style>
       <NavBar
         getdocumenttype={getdocumenttype}
         ModuleName={ModuleName}
@@ -1186,11 +1204,11 @@ export default function PurchaseRequest() {
             </Modal.Footer>
           </Modal>
           <Form onSubmit={handleSubmit}>
-            <CardGroup>
-              <DIV3>
-                <Container fluid>
+            <div className="main_container ">
+              <div className="left">
+                <div className="header_items_container">
                   <label>Requester</label>
-                  <div style={{ width: "23.5rem", height: "auto" }}>
+                  <div>
                     <Select
                       placeholder={HeaderData && HeaderData.ReqType}
                       options={[
@@ -1202,9 +1220,10 @@ export default function PurchaseRequest() {
                       displayValue="label" // Property name to display in the dropdown options
                     />
                   </div>
-
+                </div>
+                <div className="header_items_container">
                   <label>Select Requester</label>
-                  <div style={{ width: "23.5rem", height: "auto" }}>
+                  <div>
                     <Select
                       placeholder={HeaderData && HeaderData.RequesterName}
                       options={RequesterCodeDropdown} // Options to display in the dropdown
@@ -1213,8 +1232,10 @@ export default function PurchaseRequest() {
                       displayValue="name" // Property name to display in the dropdown options
                     />
                   </div>
+                </div>
+                <div className="header_items_container">
                   <label>Department</label>
-                  <div style={{ width: "23.5rem", height: "auto" }}>
+                  <div>
                     <Select
                       placeholder={HeaderData && HeaderData.RequesterDepartment}
                       options={Dept} // Options to display in the dropdown
@@ -1225,26 +1246,26 @@ export default function PurchaseRequest() {
                       displayValue="name" // Property name to display in the dropdown options
                     />
                   </div>
+                </div>
 
-                  <div style={{ width: "23.5rem", height: "auto" }}>
-                    <label>Email</label>
-                    <input
-                      type="email"
-                      readOnly="readOnly"
-                      class="form-control"
-                      id="exampleInputEmail1"
-                      defaultValue={
-                        getemail
-                          ? getemail
-                          : HeaderData && HeaderData.RequesterEmail
-                      }
-                      aria-describedby="emailHelp"
-                      // placeholder={HeaderData && HeaderData.RequesterEmail}
-                    ></input>
-                  </div>
-                  <br />
+                <div className="header_items_container">
+                  <label>Email</label>
+                  <input
+                    type="email"
+                    readOnly="readOnly"
+                    class="input"
+                    id="exampleInputEmail1"
+                    defaultValue={
+                      getemail
+                        ? getemail
+                        : HeaderData && HeaderData.RequesterEmail
+                    }
+                    aria-describedby="emailHelp"
+                    // placeholder={HeaderData && HeaderData.RequesterEmail}
+                  ></input>
+                </div>
 
-                  {/* <label>Select Item(s)</label>
+                {/* <label>Select Item(s)</label>
               <div style={{ width: '23.5rem', height: 'auto' }}>
                   <Select
                     isMulti
@@ -1256,96 +1277,83 @@ export default function PurchaseRequest() {
                   />
               </div>
               <br /> */}
-                </Container>
-              </DIV3>
-              <DIV4>
-                <Container></Container>
-              </DIV4>
-              <DIV3>
-                <Container>
-                  <div style={{ marginLeft: "3rem" }}>
-                    <label>No.</label>
-                    <CardGroup>
-                      <br />
-                      <div style={{ width: "11.5rem", height: "auto" }}>
-                        <Select
-                          // placeholder={HeaderData && HeaderData.RequesterName}
-                          options={getserviceseries} // Options to display in the dropdown
-                          onChange={(e) => {
-                            getseriesvaluefunction(e);
-                            Whse(e.item.Name);
-                          }} // Function will trigger on select event
-                          // onRemove={RequesterCodeDropdownfunc} // Function will trigger on remove event
-                          displayValue="name" // Property name to display in the dropdown options
-                        />
-                      </div>
-                      <div style={{ width: "11.5rem", height: "auto" }}>
-                        <input
-                          type="number"
-                          name="Discount"
-                          readOnly
-                          value={getnextnumber}
-                          placeholder=""
-                          class="form-control"
-                        />{" "}
-                        <br />
-                      </div>
-                    </CardGroup>
-                  </div>
-                  <div style={{ width: "23.5rem", marginLeft: "3rem" }}>
-                    <label> Status</label>
-                    <Select
-                      placeholder={getStatus}
-                      isDisabled={getStatus ? true : false}
-                      options={[
-                        { label: "Open", value: "bost_Open" },
-                        { label: "Close", value: "bost_Close" },
-                        { label: "All", value: null },
-                        // { label: 'Draft', value: 'bost_Draft' }
-                      ]} // Options to display in the dropdown
+              </div>
+
+              <div className="right">
+                <div className="header_items_container">
+                  <label>No.</label>
+                  <div className="innerpart">
+                    <select
+                      className="select_inner"
+                      name=""
+                      id=""
                       onChange={(e) => {
-                        setgetdocumentstatus(e.value);
-                      }} // Function will trigger on select event
-                      // onRemove={BusinessPartners} Function will trigger on remove event
-                      displayValue="name" // Property name to display in the dropdown options
-                    />
-                  </div>
-                  <br />
-                  <div
-                    className="Request"
-                    style={{
-                      width: "23.5rem",
-                      height: "auto",
-                      marginLeft: "3rem",
-                      border: "1px solid",
-                      borderColor: "lightgray",
-                      borderRadius: "4px",
-                    }}
-                  >
-                    <a
-                      onClick={(e) => {
-                        SearchAll_Filter_Data();
+                        getseriesvaluefunction(e);
+                        Whse(e.item.Name);
                       }}
-                      style={{ cursor: "pointer" }}
+                      displayValue="name"
                     >
-                      {" "}
-                      <svg class="svg-icon10" viewBox="0 0 20 20">
-                        <path d="M18.125,15.804l-4.038-4.037c0.675-1.079,1.012-2.308,1.01-3.534C15.089,4.62,12.199,1.75,8.584,1.75C4.815,1.75,1.982,4.726,2,8.286c0.021,3.577,2.908,6.549,6.578,6.549c1.241,0,2.417-0.347,3.44-0.985l4.032,4.026c0.167,0.166,0.43,0.166,0.596,0l1.479-1.478C18.292,16.234,18.292,15.968,18.125,15.804 M8.578,13.99c-3.198,0-5.716-2.593-5.733-5.71c-0.017-3.084,2.438-5.686,5.74-5.686c3.197,0,5.625,2.493,5.64,5.624C14.242,11.548,11.621,13.99,8.578,13.99 M16.349,16.981l-3.637-3.635c0.131-0.11,0.721-0.695,0.876-0.884l3.642,3.639L16.349,16.981z"></path>
-                      </svg>
-                    </a>
-                    <input
-                      type="Number"
-                      placeholder="Number"
-                      name={"SearchPRNumber"}
-                      class="form-control10"
-                      onChange={(e) => {
-                        ontextItemChanged(e);
-                        setSearchNumber(e.target.value);
-                      }}
-                    />
+                      {getserviceseries
+                        ? getserviceseries.map((e) => (
+                            <option value={e.value}>{e.label}</option>
+                          ))
+                        : ""}
+                    </select>
+                    <div className="number_inner">
+                      <input
+                        type="number"
+                        name="Discount"
+                        readOnly
+                        value={getnextnumber}
+                        placeholder=""
+                        class=""
+                      />
+                    </div>
                   </div>
-                  <br />
-                  {/* <div style={{ width: '23.5rem', height: 'auto' ,marginLeft:'3rem'}}>
+                </div>
+                <div className="header_items_container">
+                  <label> Status</label>
+                  <Select
+                    placeholder={getStatus}
+                    isDisabled={getStatus ? true : false}
+                    options={[
+                      { label: "Open", value: "bost_Open" },
+                      { label: "Close", value: "bost_Close" },
+                      { label: "All", value: null },
+                      // { label: 'Draft', value: 'bost_Draft' }
+                    ]} // Options to display in the dropdown
+                    onChange={(e) => {
+                      setgetdocumentstatus(e.value);
+                    }} // Function will trigger on select event
+                    // onRemove={BusinessPartners} Function will trigger on remove event
+                    displayValue="name" // Property name to display in the dropdown options
+                  />
+                </div>
+                <div className="Request header_items_container ">
+                  <a
+                    onClick={(e) => {
+                      SearchAll_Filter_Data();
+                    }}
+                    style={{ cursor: "pointer" }}
+                  >
+                    {" "}
+                    <svg class="svg-icon10" viewBox="0 0 20 20">
+                      <path d="M18.125,15.804l-4.038-4.037c0.675-1.079,1.012-2.308,1.01-3.534C15.089,4.62,12.199,1.75,8.584,1.75C4.815,1.75,1.982,4.726,2,8.286c0.021,3.577,2.908,6.549,6.578,6.549c1.241,0,2.417-0.347,3.44-0.985l4.032,4.026c0.167,0.166,0.43,0.166,0.596,0l1.479-1.478C18.292,16.234,18.292,15.968,18.125,15.804 M8.578,13.99c-3.198,0-5.716-2.593-5.733-5.71c-0.017-3.084,2.438-5.686,5.74-5.686c3.197,0,5.625,2.493,5.64,5.624C14.242,11.548,11.621,13.99,8.578,13.99 M16.349,16.981l-3.637-3.635c0.131-0.11,0.721-0.695,0.876-0.884l3.642,3.639L16.349,16.981z"></path>
+                    </svg>
+                  </a>
+                  <input
+                    type="Number"
+                    placeholder="Number"
+                    name={"SearchPRNumber"}
+                    class="input"
+                    style={{ outline: "none" }}
+                    onChange={(e) => {
+                      ontextItemChanged(e);
+                      setSearchNumber(e.target.value);
+                    }}
+                  />
+                </div>
+                {/* <div style={{ width: '23.5rem', height: 'auto' ,marginLeft:'3rem'}}>
                 <label>No.</label>
                 <input
                   type='text'
@@ -1355,51 +1363,39 @@ export default function PurchaseRequest() {
                 />
               </div> */}
 
-                  <div
-                    style={{
-                      width: "23.5rem",
-                      height: "auto",
-                      marginLeft: "3rem",
+                <div className="header_items_container">
+                  <label>Posting Date</label>
+                  <input
+                    type="date"
+                    defaultValue={
+                      HeaderData && HeaderData.DocDate
+                        ? HeaderData && HeaderData.DocDate
+                        : currentDate
+                    }
+                    name="DocDate"
+                    class="input"
+                    onChange={(e) => {
+                      dateChange(e);
                     }}
-                  >
-                    <label>Posting Date</label>
-                    <input
-                      type="date"
-                      defaultValue={
-                        HeaderData && HeaderData.DocDate
-                          ? HeaderData && HeaderData.DocDate
-                          : currentDate
-                      }
-                      name="DocDate"
-                      class="form-control"
-                      onChange={(e) => {
-                        dateChange(e);
-                      }}
-                    />
-                  </div>
-                  <div
-                    style={{
-                      width: "23.5rem",
-                      height: "auto",
-                      marginLeft: "3rem",
+                  />
+                </div>
+                <div className="header_items_container">
+                  <label>Valid Date</label>
+                  <input
+                    type="date"
+                    defaultValue={
+                      HeaderData && HeaderData.DocDueDate
+                        ? HeaderData && HeaderData.DocDueDate
+                        : currentDate
+                    }
+                    name="DocDueDate"
+                    class="input"
+                    onChange={(e) => {
+                      dateChange(e);
                     }}
-                  >
-                    <label>Valid Date</label>
-                    <input
-                      type="date"
-                      defaultValue={
-                        HeaderData && HeaderData.DocDueDate
-                          ? HeaderData && HeaderData.DocDueDate
-                          : currentDate
-                      }
-                      name="DocDueDate"
-                      class="form-control"
-                      onChange={(e) => {
-                        dateChange(e);
-                      }}
-                    />
-                  </div>
-                  {/* <div style={{ width: '23.5rem', height: 'auto',marginLeft:'3rem' }}>
+                  />
+                </div>
+                {/* <div style={{ width: '23.5rem', height: 'auto',marginLeft:'3rem' }}>
                 <label>Document Date</label>
                 <input
                   type='date'
@@ -1411,36 +1407,29 @@ export default function PurchaseRequest() {
                   }}
                 />
               </div> */}
-                  <div
-                    style={{
-                      width: "23.5rem",
-                      height: "auto",
-                      marginLeft: "3rem",
+                <div className="header_items_container">
+                  <label>Required Date</label>
+                  <input
+                    type="date"
+                    defaultValue={
+                      HeaderData && HeaderData.RequriedDate
+                        ? HeaderData && HeaderData.RequriedDate
+                        : currentDate
+                    }
+                    name="RequriedDate"
+                    class="input"
+                    onChange={(e) => {
+                      RequriedDateChange(e);
                     }}
-                  >
-                    <label>Required Date</label>
-                    <input
-                      type="date"
-                      defaultValue={
-                        HeaderData && HeaderData.RequriedDate
-                          ? HeaderData && HeaderData.RequriedDate
-                          : currentDate
-                      }
-                      name="RequriedDate"
-                      class="form-control"
-                      onChange={(e) => {
-                        RequriedDateChange(e);
-                      }}
-                    />
-                  </div>
-                  {/* <br/>
+                  />
+                </div>
+                {/* <br/>
             <div class="form-check form-check-inline" style={{marginLeft:'3rem'}}>
           <input class="form-check-input" checked={bothbodies} name='Sync' onChange={e => setbothbodies(!bothbodies)} type="checkbox" id="inlineCheckbox1" value="option1" />
           <label class="form-check-label" for="inlineCheckbox1">Sync A</label>
         </div> */}
-                </Container>
-              </DIV3>
-            </CardGroup>
+              </div>
+            </div>
             <Tabs
               defaultActiveKey="Contents"
               transition={false}
@@ -1452,115 +1441,187 @@ export default function PurchaseRequest() {
                     <Table responsive striped bordered hover>
                       <TableHead>
                         <tr>
-                          <th>#</th>
-                          <th>Bar Code</th>
-                          <th>Item No.</th>
-                          <th>Item Description</th>
-                          <th>UoM Name</th>
-                          <th>Free Text</th>
-                          <th>Required Date</th>
-                          {/* <th>Open Qty</th> */}
-                          <th>Quantity</th>
-                          <th>Unit Price</th>
-                          <th>Discount</th>
-                          <th>Tax Code</th>
-                          <th>Tax Percentage</th>
-                          <th>Price after Discount</th>
-                          <th>Gross Price after Disc.</th>
-                          <th>Freight Code</th>
-                          <th>Freight 1</th>
-                          <th>Tax Amount</th>
-                          <th>Gross Total</th>
-                          <th>Total(LC)</th>
-                          <th>Whse</th>
-                          <th>Project</th>
-                          <th>Buyer</th>
-                          <th>Cost Centre</th>
+                          <th>
+                            <div className="first_column">#</div>
+                          </th>
+                          <th>
+                            <div>Bar Code</div>
+                          </th>
+                          <th>
+                            <div>Item No.</div>
+                          </th>
+                          <th>
+                            <div>Item Description</div>
+                          </th>
+                          <th>
+                            <div>UoM Name</div>
+                          </th>
+                          <th>
+                            <div>Free Text</div>
+                          </th>
+                          <th>
+                            <div>Required Date</div>
+                          </th>
+                          {/* <th>Open Qty</div></th> */}
+                          <th>
+                            <div>Quantity</div>
+                          </th>
+                          <th>
+                            <div>Unit Price</div>
+                          </th>
+                          <th>
+                            <div>Discount</div>
+                          </th>
+                          <th>
+                            <div>Tax Code</div>
+                          </th>
+                          <th>
+                            <div>Tax Percentage</div>
+                          </th>
+                          <th>
+                            <div>Price after Discount</div>
+                          </th>
+                          <th>
+                            <div>Gross Price after Disc.</div>
+                          </th>
+                          <th>
+                            <div>Freight Code</div>
+                          </th>
+                          <th>
+                            <div>Freight 1</div>
+                          </th>
+                          <th>
+                            <div>Tax Amount</div>
+                          </th>
+                          <th>
+                            <div>Gross Total</div>
+                          </th>
+                          <th>
+                            <div>Total(LC)</div>
+                          </th>
+                          <th>
+                            <div>Whse</div>
+                          </th>
+                          <th>
+                            <div>Project</div>
+                          </th>
+                          <th>
+                            <div>Buyer</div>
+                          </th>
+                          <th>
+                            <div>Cost Centre</div>
+                          </th>
                         </tr>
                       </TableHead>
                       <tbody>
                         {SelectedItems &&
                           SelectedItems.map((item, index) => (
                             <tr key={`${index}`}>
-                              <TD>
-                                {index + 1}
-                                <a
-                                  style={{ color: "black" }}
-                                  class=""
-                                  data-bs-toggle="tooltip"
-                                  data-bs-placement="top"
-                                  title="Delete"
-                                  rel=""
-                                  onClick={(e) => {
-                                    deleteobject(e, item, index);
-                                  }}
-                                >
+                              <td>
+                                <div className="inside_td">
+                                  {index + 1}
+                                  <a
+                                    style={{ color: "black" }}
+                                    class=""
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top"
+                                    title="Delete"
+                                    rel=""
+                                    onClick={(e) => {
+                                      deleteobject(e, item, index);
+                                    }}
+                                  >
+                                    {" "}
+                                    <MdDelete />{" "}
+                                  </a>
+                                </div>
+                              </td>
+                              <td>
+                                <div className="inside_td"></div>
+                              </td>
+                              <td>
+                                <div className="inside_td">
                                   {" "}
-                                  <MdDelete />{" "}
-                                </a>
-                              </TD>
-                              <TD></TD>
-                              <TD>
-                                {" "}
-                                <div
-                                  style={{ width: "13.5rem", height: "auto" }}
-                                >
-                                  {ItemsDropDown && (
-                                    <Select
-                                      menuPortalTarget={document.body}
-                                      value={ItemsDropDown.filter(
-                                        (option) =>
-                                          option.value === item.ItemCode
-                                      )}
-                                      placeholder={
-                                        item.ItemCode ? item.ItemCode : "Select"
-                                      }
-                                      options={ItemsDropDown} // Options to display in the dropdown
+                                  <div
+                                    style={{ width: "13.5rem", height: "auto" }}
+                                  >
+                                    {ItemsDropDown && (
+                                      <Select
+                                        menuPortalTarget={document.body}
+                                        value={ItemsDropDown.filter(
+                                          (option) =>
+                                            option.value === item.ItemCode
+                                        )}
+                                        placeholder={
+                                          item.ItemCode
+                                            ? item.ItemCode
+                                            : "Select"
+                                        }
+                                        options={ItemsDropDown} // Options to display in the dropdown
+                                        onChange={(e) => {
+                                          ItemsDropDownfunc(
+                                            e,
+                                            index,
+                                            "ItemCode"
+                                          );
+                                          setSelectedItems([
+                                            ...SelectedItems,
+                                            [],
+                                          ]);
+                                        }} // Function will trigger on select event
+                                        // onRemove={ItemsDropDownfunc} // Function will trigger on remove event
+                                        displayValue="name" // Property name to display in the dropdown options
+                                      />
+                                    )}
+                                  </div>
+                                </div>
+                              </td>
+                              <td>
+                                <div className="inside_td">{item.ItemName}</div>
+                              </td>
+                              <td>
+                                <div className="inside_td">
+                                  {item.PurchaseUnit}
+                                </div>
+                              </td>
+                              <td>
+                                <div className="inside_td">
+                                  <div
+                                    style={{ width: "14rem", height: "auto" }}
+                                  >
+                                    <input
+                                      type="text"
+                                      name="FreeText"
+                                      class="form-control"
+                                      aria-describedby="Requesterid"
+                                      value={item.ItemCode ? item.FreeText : ""}
                                       onChange={(e) => {
-                                        ItemsDropDownfunc(e, index, "ItemCode");
-                                        setSelectedItems([
-                                          ...SelectedItems,
-                                          [],
-                                        ]);
-                                      }} // Function will trigger on select event
-                                      // onRemove={ItemsDropDownfunc} // Function will trigger on remove event
-                                      displayValue="name" // Property name to display in the dropdown options
+                                        ontextChanged(e, index);
+                                      }}
                                     />
-                                  )}
+                                  </div>
                                 </div>
-                              </TD>
-                              <TD>{item.ItemName}</TD>
-                              <TD>{item.PurchaseUnit}</TD>
-                              <TD>
-                                <div style={{ width: "14rem", height: "auto" }}>
-                                  <input
-                                    type="text"
-                                    name="FreeText"
-                                    class="form-control"
-                                    aria-describedby="Requesterid"
-                                    value={item.ItemCode ? item.FreeText : ""}
-                                    onChange={(e) => {
-                                      ontextChanged(e, index);
-                                    }}
-                                  />
+                              </td>
+                              <td>
+                                <div className="inside_td">
+                                  <div
+                                    style={{ width: "14rem", height: "auto" }}
+                                  >
+                                    <input
+                                      type="date"
+                                      name="RequiredDate"
+                                      onChange={(e) => {
+                                        ontextChanged2222(e, index);
+                                      }}
+                                      // readOnly="readOnly"
+                                      class="form-control"
+                                      aria-describedby="Requesterid"
+                                      // value={currentdate}
+                                    />
+                                  </div>
                                 </div>
-                              </TD>
-                              <TD>
-                                <div style={{ width: "14rem", height: "auto" }}>
-                                  <input
-                                    type="date"
-                                    name="RequiredDate"
-                                    onChange={(e) => {
-                                      ontextChanged2222(e, index);
-                                    }}
-                                    // readOnly="readOnly"
-                                    class="form-control"
-                                    aria-describedby="Requesterid"
-                                    value={currentDate}
-                                  />
-                                </div>
-                              </TD>
-                              {/* <TD>
+                              </td>
+                              {/* <td><div className="inside_td">
                   <div style={{ width: '14rem', height: 'auto' }}>
                     <input
                       type='number'
@@ -1574,135 +1635,165 @@ export default function PurchaseRequest() {
                       defaultValue={ItemsDetails[item].ItemWarehouseInfoCollection[0].InStock}
                     />
                   </div>
-                </TD> */}
+                </div></td> */}
 
-                              <TD>
-                                {" "}
-                                {getautounitprice &&
-                                getautounitprice[item.ItemCode] ? (
-                                  <div
-                                    style={{ width: "14rem", height: "auto" }}
-                                  >
-                                    <input
-                                      type="number"
-                                      name="Quantity"
-                                      // readOnly="readOnly"
-                                      onChange={(e) => {
-                                        testing(e, index);
-                                      }}
-                                      value={item.ItemCode ? item.Quantity : ""}
-                                      class="form-control"
-                                      aria-describedby="Requesterid"
-                                    />
-                                  </div>
-                                ) : (
-                                  <div
-                                    style={{ width: "14rem", height: "auto" }}
-                                  >
-                                    <input
-                                      type="number"
-                                      name="Quantity"
-                                      // readOnly="readOnly"
-                                      onChange={(e) => {
-                                        ontextChanged(e, index);
-                                      }}
-                                      value={item.ItemCode ? item.Quantity : ""}
-                                      class="form-control"
-                                      aria-describedby="Requesterid"
-                                    />
-                                  </div>
-                                )}
-                              </TD>
-                              <TD>
-                                {getautounitprice &&
-                                getautounitprice[item.ItemCode] ? (
-                                  <div
-                                    style={{ width: "14rem", height: "auto" }}
-                                  >
-                                    <input
-                                      type="number"
-                                      name="UnitPrice"
-                                      readOnly
-                                      class="form-control"
-                                      aria-describedby="Requesterid"
-                                      value={
-                                        item.ItemCode
-                                          ? getautounitprice &&
-                                            getautounitprice[item.ItemCode]
-                                              .Price
-                                          : ""
-                                      }
-                                    />
-                                  </div>
-                                ) : (
-                                  <div
-                                    style={{ width: "14rem", height: "auto" }}
-                                  >
-                                    <input
-                                      type="number"
-                                      name="UnitPrice"
-                                      onChange={(e) => {
-                                        unitPriceontextChanged(e, index);
-                                      }}
-                                      class="form-control"
-                                      aria-describedby="Requesterid"
-                                      value={
-                                        item.ItemCode ? item.UnitPrice : ""
-                                      }
-                                    />
-                                  </div>
-                                )}
-                              </TD>
-                              <TD>
-                                {" "}
-                                {getautounitprice &&
-                                getautounitprice[item.ItemCode] ? (
-                                  <div
-                                    style={{ width: "14rem", height: "auto" }}
-                                  >
-                                    <input
-                                      type="number"
-                                      name="Discount"
-                                      readOnly
-                                      class="form-control"
-                                      aria-describedby="Requesterid"
-                                      value={
-                                        item.ItemCode
-                                          ? getautounitprice &&
-                                            getautounitprice[item.ItemCode]
-                                              .DiscountPercent
-                                          : ""
-                                      }
-                                    />
-                                  </div>
-                                ) : (
-                                  <div
-                                    style={{ width: "14rem", height: "auto" }}
-                                  >
-                                    <input
-                                      type="number"
-                                      name="Discount"
-                                      onChange={(e) => {
-                                        DiscountontextChanged(e, index);
-                                      }}
-                                      // readOnly="readOnly"
-                                      class="form-control"
-                                      aria-describedby="Requesterid"
-                                      // defaultValue={item.RemainingOpenQuantity}
-                                    />
-                                  </div>
-                                )}
-                              </TD>
-                              <TD>
-                                {getseriesnumbring == "2" ? (
-                                  <div
-                                    style={{ width: "14rem", height: "auto" }}
-                                  >
-                                    {TaxCode && (
+                              <td>
+                                <div className="inside_td">
+                                  {" "}
+                                  {getautounitprice &&
+                                  getautounitprice[item.ItemCode] ? (
+                                    <div
+                                      style={{ width: "14rem", height: "auto" }}
+                                    >
+                                      <input
+                                        type="number"
+                                        name="Quantity"
+                                        // readOnly="readOnly"
+                                        onChange={(e) => {
+                                          testing(e, index);
+                                        }}
+                                        value={
+                                          item.ItemCode ? item.Quantity : ""
+                                        }
+                                        class="form-control"
+                                        aria-describedby="Requesterid"
+                                      />
+                                    </div>
+                                  ) : (
+                                    <div
+                                      style={{ width: "14rem", height: "auto" }}
+                                    >
+                                      <input
+                                        type="number"
+                                        name="Quantity"
+                                        // readOnly="readOnly"
+                                        onChange={(e) => {
+                                          ontextChanged(e, index);
+                                        }}
+                                        value={
+                                          item.ItemCode ? item.Quantity : ""
+                                        }
+                                        class="form-control"
+                                        aria-describedby="Requesterid"
+                                      />
+                                    </div>
+                                  )}
+                                </div>
+                              </td>
+                              <td>
+                                <div className="inside_td">
+                                  {getautounitprice &&
+                                  getautounitprice[item.ItemCode] ? (
+                                    <div
+                                      style={{ width: "14rem", height: "auto" }}
+                                    >
+                                      <input
+                                        type="number"
+                                        name="UnitPrice"
+                                        readOnly
+                                        class="form-control"
+                                        aria-describedby="Requesterid"
+                                        value={
+                                          item.ItemCode
+                                            ? getautounitprice &&
+                                              getautounitprice[item.ItemCode]
+                                                .Price
+                                            : ""
+                                        }
+                                      />
+                                    </div>
+                                  ) : (
+                                    <div
+                                      style={{ width: "14rem", height: "auto" }}
+                                    >
+                                      <input
+                                        type="number"
+                                        name="UnitPrice"
+                                        onChange={(e) => {
+                                          unitPriceontextChanged(e, index);
+                                        }}
+                                        class="form-control"
+                                        aria-describedby="Requesterid"
+                                        value={
+                                          item.ItemCode ? item.UnitPrice : ""
+                                        }
+                                      />
+                                    </div>
+                                  )}
+                                </div>
+                              </td>
+                              <td>
+                                <div className="inside_td">
+                                  {" "}
+                                  {getautounitprice &&
+                                  getautounitprice[item.ItemCode] ? (
+                                    <div
+                                      style={{ width: "14rem", height: "auto" }}
+                                    >
+                                      <input
+                                        type="number"
+                                        name="Discount"
+                                        readOnly
+                                        class="form-control"
+                                        aria-describedby="Requesterid"
+                                        value={
+                                          item.ItemCode
+                                            ? getautounitprice &&
+                                              getautounitprice[item.ItemCode]
+                                                .DiscountPercent
+                                            : ""
+                                        }
+                                      />
+                                    </div>
+                                  ) : (
+                                    <div
+                                      style={{ width: "14rem", height: "auto" }}
+                                    >
+                                      <input
+                                        type="number"
+                                        name="Discount"
+                                        onChange={(e) => {
+                                          DiscountontextChanged(e, index);
+                                        }}
+                                        // readOnly="readOnly"
+                                        class="form-control"
+                                        aria-describedby="Requesterid"
+                                        // defaultValue={item.RemainingOpenQuantity}
+                                      />
+                                    </div>
+                                  )}
+                                </div>
+                              </td>
+                              <td>
+                                <div className="inside_td">
+                                  {getseriesnumbring == "2" ? (
+                                    <div
+                                      style={{ width: "14rem", height: "auto" }}
+                                    >
+                                      {TaxCode && (
+                                        <Select
+                                          value={TaxCode.filter(
+                                            (option) => option.value === "P2"
+                                          )}
+                                          menuPortalTarget={document.body}
+                                          placeholder="Select.."
+                                          options={TaxCode} // Options to display in the dropdown
+                                          onChange={(e) => {
+                                            DocLinesDropDownOnChange2(
+                                              e,
+                                              index,
+                                              "VatGroup"
+                                            );
+                                          }}
+                                          displayValue="name" // Property name to display in the dropdown options
+                                        />
+                                      )}
+                                    </div>
+                                  ) : (
+                                    <div
+                                      style={{ width: "14rem", height: "auto" }}
+                                    >
                                       <Select
-                                        value={TaxCode.filter(
-                                          (option) => option.value === "P2"
-                                        )}
                                         menuPortalTarget={document.body}
                                         placeholder="Select.."
                                         options={TaxCode} // Options to display in the dropdown
@@ -1715,343 +1806,371 @@ export default function PurchaseRequest() {
                                         }}
                                         displayValue="name" // Property name to display in the dropdown options
                                       />
+                                    </div>
+                                  )}
+                                </div>
+                              </td>
+                              <td>
+                                <div className="inside_td">
+                                  <div
+                                    style={{ width: "14rem", height: "auto" }}
+                                  >
+                                    <input
+                                      type="number"
+                                      name="TaxCode"
+                                      readOnly="readOnly"
+                                      class="form-control"
+                                      aria-describedby="Requesterid"
+                                      value={
+                                        item.ItemCode ? item.TaxAmount : null
+                                      }
+                                    />
+                                  </div>
+                                </div>
+                              </td>
+                              <td>
+                                <div className="inside_td">
+                                  {" "}
+                                  {getautounitprice &&
+                                  getautounitprice[item.ItemCode] ? (
+                                    <div
+                                      style={{ width: "14rem", height: "auto" }}
+                                    >
+                                      <input
+                                        type="number"
+                                        name="PriceafterDiscount"
+                                        onChange={(e) => {
+                                          ontextChanged2222(e, index);
+                                        }}
+                                        readOnly="readOnly"
+                                        class="form-control"
+                                        aria-describedby="Requesterid"
+                                        value={
+                                          item.ItemCode
+                                            ? getautounitprice &&
+                                              getautounitprice[item.ItemCode]
+                                                .Price
+                                            : ""
+                                        }
+                                      />
+                                    </div>
+                                  ) : (
+                                    <div
+                                      style={{ width: "14rem", height: "auto" }}
+                                    >
+                                      <input
+                                        type="number"
+                                        name="PriceafterDiscount"
+                                        onChange={(e) => {
+                                          ontextChanged2222(e, index);
+                                        }}
+                                        readOnly="readOnly"
+                                        class="form-control"
+                                        aria-describedby="Requesterid"
+                                        value={
+                                          item.ItemCode
+                                            ? item.PriceAfterDiscount
+                                            : ""
+                                        }
+                                      />
+                                    </div>
+                                  )}
+                                </div>
+                              </td>
+                              <td>
+                                <div className="inside_td">
+                                  {" "}
+                                  {getautounitprice &&
+                                  getautounitprice[item.ItemCode] ? (
+                                    <div
+                                      style={{ width: "14rem", height: "auto" }}
+                                    >
+                                      <input
+                                        type="number"
+                                        name="GrossPriceafterDisc"
+                                        // onChange={e => {
+                                        //   ontextChanged2222(e, item)
+                                        // }}
+                                        readOnly="readOnly"
+                                        class="form-control"
+                                        aria-describedby="Requesterid"
+                                        value={
+                                          item.ItemCode
+                                            ? Number(item.TaxRate) +
+                                              Number(
+                                                getautounitprice &&
+                                                  getautounitprice[
+                                                    item.ItemCode
+                                                  ].Price
+                                              )
+                                            : ""
+                                        }
+                                      />
+                                    </div>
+                                  ) : (
+                                    <div
+                                      style={{ width: "14rem", height: "auto" }}
+                                    >
+                                      <input
+                                        type="number"
+                                        name="GrossPriceafterDisc"
+                                        // onChange={e => {
+                                        //   ontextChanged2222(e, item)
+                                        // }}
+                                        readOnly="readOnly"
+                                        class="form-control"
+                                        aria-describedby="Requesterid"
+                                        value={
+                                          item.ItemCode
+                                            ? item.GrossPriceAfterDiscount
+                                            : ""
+                                        }
+                                      />
+                                    </div>
+                                  )}
+                                </div>
+                              </td>
+                              <td>
+                                <div className="inside_td">
+                                  <div
+                                    style={{ width: "14rem", height: "auto" }}
+                                  >
+                                    <Select
+                                      menuPortalTarget={document.body}
+                                      placeholder="Select.."
+                                      options={Frieght} // Options to display in the dropdown
+                                      onChange={(e) => {
+                                        DocLinesDropDownOnChange22(
+                                          e,
+                                          index,
+                                          "FreightCode"
+                                        );
+                                      }}
+                                      // onSelect={CostCentre} // Function will trigger on select event
+                                      // onRemove={CostCentre} //Function will trigger on remove event
+                                      displayValue="name" // Property name to display in the dropdown options
+                                    />
+                                  </div>
+                                </div>
+                              </td>
+                              <td>
+                                <div className="inside_td">
+                                  <div
+                                    style={{ width: "14rem", height: "auto" }}
+                                  >
+                                    <input
+                                      type="number"
+                                      name="Freight"
+                                      onChange={(e) => {
+                                        unitPriceontextChanged(e, index);
+                                      }}
+                                      // readOnly="readOnly"
+                                      class="form-control"
+                                      aria-describedby="Requesterid"
+                                      // defaultValue={item.RemainingOpenQuantity}
+                                    />
+                                  </div>
+                                </div>
+                              </td>
+                              <td>
+                                <div className="inside_td">
+                                  <div
+                                    style={{ width: "14rem", height: "auto" }}
+                                  >
+                                    <input
+                                      type="number"
+                                      name="TaxTotalAmount"
+                                      // onChange={e => {
+                                      //   ontextChanged2222(e, item)
+                                      // }}
+                                      readOnly="readOnly"
+                                      class="form-control"
+                                      aria-describedby="Requesterid"
+                                      value={
+                                        item.ItemCode ? item.TaxAmount : ""
+                                      }
+                                    />
+                                  </div>
+                                </div>
+                              </td>
+                              <td>
+                                <div className="inside_td">
+                                  {getautounitprice &&
+                                  getautounitprice[item.ItemCode] ? (
+                                    <div
+                                      style={{ width: "14rem", height: "auto" }}
+                                    >
+                                      <input
+                                        type="number"
+                                        name="GrossTotal"
+                                        // onChange={e => {
+                                        //   ontextChanged2222(e, item)
+                                        // }}
+                                        readOnly="readOnly"
+                                        class="form-control"
+                                        aria-describedby="Requesterid"
+                                        value={
+                                          item.ItemCode
+                                            ? (item.TaxAmount +
+                                                getautounitprice &&
+                                                getautounitprice[item.ItemCode]
+                                                  .Price) * item.Quantity
+                                            : ""
+                                        }
+                                      />
+                                    </div>
+                                  ) : (
+                                    <div
+                                      style={{ width: "14rem", height: "auto" }}
+                                    >
+                                      <input
+                                        type="number"
+                                        name="GrossTotal"
+                                        // onChange={e => {
+                                        //   ontextChanged2222(e, item)
+                                        // }}
+                                        readOnly="readOnly"
+                                        class="form-control"
+                                        aria-describedby="Requesterid"
+                                        value={
+                                          item.ItemCode ? item.GrossTotal : ""
+                                        }
+                                      />
+                                    </div>
+                                  )}
+                                </div>
+                              </td>
+                              <td>
+                                <div className="inside_td">
+                                  <div
+                                    style={{ width: "14rem", height: "auto" }}
+                                  >
+                                    <input
+                                      type="number"
+                                      name="Total"
+                                      readOnly="readOnly"
+                                      class="form-control"
+                                      aria-describedby="Requesterid"
+                                      value={item.ItemCode ? item.Total_LC : ""}
+                                    />
+                                  </div>
+                                </div>
+                              </td>
+                              <td>
+                                <div className="inside_td">
+                                  <div
+                                    style={{ width: "14rem", height: "auto" }}
+                                  >
+                                    {PrWhse && (
+                                      <Select
+                                        menuPortalTarget={document.body}
+                                        value={PrWhse.filter(
+                                          (option) => option.value === item.Whse
+                                        )}
+                                        options={PrWhse} // Options to display in the dropdown
+                                        onChange={(e) => {
+                                          DocLinesDropDownOnChange22(
+                                            e,
+                                            index,
+                                            "Whse"
+                                          );
+                                        }}
+                                        // onSelect={CostCentre} // Function will trigger on select event
+                                        // onRemove={CostCentre} //Function will trigger on remove event
+                                        displayValue="name" // Property name to display in the dropdown options
+                                      />
                                     )}
                                   </div>
-                                ) : (
-                                  <div
-                                    style={{ width: "14rem", height: "auto" }}
-                                  >
-                                    <Select
-                                      menuPortalTarget={document.body}
-                                      placeholder="Select.."
-                                      options={TaxCode} // Options to display in the dropdown
-                                      onChange={(e) => {
-                                        DocLinesDropDownOnChange2(
-                                          e,
-                                          index,
-                                          "VatGroup"
-                                        );
-                                      }}
-                                      displayValue="name" // Property name to display in the dropdown options
-                                    />
-                                  </div>
-                                )}
-                              </TD>
-                              <TD>
-                                <div style={{ width: "14rem", height: "auto" }}>
-                                  <input
-                                    type="number"
-                                    name="TaxCode"
-                                    readOnly="readOnly"
-                                    class="form-control"
-                                    aria-describedby="Requesterid"
-                                    value={
-                                      item.ItemCode ? item.TaxAmount : null
-                                    }
-                                  />
                                 </div>
-                              </TD>
-                              <TD>
-                                {" "}
-                                {getautounitprice &&
-                                getautounitprice[item.ItemCode] ? (
-                                  <div
-                                    style={{ width: "14rem", height: "auto" }}
-                                  >
-                                    <input
-                                      type="number"
-                                      name="PriceafterDiscount"
-                                      onChange={(e) => {
-                                        ontextChanged2222(e, index);
-                                      }}
-                                      readOnly="readOnly"
-                                      class="form-control"
-                                      aria-describedby="Requesterid"
-                                      value={
-                                        item.ItemCode
-                                          ? getautounitprice &&
-                                            getautounitprice[item.ItemCode]
-                                              .Price
-                                          : ""
-                                      }
-                                    />
-                                  </div>
-                                ) : (
-                                  <div
-                                    style={{ width: "14rem", height: "auto" }}
-                                  >
-                                    <input
-                                      type="number"
-                                      name="PriceafterDiscount"
-                                      onChange={(e) => {
-                                        ontextChanged2222(e, index);
-                                      }}
-                                      readOnly="readOnly"
-                                      class="form-control"
-                                      aria-describedby="Requesterid"
-                                      value={
-                                        item.ItemCode
-                                          ? item.PriceAfterDiscount
-                                          : ""
-                                      }
-                                    />
-                                  </div>
-                                )}
-                              </TD>
-                              <TD>
-                                {" "}
-                                {getautounitprice &&
-                                getautounitprice[item.ItemCode] ? (
-                                  <div
-                                    style={{ width: "14rem", height: "auto" }}
-                                  >
-                                    <input
-                                      type="number"
-                                      name="GrossPriceafterDisc"
-                                      // onChange={e => {
-                                      //   ontextChanged2222(e, item)
-                                      // }}
-                                      readOnly="readOnly"
-                                      class="form-control"
-                                      aria-describedby="Requesterid"
-                                      value={
-                                        item.ItemCode
-                                          ? Number(item.TaxRate) +
-                                            Number(
-                                              getautounitprice &&
-                                                getautounitprice[item.ItemCode]
-                                                  .Price
-                                            )
-                                          : ""
-                                      }
-                                    />
-                                  </div>
-                                ) : (
-                                  <div
-                                    style={{ width: "14rem", height: "auto" }}
-                                  >
-                                    <input
-                                      type="number"
-                                      name="GrossPriceafterDisc"
-                                      // onChange={e => {
-                                      //   ontextChanged2222(e, item)
-                                      // }}
-                                      readOnly="readOnly"
-                                      class="form-control"
-                                      aria-describedby="Requesterid"
-                                      value={
-                                        item.ItemCode
-                                          ? item.GrossPriceAfterDiscount
-                                          : ""
-                                      }
-                                    />
-                                  </div>
-                                )}
-                              </TD>
-                              <TD>
-                                <div style={{ width: "14rem", height: "auto" }}>
-                                  <Select
-                                    menuPortalTarget={document.body}
-                                    placeholder="Select.."
-                                    options={Frieght} // Options to display in the dropdown
-                                    onChange={(e) => {
-                                      DocLinesDropDownOnChange22(
-                                        e,
-                                        index,
-                                        "FreightCode"
-                                      );
-                                    }}
-                                    // onSelect={CostCentre} // Function will trigger on select event
-                                    // onRemove={CostCentre} //Function will trigger on remove event
-                                    displayValue="name" // Property name to display in the dropdown options
-                                  />
-                                </div>
-                              </TD>
-                              <TD>
-                                <div style={{ width: "14rem", height: "auto" }}>
-                                  <input
-                                    type="number"
-                                    name="Freight"
-                                    onChange={(e) => {
-                                      unitPriceontextChanged(e, index);
-                                    }}
-                                    // readOnly="readOnly"
-                                    class="form-control"
-                                    aria-describedby="Requesterid"
-                                    // defaultValue={item.RemainingOpenQuantity}
-                                  />
-                                </div>
-                              </TD>
-                              <TD>
-                                <div style={{ width: "14rem", height: "auto" }}>
-                                  <input
-                                    type="number"
-                                    name="TaxTotalAmount"
-                                    // onChange={e => {
-                                    //   ontextChanged2222(e, item)
-                                    // }}
-                                    readOnly="readOnly"
-                                    class="form-control"
-                                    aria-describedby="Requesterid"
-                                    value={item.ItemCode ? item.TaxAmount : ""}
-                                  />
-                                </div>
-                              </TD>
-                              <TD>
-                                {getautounitprice &&
-                                getautounitprice[item.ItemCode] ? (
-                                  <div
-                                    style={{ width: "14rem", height: "auto" }}
-                                  >
-                                    <input
-                                      type="number"
-                                      name="GrossTotal"
-                                      // onChange={e => {
-                                      //   ontextChanged2222(e, item)
-                                      // }}
-                                      readOnly="readOnly"
-                                      class="form-control"
-                                      aria-describedby="Requesterid"
-                                      value={
-                                        item.ItemCode
-                                          ? (item.TaxAmount +
-                                              getautounitprice &&
-                                              getautounitprice[item.ItemCode]
-                                                .Price) * item.Quantity
-                                          : ""
-                                      }
-                                    />
-                                  </div>
-                                ) : (
-                                  <div
-                                    style={{ width: "14rem", height: "auto" }}
-                                  >
-                                    <input
-                                      type="number"
-                                      name="GrossTotal"
-                                      // onChange={e => {
-                                      //   ontextChanged2222(e, item)
-                                      // }}
-                                      readOnly="readOnly"
-                                      class="form-control"
-                                      aria-describedby="Requesterid"
-                                      value={
-                                        item.ItemCode ? item.GrossTotal : ""
-                                      }
-                                    />
-                                  </div>
-                                )}
-                              </TD>
-                              <TD>
-                                <div style={{ width: "14rem", height: "auto" }}>
-                                  <input
-                                    type="number"
-                                    name="Total"
-                                    readOnly="readOnly"
-                                    class="form-control"
-                                    aria-describedby="Requesterid"
-                                    value={item.ItemCode ? item.Total_LC : ""}
-                                  />
-                                </div>
-                              </TD>
-                              <TD>
-                                <div style={{ width: "14rem", height: "auto" }}>
-                                  {PrWhse && (
-                                    <Select
-                                      menuPortalTarget={document.body}
-                                      value={PrWhse.filter(
-                                        (option) => option.value === item.Whse
-                                      )}
-                                      options={PrWhse} // Options to display in the dropdown
-                                      onChange={(e) => {
-                                        DocLinesDropDownOnChange22(
-                                          e,
-                                          index,
-                                          "Whse"
-                                        );
-                                      }}
-                                      // onSelect={CostCentre} // Function will trigger on select event
-                                      // onRemove={CostCentre} //Function will trigger on remove event
-                                      displayValue="name" // Property name to display in the dropdown options
-                                    />
-                                  )}
-                                </div>
-                              </TD>
+                              </td>
 
-                              <TD>
-                                <div style={{ width: "14rem", height: "auto" }}>
-                                  {PrProject && (
-                                    <Select
-                                      menuPortalTarget={document.body}
-                                      value={PrProject.filter(
-                                        (option) =>
-                                          option.value === item.Project
-                                      )}
-                                      placeholder="Select.."
-                                      options={PrProject} // Options to display in the dropdown
-                                      onChange={(e) => {
-                                        DocLinesDropDownOnChange22(
-                                          e,
-                                          index,
-                                          "Project"
-                                        );
-                                      }}
-                                      // onSelect={CostCentre} // Function will trigger on select event
-                                      // onRemove={CostCentre} //Function will trigger on remove event
-                                      displayValue="name" // Property name to display in the dropdown options
-                                    />
-                                  )}
+                              <td>
+                                <div className="inside_td">
+                                  <div
+                                    style={{ width: "14rem", height: "auto" }}
+                                  >
+                                    {PrProject && (
+                                      <Select
+                                        menuPortalTarget={document.body}
+                                        value={PrProject.filter(
+                                          (option) =>
+                                            option.value === item.Project
+                                        )}
+                                        placeholder="Select.."
+                                        options={PrProject} // Options to display in the dropdown
+                                        onChange={(e) => {
+                                          DocLinesDropDownOnChange22(
+                                            e,
+                                            index,
+                                            "Project"
+                                          );
+                                        }}
+                                        // onSelect={CostCentre} // Function will trigger on select event
+                                        // onRemove={CostCentre} //Function will trigger on remove event
+                                        displayValue="name" // Property name to display in the dropdown options
+                                      />
+                                    )}
+                                  </div>
                                 </div>
-                              </TD>
-                              <TD>
-                                <div style={{ width: "14rem", height: "auto" }}>
-                                  {PrBuyer && (
-                                    <Select
-                                      menuPortalTarget={document.body}
-                                      value={PrBuyer.filter(
-                                        (option) => option.value === item.Buyer
-                                      )}
-                                      placeholder="Select.."
-                                      options={PrBuyer} // Options to display in the dropdown
-                                      onChange={(e) => {
-                                        DocLinesDropDownOnChange22(
-                                          e,
-                                          index,
-                                          "Buyer"
-                                        );
-                                      }}
-                                      // onSelect={CostCentre} // Function will trigger on select event
-                                      // onRemove={CostCentre} //Function will trigger on remove event
-                                      displayValue="name" // Property name to display in the dropdown options
-                                    />
-                                  )}
+                              </td>
+                              <td>
+                                <div className="inside_td">
+                                  <div
+                                    style={{ width: "14rem", height: "auto" }}
+                                  >
+                                    {PrBuyer && (
+                                      <Select
+                                        menuPortalTarget={document.body}
+                                        value={PrBuyer.filter(
+                                          (option) =>
+                                            option.value === item.Buyer
+                                        )}
+                                        placeholder="Select.."
+                                        options={PrBuyer} // Options to display in the dropdown
+                                        onChange={(e) => {
+                                          DocLinesDropDownOnChange22(
+                                            e,
+                                            index,
+                                            "Buyer"
+                                          );
+                                        }}
+                                        // onSelect={CostCentre} // Function will trigger on select event
+                                        // onRemove={CostCentre} //Function will trigger on remove event
+                                        displayValue="name" // Property name to display in the dropdown options
+                                      />
+                                    )}
+                                  </div>
                                 </div>
-                              </TD>
-                              <TD>
-                                <div style={{ width: "14rem", height: "auto" }}>
-                                  {PrCost && (
-                                    <Select
-                                      menuPortalTarget={document.body}
-                                      value={PrCost.filter(
-                                        (option) =>
-                                          option.value === item.CostCentre
-                                      )}
-                                      placeholder="Select.."
-                                      options={PrCost} // Options to display in the dropdown
-                                      onChange={(e) => {
-                                        DocLinesDropDownOnChange22(
-                                          e,
-                                          index,
-                                          "CostCentre"
-                                        );
-                                      }}
-                                      // onSelect={CostCentre} // Function will trigger on select event
-                                      // onRemove={CostCentre} //Function will trigger on remove event
-                                      displayValue="name" // Property name to display in the dropdown options
-                                    />
-                                  )}
+                              </td>
+                              <td>
+                                <div className="inside_td">
+                                  <div
+                                    style={{ width: "14rem", height: "auto" }}
+                                  >
+                                    {PrCost && (
+                                      <Select
+                                        menuPortalTarget={document.body}
+                                        value={PrCost.filter(
+                                          (option) =>
+                                            option.value === item.CostCentre
+                                        )}
+                                        placeholder="Select.."
+                                        options={PrCost} // Options to display in the dropdown
+                                        onChange={(e) => {
+                                          DocLinesDropDownOnChange22(
+                                            e,
+                                            index,
+                                            "CostCentre"
+                                          );
+                                        }}
+                                        // onSelect={CostCentre} // Function will trigger on select event
+                                        // onRemove={CostCentre} //Function will trigger on remove event
+                                        displayValue="name" // Property name to display in the dropdown options
+                                      />
+                                    )}
+                                  </div>
                                 </div>
-                              </TD>
+                              </td>
                             </tr>
                           ))}
                       </tbody>
@@ -2308,86 +2427,114 @@ export default function PurchaseRequest() {
               </Tab>
             </Tabs>
             {/* Table+++++++++ */}
-            <DIV3>
-              <Container fluid>
-                <label for="exampleFormControlTextarea1">Owner</label>
-                <div
-                  style={{ width: "23.5rem", height: "auto" }}
-                  onClick={Owner}
-                >
-                  <Select
-                    placeholder={HeaderData && HeaderData.Owner}
-                    options={OwnerDropdown}
-                    onChange={(e) => setselectedOwner(e.value)} // Options to display in the dropdown
-                    // onSelect={Owner} // Function will trigger on select event
-                    // onRemove={Owner} //Function will trigger on remove event
-                    displayValue="name" // Property name to display in the dropdown options
-                  />
+            <div className="main_container">
+              <div className="left">
+                <div className="header_items_container">
+                  <label for="exampleFormControlTextarea1">Owner</label>
+                  <div onClick={Owner}>
+                    <Select
+                      placeholder={HeaderData && HeaderData.Owner}
+                      options={OwnerDropdown}
+                      onChange={(e) => setselectedOwner(e.value)} // Options to display in the dropdown
+                      // onSelect={Owner} // Function will trigger on select event
+                      // onRemove={Owner} //Function will trigger on remove event
+                      displayValue="name" // Property name to display in the dropdown options
+                    />
+                  </div>
                 </div>
-                <div class="form-group">
+                <div className="header_items_container">
                   <label for="exampleFormControlTextarea1">Remarks</label>
-                  <div style={{ width: "23.5rem" }}>
-                    <textarea
-                      defaultValue={HeaderData && HeaderData.Comments}
-                      type="text"
-                      class="form-control rounded-0"
-                      id="exampleFormControlTextarea1"
-                      name="Comments"
-                      rows="3"
-                      onChange={(e) => {
-                        CommentsFun(e);
-                      }}
-                    ></textarea>
-                  </div>
+                  <textarea
+                    defaultValue={HeaderData && HeaderData.Comments}
+                    type="text"
+                    class="textArea"
+                    id="exampleFormControlTextarea1"
+                    name="Comments"
+                    rows="3"
+                    onChange={(e) => {
+                      CommentsFun(e);
+                    }}
+                  ></textarea>
                 </div>
-                <br />
-                <br />
-                <br />
-                <br />
-                {localStorage.getItem("documentcontroller") === "R" ? (
-                  <div>
-                    <Button
-                      style={{ marginLeft: "5%" }}
-                      onClick={() => {
-                        window.location.href = "/Home";
-                      }}
-                    >
-                      OK
-                    </Button>
-                    <Button
-                      variant="secondary"
-                      style={{ marginLeft: "5%" }}
-                      onClick={() => {
-                        window.location.href = "/Home";
-                      }}
-                    >
-                      Cancel
-                    </Button>
-                  </div>
-                ) : (
-                  <div>
-                    <Button
-                      style={{ marginLeft: "5%" }}
-                      type="reset"
-                      onClick={() => {
-                        Submit_PatchFunc();
-                      }}
-                    >
-                      {ButtonName}
-                    </Button>
-
-                    <Button
-                      style={{ marginLeft: "5%" }}
-                      onClick={() => {
-                        window.location.href = "/Home";
-                      }}
-                    >
-                      Cancel
-                    </Button>
-                  </div>
-                )}
-              </Container>
-            </DIV3>
+              </div>
+            </div>
+            {localStorage.getItem("documentcontroller") === "R" ? (
+              <div className="button_main_container">
+                <div className="button_container">
+                  <button
+                    onClick={() => {
+                      window.location.href = "/Home";
+                    }}
+                    className="form_button"
+                    style={{ backgroundColor: `${redux_response.color}` }}
+                  >
+                    OK
+                  </button>
+                  <button
+                    variant="secondary"
+                    onClick={() => {
+                      window.location.href = "/Home";
+                    }}
+                    className="form_button"
+                    style={{ backgroundColor: `${redux_response.color}` }}
+                  >
+                    Cancel
+                  </button>
+                </div>
+                <div className="button_container">
+                  <button
+                    style={{ backgroundColor: `${redux_response.color}` }}
+                    className="form_button"
+                  >
+                    Copy From
+                  </button>{" "}
+                  <button
+                    style={{ backgroundColor: `${redux_response.color}` }}
+                    className="form_button"
+                  >
+                    Copy To
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="button_main_container">
+                <div className="button_container">
+                  <button
+                    onClick={() => {
+                      Submit_PatchFunc();
+                    }}
+                    className="form_button"
+                    style={{ backgroundColor: `${redux_response.color}` }}
+                  >
+                    {ButtonName}
+                  </button>
+                  <button
+                    variant="secondary"
+                    onClick={() => {
+                      window.location.href = "/Home";
+                    }}
+                    className="form_button"
+                    style={{ backgroundColor: `${redux_response.color}` }}
+                  >
+                    Cancel
+                  </button>
+                </div>
+                <div className="button_container">
+                  <button
+                    style={{ backgroundColor: `${redux_response.color}` }}
+                    className="form_button"
+                  >
+                    Copy From
+                  </button>
+                  <button
+                    style={{ backgroundColor: `${redux_response.color}` }}
+                    className="form_button"
+                  >
+                    Copy To
+                  </button>
+                </div>
+              </div>
+            )}
           </Form>
         </>
       )}

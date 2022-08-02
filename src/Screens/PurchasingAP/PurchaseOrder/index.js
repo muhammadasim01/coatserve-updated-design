@@ -9,21 +9,28 @@ import {
   Tab,
   Tabs,
   Form,
+  Row,
 } from "react-bootstrap";
+// import {  } from "react-excel-renderer";
+import {
+  OutTable,
+  ExcelRenderer,
+} from "../../../Component/ExcelRenderer/index";
+
+import { FaFileUpload } from "react-icons/fa";
 import { MenuUp } from "react-bootstrap-icons";
 import Select from "react-select";
 import { makeStyles } from "@material-ui/core/styles";
-import { Backdrop } from "@material-ui/core";
-import CircularProgress from "@material-ui/core/CircularProgress";
+
 import { Logistics, Accounting } from "../../../Component/PurchaseQuotation";
 import { Attachment } from "../../../Component/APDownPaymentRequest";
-import { CONSTANTS, LINKS } from "../../../Utils";
+import { LINKS } from "../../../Utils";
 import { MdDelete } from "react-icons/md";
 import { Navbar } from "../../../Component/Global";
 import { useAlert } from "react-alert";
-import { input, DIV3, DIV4, InputD, TableHead, TD } from "./Style";
+import { TableHead, TD } from "./Style";
 import "./index.css";
-import Switch from "react-switch";
+import { useSelector } from "react-redux";
 const axios = require("axios");
 const useStyles = makeStyles((theme) => ({
   backdrop: {
@@ -33,6 +40,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function PurchaseOrder() {
+  const redux_response = useSelector((state) => state.colorReducer);
   const alert = useAlert();
   const [SelectShow, setSelectShow] = React.useState();
   const [getdisabledvalue, setgetdisabledvalue] = React.useState(false);
@@ -49,6 +57,7 @@ export default function PurchaseOrder() {
   const [CurrencyDropdown, setCurrencyDropdown] = React.useState();
   const [attachmentresponse, setattachmentresponse] = React.useState();
   const [update, setUpdate] = React.useState(1);
+  const [state, setState] = React.useState({ rows: [], cols: [] });
   const [getdocumenttype, setgetdocumenttype] = React.useState("22");
   const [getdocumentname, setgetdocumentname] = React.useState("POR2");
   const [ModuleName, setModuleName] = React.useState("PurchaseOrders");
@@ -254,7 +263,6 @@ export default function PurchaseOrder() {
     }
   };
   const Currencies = async (e) => {
-    console.log(e.item.Currency);
     let cook = await localStorage.getItem("cookie");
     const api = `${LINKS.api}/GetApi`;
     // -------------------------    Vendor API GET DATA   ------------------------------------------------------
@@ -404,6 +412,7 @@ export default function PurchaseOrder() {
             });
           });
           setVendorCodeDropdown(ItemsDropDown);
+          console.log("VENDOR", ItemsDropDown);
         }
       })
       .catch(function (error) {
@@ -1552,8 +1561,38 @@ export default function PurchaseOrder() {
     });
     setgetcurrencycode(e.value);
   };
+
+  const fileHandler = (event) => {
+    let fileObj = event.target.files[0];
+
+    //just pass the fileObj as parameter
+    ExcelRenderer(fileObj, (err, resp) => {
+      if (err) {
+        console.log(err);
+      } else {
+        setState({
+          cols: resp.cols,
+          rows: resp.rows,
+        });
+      }
+    });
+  };
   return (
     <>
+      <style>{`
+            .nav-tabs .nav-link{
+              color: white !important;
+              background-color: ${
+                redux_response.color ? redux_response.color : "rgb(69 70 73)"
+              } !important;  
+              width: 12rem  !important;
+              height: 24px !important;
+              padding: 0 !important;
+              text-align: center !important;
+            }
+           
+               
+          `}</style>
       <Navbar
         setgetserviceseries={setgetserviceseries}
         getdocumentname={getdocumentname}
@@ -1565,14 +1604,11 @@ export default function PurchaseOrder() {
       ) : (
         <>
           <h1 style={{ textAlign: "center" }}>Purchase Order</h1>
-          <CardGroup>
-            <DIV3>
-              <Container fluid>
+          <div className="main_container ">
+            <div className="left">
+              <div className="header_items_container">
                 <label>Doc Type</label>
-                <div
-                  style={{ width: "23.5rem", height: "auto" }}
-                  variant="primary"
-                >
+                <div variant="primary">
                   <Select
                     placeholder="Direct"
                     options={[
@@ -1586,11 +1622,10 @@ export default function PurchaseOrder() {
                     displayValue="name" // Property name to display in the dropdown options
                   />
                 </div>
+              </div>
+              <div className="header_items_container">
                 <label>Vendor</label>
-                <div
-                  style={{ width: "23.5rem", height: "auto" }}
-                  variant="primary"
-                >
+                <div variant="primary">
                   <Select
                     placeholder={
                       HeaderData &&
@@ -1606,27 +1641,11 @@ export default function PurchaseOrder() {
                     // onRemove={BusinessPartners} Function will trigger on remove event
                     displayValue="name" // Property name to display in the dropdown options
                   />
-                  {/* {HeaderData ? 
-              <Select
-    value = {
-      VendorCodeDropdown&&VendorCodeDropdown.filter(option => 
-          option.value == HeaderData&&HeaderData.CardCode)
-    }
-             
-    // onChange = {value => VendorCodeDropdown.onChange(value)}
-    onBlur={() => VendorCodeDropdown.onBlur(VendorCodeDropdown.value)}
-    // options={VendorCodeDropdown}
-    placeholder=''
-  />
-  : null} */}
                 </div>
+              </div>
+              <div className="header_items_container">
                 <label>Contact Person</label>
-                <div
-                  style={{ width: "23.5rem", height: "auto" }}
-                  variant="primary"
-                  onClick={ContactPerson}
-                >
-                  {/* {ContactPersonDropdown && ( */}
+                <div variant="primary" onClick={ContactPerson}>
                   <Select
                     placeholder={HeaderData && HeaderData.ContactPersonCode}
                     options={CPDropdown} // Options to display in the dropdown
@@ -1635,438 +1654,480 @@ export default function PurchaseOrder() {
                       CPChange(e);
                     }}
                   />
-                  {/* )} */}
                 </div>
-                <br />
-                {getcopyfromdoctype ? (
-                  <Button variant="primary" onClick={handleShow}>
-                    Copy From
-                  </Button>
-                ) : null}
-                <Modal
-                  show={show}
-                  onHide={handleClose}
-                  className="Modal-big"
-                  size="lg"
-                >
-                  <Modal.Header closeButton>
-                    <Modal.Title id="example-modal-sizes-title-lg">
-                      Open Purchase Quotations List
-                    </Modal.Title>
-                  </Modal.Header>
-                  <Modal.Body>
-                    {PrRe && (
-                      <Table responsive>
-                        <TableHead>
-                          <tr>
-                            <th>#</th>
-                            <th>Document No.</th>
-                            <th>Vendor Code</th>
-                            <th>Vendor Name</th>
-                            <th>Posting Date</th>
-                          </tr>
-                        </TableHead>
-                        <tbody>
-                          {PrRe.map((item, index) => (
-                            <tr key={`${index}`}>
-                              <TD>
-                                {index + 1}
-                                <input
-                                  type="checkbox"
-                                  onChange={() => {
-                                    checkboxSelect(item, index);
-                                  }}
-                                  checked={item.isSelected}
-                                />
-                              </TD>
-                              <TD>{item.DocNum}</TD>
-                              <TD>{item.CardCode}</TD>
-                              <TD>{item.CardName}</TD>
-                              <TD>{item.DocDate}</TD>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </Table>
-                    )}
-                  </Modal.Body>
-
-                  <Modal.Footer>
-                    <Button
-                      variant="secondary"
-                      onClick={() => {
-                        handleShowModalTwo();
-                        handleClose();
-                      }}
-                    >
-                      Choose
-                    </Button>
-                    <Button variant="primary" onClick={handleClose}>
-                      Cancel
-                    </Button>
-                  </Modal.Footer>
-                </Modal>
-                <Modal
-                  show={modalTwo === "modal-two"}
-                  className="Modal-big"
-                  size="lg"
-                >
+              </div>
+              {getcopyfromdoctype ? (
+                <Button variant="primary" onClick={handleShow}>
+                  Copy From
+                </Button>
+              ) : null}
+              <Modal
+                show={show}
+                onHide={handleClose}
+                className="Modal-big"
+                size="lg"
+              >
+                <Modal.Header closeButton>
                   <Modal.Title id="example-modal-sizes-title-lg">
-                    List of Purchase Quotations
+                    Open Purchase Quotations List
                   </Modal.Title>
-                  <Modal.Body>
-                    <Table responsive striped bordered hover>
+                </Modal.Header>
+                <Modal.Body>
+                  {PrRe && (
+                    <Table responsive>
                       <TableHead>
                         <tr>
                           <th>#</th>
-                          <th>Bar Code</th>
-                          <th>Item No.</th>
-                          <th>Item Description</th>
-                          <th>UoM Name</th>
-                          <th>Free Text</th>
-                          <th>Quantity</th>
-                          <th>Delivery Date</th>
-                          <th>Open Qty</th>
-                          <th>Whse</th>
-                          <th>Unit Price</th>
-                          <th>Discount</th>
-                          <th>Price after Discount</th>
-                          <th>Tax Code : Rate</th>
-                          <th>Tax Amount(LC)</th>
-                          <th>Gross Price After Disc.</th>
-                          <th>Freight 1</th>
-                          <th>Freight 1 (LC)</th>
-                          <th>Line Total</th>
-                          <th>Gross Total(LC)</th>
-                          <th>Project</th>
-                          <th>Buyer</th>
-                          <th>Cost Centre</th>
+                          <th>Document No.</th>
+                          <th>Vendor Code</th>
+                          <th>Vendor Name</th>
+                          <th>Posting Date</th>
                         </tr>
                       </TableHead>
                       <tbody>
-                        {PQDocumentLines &&
-                          PQDocumentLines.map(
-                            (PrReItem, PrReIndex) =>
-                              PrReItem.isSelected &&
-                              PrReItem.DocumentLines.map(
-                                (item, index) =>
-                                  item.LineStatus === "bost_Open" && (
-                                    <tr key={`${index}`}>
-                                      <TD>
-                                        {index + 1}
-                                        <input
-                                          type="checkbox"
-                                          onChange={() => {
-                                            docLineSelectedSwitch(
-                                              PrReIndex,
-                                              item,
-                                              index
-                                            );
-                                          }}
-                                          checked={item.isSelected}
-                                        />
-                                      </TD>
-                                      <TD> </TD>
-                                      <TD>{item.ItemCode}</TD>
-                                      <TD>{item.ItemDescription}</TD>
-                                      <TD>{item.MeasureUnit}</TD>
-                                      <TD>
-                                        <div
-                                          style={{
-                                            width: "14rem",
-                                            height: "auto",
-                                          }}
-                                        >
-                                          <input
-                                            type="text"
-                                            name="FreeText"
-                                            class="form-control"
-                                            aria-describedby="Requesterid"
-                                            defaultValue={item.FreeText}
-                                            // onChange={e => {
-                                            //   ontextChanged(e, index)
-                                            // }}
-                                          />
-                                        </div>
-                                      </TD>
-                                      <TD>
-                                        <div
-                                          style={{
-                                            width: "14rem",
-                                            height: "auto",
-                                          }}
-                                        >
-                                          <input
-                                            type="number"
-                                            name="QuotedQty"
-                                            readOnly="readOnly"
-                                            class="form-control"
-                                            aria-describedby="Requesterid"
-                                            defaultValue={
-                                              item.RemainingOpenQuantity
-                                            }
-                                            // onChange={e=>OpenQtyFunction(e, index)
-                                            // setOpenQty(e.target.value)
-                                            // }
-                                            // onChange={e => {
-                                            //   OpenQtyFunction(e, index)
-                                            //   setOpenQty(e.target.value)
-                                            // }}
-                                          />
-                                        </div>
-                                      </TD>
-                                      <TD>
-                                        <div
-                                          style={{
-                                            width: "14rem",
-                                            height: "auto",
-                                          }}
-                                        >
-                                          <input
-                                            type="date"
-                                            name="ShipDate"
-                                            readOnly="readOnly"
-                                            class="form-control"
-                                            onChange={(e) => {
-                                              ShipDateChange(e, index);
-                                            }}
-                                            defaultValue={item.ShipDate}
-                                          />
-                                        </div>
-                                      </TD>
-                                      <TD>
-                                        {item.RemainingOpenQuantity || OpenQty}{" "}
-                                      </TD>
-                                      <TD>
-                                        <div style={{ width: "15em" }}>
-                                          {PrWhse && (
-                                            <Select
-                                              menuPortalTarget={document.body}
-                                              value={PrWhse.filter(
-                                                (option) =>
-                                                  option.value ===
-                                                  item.WarehouseCode
-                                              )}
-                                              placeholder="Select.."
-                                              options={PrWhse} // Options to display in the dropdown
-                                              onChange={(e) => {
-                                                DocLinesDropDownOnChange(
-                                                  e,
-                                                  index,
-                                                  "WarehouseCode"
-                                                );
-                                              }}
-                                              // onSelect={CostCentre} // Function will trigger on select event
-                                              // onRemove={CostCentre} //Function will trigger on remove event
-                                              displayValue="name" // Property name to display in the dropdown options
-                                            />
-                                          )}
-                                        </div>
-                                      </TD>
-                                      <TD>{item.UnitPrice}</TD>
-                                      <TD>{item.DiscountPercent}</TD>
-                                      <TD>{item.Price}</TD>
-                                      <TD>
-                                        <div style={{ width: "14rem" }}>
-                                          <Select
-                                            menuPortalTarget={document.body}
-                                            // disabled={true}
-                                            placeholder={
-                                              item.VatGroup +
-                                              "  : " +
-                                              item.TaxPercentagePerRow +
-                                              "%"
-                                            }
-                                            // options={TaxCode} // Options to display in the dropdown
-                                            // onChange={e => {
-                                            //   DocLinesDropDownOnChange(e, index, 'VatGroup')
-                                            // }}
-                                            // onSelect={CostCentre} // Function will trigger on select event
-                                            // onRemove={CostCentre} //Function will trigger on remove event
-                                            displayValue="name" // Property name to display in the dropdown options
-                                          />
-                                        </div>
-                                      </TD>
-                                      <TD>{item.TaxTotal}</TD>
-                                      <TD>{item.GrossTotalSC}</TD>
-                                      <TD>
-                                        <div style={{ width: "14rem" }}>
-                                          <Select
-                                            menuPortalTarget={document.body}
-                                            // placeholder= {item.DocumentLineAdditionalExpenses[0].ExpenseCode || "null"}
-                                            options={Frieght} // Options to display in the dropdown
-                                            // onChange={e => {
-                                            //   FreightDropDownOnChange(e, index, 'Freight')
-                                            // }}
-                                            // onSelect={CostCentre} // Function will trigger on select event
-                                            // onRemove={CostCentre} //Function will trigger on remove event
-                                            displayValue="name" // Property name to display in the dropdown options
-                                          />
-                                        </div>
-                                      </TD>
-                                      <TD>
-                                        {item.DocumentLineAdditionalExpenses[0]
-                                          ? item
-                                              .DocumentLineAdditionalExpenses[0]
-                                              .LineTotal
-                                          : 0}
-                                      </TD>
-                                      <TD>{item.LineTotal}</TD>
-                                      <TD>{item.GrossTotal}</TD>
-                                      <TD>
-                                        <div style={{ width: "14rem" }}>
-                                          <Select
-                                            menuPortalTarget={document.body}
-                                            placeholder={item.ProjectCode}
-                                            // options={Frieght} // Options to display in the dropdown
-                                            // onChange={e => {
-                                            //   FreightDropDownOnChange(e, index, 'Freight')
-                                            // }}
-                                            // onSelect={CostCentre} // Function will trigger on select event
-                                            // onRemove={CostCentre} //Function will trigger on remove event
-                                            displayValue="name" // Property name to display in the dropdown options
-                                          />
-                                        </div>
-                                      </TD>
-                                      <TD>
-                                        <div style={{ width: "14rem" }}>
-                                          <Select
-                                            menuPortalTarget={document.body}
-                                            placeholder={item.SalesPersonCode}
-                                            // options={Frieght} // Options to display in the dropdown
-                                            // onChange={e => {
-                                            //   FreightDropDownOnChange(e, index, 'Freight')
-                                            // }}
-                                            // onSelect={CostCentre} // Function will trigger on select event
-                                            // onRemove={CostCentre} //Function will trigger on remove event
-                                            displayValue="name" // Property name to display in the dropdown options
-                                          />
-                                        </div>
-                                      </TD>
-                                      <TD>
-                                        <div style={{ width: "14rem" }}>
-                                          <Select
-                                            menuPortalTarget={document.body}
-                                            placeholder={item.CostingCode}
-                                            // options={Frieght} // Options to display in the dropdown
-                                            // onChange={e => {
-                                            //   FreightDropDownOnChange(e, index, 'Freight')
-                                            // }}
-                                            // onSelect={CostCentre} // Function will trigger on select event
-                                            // onRemove={CostCentre} //Function will trigger on remove event
-                                            displayValue="name" // Property name to display in the dropdown options
-                                          />
-                                        </div>
-                                      </TD>
-                                    </tr>
-                                  )
-                              )
-                          )}
+                        {PrRe.map((item, index) => (
+                          <tr key={`${index}`}>
+                            <TD>
+                              {index + 1}
+                              <input
+                                type="checkbox"
+                                onChange={() => {
+                                  checkboxSelect(item, index);
+                                }}
+                                checked={item.isSelected}
+                              />
+                            </TD>
+                            <TD>{item.DocNum}</TD>
+                            <TD>{item.CardCode}</TD>
+                            <TD>{item.CardName}</TD>
+                            <TD>{item.DocDate}</TD>
+                          </tr>
+                        ))}
                       </tbody>
                     </Table>
-                  </Modal.Body>
-                  <Modal.Footer>
-                    <Button
-                      variant="secondary"
-                      onClick={() => {
-                        getvaluesformula();
-                        handleCloseee();
-                      }}
-                    >
-                      Choose
-                    </Button>
-                  </Modal.Footer>
-                </Modal>
-                <Modal show={show1} onHide={handleClose2}>
-                  <Modal.Header closeButton>
-                    <Modal.Title>Purchase Orders List</Modal.Title>
-                  </Modal.Header>
-                  <Modal.Body>
-                    {ModalHeaderData && (
-                      <Table responsive>
-                        <TableHead>
-                          <tr>
-                            <th>#</th>
-                            <th>Document Status</th>
-                            <th>DocNum</th>
-                            <th>DocEntry</th>
-                            <th>Code</th>
-                            <th>Name</th>
-                            <th>Posting Date</th>
-                          </tr>
-                        </TableHead>
-                        <tbody>
-                          {ModalHeaderData.map((item, index) => (
-                            <tr
-                              key={`${index}`}
-                              onClick={(e) => {
-                                selectPR(item);
-                                handleClose2();
-                              }}
-                            >
-                              <TD>{index + 1}</TD>
-                              <TD>
-                                {item.DocumentStatus === "bost_Open" ? (
-                                  <p
-                                    style={{
-                                      background: "gray",
-                                      color: "white",
-                                    }}
-                                  >
-                                    Open
-                                  </p>
-                                ) : item.DocumentStatus === "bost_Close" ? (
-                                  <p
-                                    style={{
-                                      background: "red",
-                                      color: "white",
-                                    }}
-                                  >
-                                    Closed
-                                  </p>
-                                ) : null}
-                              </TD>
+                  )}
+                </Modal.Body>
 
-                              <TD>{item.DocNum}</TD>
-                              <TD>{item.DocEntry}</TD>
-                              <TD>{item.CardCode}</TD>
-                              <TD>{item.CardName}</TD>
-                              <TD>{item.DocDate}</TD>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </Table>
-                    )}
-                  </Modal.Body>
-
-                  <Modal.Footer>
-                    <Button variant="secondary" onClick={handleClose2}>
-                      Close
-                    </Button>
-                    <Button variant="primary" onClick={handleClose2}>
-                      Cancel
-                    </Button>
-                  </Modal.Footer>
-                </Modal>
-                <br />
-                <div style={{ width: "23.5rem", height: "auto" }}>
-                  <label>Vendor Ref.No</label>
-                  <input
-                    value={HeaderData && HeaderData.NumAtCard}
-                    type="text"
-                    class="form-control"
-                    id="exampleInputEmail1"
-                    onChange={(e) => {
-                      setgetnumatcard(e.target.value);
+                <Modal.Footer>
+                  <Button
+                    variant="secondary"
+                    onClick={() => {
+                      handleShowModalTwo();
+                      handleClose();
                     }}
-                    aria-describedby="emailHelp"
-                    placeholder=""
-                  ></input>
-                </div>
+                  >
+                    Choose
+                  </Button>
+                  <Button variant="primary" onClick={handleClose}>
+                    Cancel
+                  </Button>
+                </Modal.Footer>
+              </Modal>
+              <Modal
+                show={modalTwo === "modal-two"}
+                className="Modal-big"
+                size="lg"
+              >
+                <Modal.Title id="example-modal-sizes-title-lg">
+                  List of Purchase Quotations
+                </Modal.Title>
+                <Modal.Body>
+                  <Table responsive striped bordered hover>
+                    <TableHead>
+                      <tr>
+                        <th>
+                          <div>#</div>
+                        </th>
+                        <th>
+                          <div>Bar Code</div>
+                        </th>
+                        <th>
+                          <div>Item No.</div>
+                        </th>
+                        <th>
+                          <div>Item Description</div>
+                        </th>
+                        <th>
+                          <div>UoM Name</div>
+                        </th>
+                        <th>
+                          <div>Free Text</div>
+                        </th>
+                        <th>
+                          <div>Quantity</div>
+                        </th>
+                        <th>
+                          <div>Delivery Date</div>
+                        </th>
+                        <th>
+                          <div>Open Qty</div>
+                        </th>
+                        <th>
+                          <div>Whse</div>
+                        </th>
+                        <th>
+                          <div>Unit Price</div>
+                        </th>
+                        <th>
+                          <div>Discount</div>
+                        </th>
+                        <th>
+                          <div>Price after Discount</div>
+                        </th>
+                        <th>
+                          <div>Tax Code : Rate</div>
+                        </th>
+                        <th>
+                          <div>Tax Amount(LC)</div>
+                        </th>
+                        <th>
+                          <div>Gross Price After Disc.</div>
+                        </th>
+                        <th>
+                          <div>Freight 1</div>
+                        </th>
+                        <th>
+                          <div>Freight 1 (LC)</div>
+                        </th>
+                        <th>
+                          <div>Line Total</div>
+                        </th>
+                        <th>
+                          <div>Gross Total(LC)</div>
+                        </th>
+                        <th>
+                          <div>Project</div>
+                        </th>
+                        <th>
+                          <div>Buyer</div>
+                        </th>
+                        <th>
+                          <div>Cost Centre</div>
+                        </th>
+                      </tr>
+                    </TableHead>
+                    <tbody>
+                      {PQDocumentLines &&
+                        PQDocumentLines.map(
+                          (PrReItem, PrReIndex) =>
+                            PrReItem.isSelected &&
+                            PrReItem.DocumentLines.map(
+                              (item, index) =>
+                                item.LineStatus === "bost_Open" && (
+                                  <tr key={`${index}`}>
+                                    <TD>
+                                      {index + 1}
+                                      <input
+                                        type="checkbox"
+                                        onChange={() => {
+                                          docLineSelectedSwitch(
+                                            PrReIndex,
+                                            item,
+                                            index
+                                          );
+                                        }}
+                                        checked={item.isSelected}
+                                      />
+                                    </TD>
+                                    <TD> </TD>
+                                    <TD>{item.ItemCode}</TD>
+                                    <TD>{item.ItemDescription}</TD>
+                                    <TD>{item.MeasureUnit}</TD>
+                                    <TD>
+                                      <div
+                                        style={{
+                                          width: "14rem",
+                                          height: "auto",
+                                        }}
+                                      >
+                                        <input
+                                          type="text"
+                                          name="FreeText"
+                                          class="form-control"
+                                          aria-describedby="Requesterid"
+                                          defaultValue={item.FreeText}
+                                          // onChange={e => {
+                                          //   ontextChanged(e, index)
+                                          // }}
+                                        />
+                                      </div>
+                                    </TD>
+                                    <TD>
+                                      <div
+                                        style={{
+                                          width: "14rem",
+                                          height: "auto",
+                                        }}
+                                      >
+                                        <input
+                                          type="number"
+                                          name="QuotedQty"
+                                          readOnly="readOnly"
+                                          class="form-control"
+                                          aria-describedby="Requesterid"
+                                          defaultValue={
+                                            item.RemainingOpenQuantity
+                                          }
+                                          // onChange={e=>OpenQtyFunction(e, index)
+                                          // setOpenQty(e.target.value)
+                                          // }
+                                          // onChange={e => {
+                                          //   OpenQtyFunction(e, index)
+                                          //   setOpenQty(e.target.value)
+                                          // }}
+                                        />
+                                      </div>
+                                    </TD>
+                                    <TD>
+                                      <div
+                                        style={{
+                                          width: "14rem",
+                                          height: "auto",
+                                        }}
+                                      >
+                                        <input
+                                          type="date"
+                                          name="ShipDate"
+                                          readOnly="readOnly"
+                                          class="form-control"
+                                          onChange={(e) => {
+                                            ShipDateChange(e, index);
+                                          }}
+                                          defaultValue={item.ShipDate}
+                                        />
+                                      </div>
+                                    </TD>
+                                    <TD>
+                                      {item.RemainingOpenQuantity || OpenQty}
+                                    </TD>
+                                    <TD>
+                                      <div style={{ width: "15em" }}>
+                                        {PrWhse && (
+                                          <Select
+                                            menuPortalTarget={document.body}
+                                            value={PrWhse.filter(
+                                              (option) =>
+                                                option.value ===
+                                                item.WarehouseCode
+                                            )}
+                                            placeholder="Select.."
+                                            options={PrWhse} // Options to display in the dropdown
+                                            onChange={(e) => {
+                                              DocLinesDropDownOnChange(
+                                                e,
+                                                index,
+                                                "WarehouseCode"
+                                              );
+                                            }}
+                                            // onSelect={CostCentre} // Function will trigger on select event
+                                            // onRemove={CostCentre} //Function will trigger on remove event
+                                            displayValue="name" // Property name to display in the dropdown options
+                                          />
+                                        )}
+                                      </div>
+                                    </TD>
+                                    <TD>{item.UnitPrice}</TD>
+                                    <TD>{item.DiscountPercent}</TD>
+                                    <TD>{item.Price}</TD>
+                                    <TD>
+                                      <div style={{ width: "14rem" }}>
+                                        <Select
+                                          menuPortalTarget={document.body}
+                                          // disabled={true}
+                                          placeholder={
+                                            item.VatGroup +
+                                            "  : " +
+                                            item.TaxPercentagePerRow +
+                                            "%"
+                                          }
+                                          // options={TaxCode} // Options to display in the dropdown
+                                          // onChange={e => {
+                                          //   DocLinesDropDownOnChange(e, index, 'VatGroup')
+                                          // }}
+                                          // onSelect={CostCentre} // Function will trigger on select event
+                                          // onRemove={CostCentre} //Function will trigger on remove event
+                                          displayValue="name" // Property name to display in the dropdown options
+                                        />
+                                      </div>
+                                    </TD>
+                                    <TD>{item.TaxTotal}</TD>
+                                    <TD>{item.GrossTotalSC}</TD>
+                                    <TD>
+                                      <div style={{ width: "14rem" }}>
+                                        <Select
+                                          menuPortalTarget={document.body}
+                                          // placeholder= {item.DocumentLineAdditionalExpenses[0].ExpenseCode || "null"}
+                                          options={Frieght} // Options to display in the dropdown
+                                          // onChange={e => {
+                                          //   FreightDropDownOnChange(e, index, 'Freight')
+                                          // }}
+                                          // onSelect={CostCentre} // Function will trigger on select event
+                                          // onRemove={CostCentre} //Function will trigger on remove event
+                                          displayValue="name" // Property name to display in the dropdown options
+                                        />
+                                      </div>
+                                    </TD>
+                                    <TD>
+                                      {item.DocumentLineAdditionalExpenses[0]
+                                        ? item.DocumentLineAdditionalExpenses[0]
+                                            .LineTotal
+                                        : 0}
+                                    </TD>
+                                    <TD>{item.LineTotal}</TD>
+                                    <TD>{item.GrossTotal}</TD>
+                                    <TD>
+                                      <div style={{ width: "14rem" }}>
+                                        <Select
+                                          menuPortalTarget={document.body}
+                                          placeholder={item.ProjectCode}
+                                          // options={Frieght} // Options to display in the dropdown
+                                          // onChange={e => {
+                                          //   FreightDropDownOnChange(e, index, 'Freight')
+                                          // }}
+                                          // onSelect={CostCentre} // Function will trigger on select event
+                                          // onRemove={CostCentre} //Function will trigger on remove event
+                                          displayValue="name" // Property name to display in the dropdown options
+                                        />
+                                      </div>
+                                    </TD>
+                                    <TD>
+                                      <div style={{ width: "14rem" }}>
+                                        <Select
+                                          menuPortalTarget={document.body}
+                                          placeholder={item.SalesPersonCode}
+                                          // options={Frieght} // Options to display in the dropdown
+                                          // onChange={e => {
+                                          //   FreightDropDownOnChange(e, index, 'Freight')
+                                          // }}
+                                          // onSelect={CostCentre} // Function will trigger on select event
+                                          // onRemove={CostCentre} //Function will trigger on remove event
+                                          displayValue="name" // Property name to display in the dropdown options
+                                        />
+                                      </div>
+                                    </TD>
+                                    <TD>
+                                      <div style={{ width: "14rem" }}>
+                                        <Select
+                                          menuPortalTarget={document.body}
+                                          placeholder={item.CostingCode}
+                                          // options={Frieght} // Options to display in the dropdown
+                                          // onChange={e => {
+                                          //   FreightDropDownOnChange(e, index, 'Freight')
+                                          // }}
+                                          // onSelect={CostCentre} // Function will trigger on select event
+                                          // onRemove={CostCentre} //Function will trigger on remove event
+                                          displayValue="name" // Property name to display in the dropdown options
+                                        />
+                                      </div>
+                                    </TD>
+                                  </tr>
+                                )
+                            )
+                        )}
+                    </tbody>
+                  </Table>
+                </Modal.Body>
+                <Modal.Footer>
+                  <Button
+                    variant="secondary"
+                    onClick={() => {
+                      getvaluesformula();
+                      handleCloseee();
+                    }}
+                  >
+                    Choose
+                  </Button>
+                </Modal.Footer>
+              </Modal>
+              <Modal show={show1} onHide={handleClose2}>
+                <Modal.Header closeButton>
+                  <Modal.Title>Purchase Orders List</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                  {ModalHeaderData && (
+                    <Table responsive>
+                      <TableHead>
+                        <tr>
+                          <th>#</th>
+                          <th>Document Status</th>
+                          <th>DocNum</th>
+                          <th>DocEntry</th>
+                          <th>Code</th>
+                          <th>Name</th>
+                          <th>Posting Date</th>
+                        </tr>
+                      </TableHead>
+                      <tbody>
+                        {ModalHeaderData.map((item, index) => (
+                          <tr
+                            key={`${index}`}
+                            onClick={(e) => {
+                              selectPR(item);
+                              handleClose2();
+                            }}
+                          >
+                            <TD>{index + 1}</TD>
+                            <TD>
+                              {item.DocumentStatus === "bost_Open" ? (
+                                <p
+                                  style={{
+                                    background: "gray",
+                                    color: "white",
+                                  }}
+                                >
+                                  Open
+                                </p>
+                              ) : item.DocumentStatus === "bost_Close" ? (
+                                <p
+                                  style={{
+                                    background: "red",
+                                    color: "white",
+                                  }}
+                                >
+                                  Closed
+                                </p>
+                              ) : null}
+                            </TD>
+
+                            <TD>{item.DocNum}</TD>
+                            <TD>{item.DocEntry}</TD>
+                            <TD>{item.CardCode}</TD>
+                            <TD>{item.CardName}</TD>
+                            <TD>{item.DocDate}</TD>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </Table>
+                  )}
+                </Modal.Body>
+
+                <Modal.Footer>
+                  <Button variant="secondary" onClick={handleClose2}>
+                    Close
+                  </Button>
+                  <Button variant="primary" onClick={handleClose2}>
+                    Cancel
+                  </Button>
+                </Modal.Footer>
+              </Modal>
+
+              <div className="header_items_container">
+                <label>Vendor Ref.No</label>
+                <input
+                  value={HeaderData && HeaderData.NumAtCard}
+                  type="number"
+                  class="input"
+                  id=""
+                  onChange={(e) => {
+                    setgetnumatcard(e.target.value);
+                  }}
+                  aria-describedby=""
+                  placeholder=""
+                ></input>
+              </div>
+              <div className="header_items_container">
                 <label>Currency</label>
-                <div
-                  style={{ width: "23.5rem", height: "auto" }}
-                  variant="primary"
-                >
+                <div variant="primary">
                   <Select
                     isDisabled={CurrencyRateData ? false : true}
                     placeholder={HeaderData && HeaderData.DocCurrency}
@@ -2077,11 +2138,10 @@ export default function PurchaseOrder() {
                     }}
                   />
                 </div>
+              </div>
+              <div className="header_items_container">
                 <label>Exchange Rate</label>
-                <div
-                  style={{ width: "23.5rem", height: "auto" }}
-                  variant="primary"
-                >
+                <div variant="primary">
                   <input
                     defaultValue={
                       getcurrencycode === "PKR"
@@ -2089,8 +2149,8 @@ export default function PurchaseOrder() {
                         : getcurrencyrate || (HeaderData && HeaderData.DocRate)
                     }
                     type="number"
-                    class="form-control"
-                    id="exampleInputEmail1"
+                    class="input"
+                    id=""
                     onChange={(e) => {
                       setgetcurrencyrate(e.target.value);
                     }}
@@ -2098,20 +2158,19 @@ export default function PurchaseOrder() {
                     placeholder=""
                   />
                 </div>
-                <div
-                  style={{ marginTop: "5%", marginLeft: "47%", width: "50%" }}
-                >
-                  {RequesterCodeDropdown && (
-                    <Select
-                      placeholder=""
-                      options={RequesterCodeDropdown} // Options to display in the dropdown
-                      // onSelect={RequesterCodeDropdownfunc} // Function will trigger on select event
-                      // onRemove={RequesterCodeDropdownfunc} // Function will trigger on remove event
-                      displayValue="name" // Property name to display in the dropdown options
-                    />
-                  )}
-                </div>
-                {/* {getdirectdoctype?(
+              </div>
+              <div style={{ marginTop: "5%", marginLeft: "47%", width: "50%" }}>
+                {RequesterCodeDropdown && (
+                  <Select
+                    placeholder=""
+                    options={RequesterCodeDropdown} // Options to display in the dropdown
+                    // onSelect={RequesterCodeDropdownfunc} // Function will trigger on select event
+                    // onRemove={RequesterCodeDropdownfunc} // Function will trigger on remove event
+                    displayValue="name" // Property name to display in the dropdown options
+                  />
+                )}
+              </div>
+              {/* {getdirectdoctype?(
               <>
                 <label>Select Item(s)</label>
                 <div style={{ width: '23.5rem', height: 'auto' }}>
@@ -2126,187 +2185,121 @@ export default function PurchaseOrder() {
                 </div><br/>
                 </>
             ):null} */}
-              </Container>
-            </DIV3>
-            <DIV4></DIV4>
-            <DIV3>
-              <Container>
-                <div style={{ marginLeft: "3rem" }}>
-                  <label>No.</label>
-                  <CardGroup>
-                    <br />
-                    <div style={{ width: "11.5rem", height: "auto" }}>
-                      <Select
-                        // placeholder={HeaderData && HeaderData.RequesterName}
-                        options={getserviceseries} // Options to display in the dropdown
-                        onChange={(e) => {
-                          getseriesvaluefunction(e);
-                          // TableTaxCode(e.item.Name)
-                          Whse(e.item.Name);
-                        }} // Function will trigger on select event
-                        // onRemove={RequesterCodeDropdownfunc} // Function will trigger on remove event
-                        displayValue="name" // Property name to display in the dropdown options
-                      />
-                    </div>
-                    <div style={{ width: "11.5rem", height: "auto" }}>
-                      <input
-                        type="number"
-                        name="Discount"
-                        readOnly
-                        value={
-                          getnextnumber
-                            ? getnextnumber
-                            : HeaderData && HeaderData.DocNum
-                        }
-                        placeholder=""
-                        class="form-control"
-                      />{" "}
-                      <br />
-                    </div>
-                  </CardGroup>
-                </div>
-                <div style={{ width: "23.5rem", marginLeft: "3rem" }}>
-                  <label> Status</label>
-                  <Select
-                    placeholder={getStatus}
-                    isDisabled={getStatus ? true : false}
-                    options={[
-                      { label: "Open", value: "bost_Open" },
-                      { label: "Close", value: "bost_Close" },
-                      { label: "All", value: null },
-                      // { label: 'Draft', value: 'bost_Draft' }
-                    ]} // Options to display in the dropdown
+            </div>
+            <div className="right">
+              <div className="header_items_container">
+                <label>No.</label>
+                <div className="innerpart">
+                  <select
+                    className="select_inner"
+                    name=""
+                    id=""
                     onChange={(e) => {
-                      setgetdocumentstatus(e.value);
-                    }} // Function will trigger on select event
-                    // onRemove={BusinessPartners} Function will trigger on remove event
-                    displayValue="name" // Property name to display in the dropdown options
-                  />
-                </div>
-                <br />
-                <div
-                  className="Order"
-                  style={{
-                    width: "23.5rem",
-                    height: "auto",
-                    marginLeft: "3rem",
-                    border: "1px solid",
-                    borderColor: "lightgray",
-                    borderRadius: "4px",
-                  }}
-                >
-                  <a
-                    onClick={(e) => {
-                      SearchAll_Filter_Data();
+                      getseriesvaluefunction(e);
+                      Whse(e.item.Name);
                     }}
-                    style={{ cursor: "pointer" }}
+                    displayValue="name"
                   >
-                    {" "}
-                    <svg class="svg-icon13" viewBox="0 0 20 20">
-                      <path d="M18.125,15.804l-4.038-4.037c0.675-1.079,1.012-2.308,1.01-3.534C15.089,4.62,12.199,1.75,8.584,1.75C4.815,1.75,1.982,4.726,2,8.286c0.021,3.577,2.908,6.549,6.578,6.549c1.241,0,2.417-0.347,3.44-0.985l4.032,4.026c0.167,0.166,0.43,0.166,0.596,0l1.479-1.478C18.292,16.234,18.292,15.968,18.125,15.804 M8.578,13.99c-3.198,0-5.716-2.593-5.733-5.71c-0.017-3.084,2.438-5.686,5.74-5.686c3.197,0,5.625,2.493,5.64,5.624C14.242,11.548,11.621,13.99,8.578,13.99 M16.349,16.981l-3.637-3.635c0.131-0.11,0.721-0.695,0.876-0.884l3.642,3.639L16.349,16.981z"></path>
-                    </svg>
-                  </a>
-                  <input
-                    name={"SearchPRNumber"}
-                    type="Number"
-                    placeholder="Number"
-                    class="form-control13"
-                    onKeyDown={keyHandler}
-                    style={{
-                      backgroundColor: isfocused ? "#fce8a7" : "",
-                    }}
-                    ref={searchRef}
-                    onChange={(e) => {
-                      setSearchNumber(e.target.value);
-                    }}
-                  />
+                    {getserviceseries
+                      ? getserviceseries.map((e) => (
+                          <option value={e.value}>{e.label}</option>
+                        ))
+                      : ""}
+                  </select>
+                  <div className="number_inner">
+                    <input
+                      type="number"
+                      name="Discount"
+                      readOnly
+                      value={
+                        getnextnumber
+                          ? getnextnumber
+                          : HeaderData && HeaderData.DocNum
+                      }
+                      placeholder=""
+                      class=""
+                    />
+                  </div>
                 </div>
-                <br />
-                {/* <Button
-             style={{marginLeft:'3rem'}}
-              onClick={e => {
-                SearchAll_Filter_Data()
-              }}
-            >
-              Search
-            </Button><br/> */}
-                {/* <div style={{ width: '23.5rem' ,marginLeft:'3rem'}}>
-            <label>No</label>
-            <input
-              type='number'
-              readOnly='readOnly'
-              defaultValue={SelectedPRDocEntry && SelectedPRDocEntry.DocNum|| HeaderData && HeaderData.DocNum}
-              class='form-control' />
-              </div> */}
-                <div style={{ width: "23.5rem", marginLeft: "3rem" }}>
-                  <label> Posting Date</label>
-                  <input
-                    type="date"
-                    name="DocDate"
-                    class="form-control"
-                    onChange={(e) => {
-                      setgetpostingdate(e.target.value);
-                    }}
-                    defaultValue={
-                      HeaderData && HeaderData.DocDueDate
-                        ? HeaderData && HeaderData.DocDueDate
-                        : getpostingdate
-                    }
-                  />
-                </div>
-                <div style={{ width: "23.5rem", marginLeft: "3rem" }}>
-                  <label> Delivery Date</label>
-                  <input
-                    type="date"
-                    name="DocDate"
-                    class="form-control"
-                    onChange={(e) => {
-                      setgetdeliverydate(e.target.value);
-                    }}
-                    defaultValue={
-                      HeaderData && HeaderData.DocDueDate
-                        ? HeaderData && HeaderData.DocDueDate
-                        : getdeliverydate
-                    }
-                  />
-                </div>
-                {/* <br/>
-            <div class="form-check form-check-inline" style={{marginLeft:'3rem'}}>
-          <input class="form-check-input" checked={bothbodies} name='Sync' onChange={e => setbothbodies(!bothbodies)} type="checkbox" id="inlineCheckbox1" value="option1" />
-          <label class="form-check-label" for="inlineCheckbox1">Sync A</label>
-        </div> */}
-                {/* <label>Priority</label>
-            <div style={{ width: '23.5rem', height: 'auto' }} variant='primary' >
-              <Select
-                placeholder='Select'
-                options={[
-                  { label: 'Low', value: 'Low' },
-                  { label: 'Moderate', value: 'Moderate' },
-                  { label: 'High', value: 'High' }
-                ]} // Options to display in the dropdown
-                onChange={e => {
-                  setgetprioity(e.value)
-                }} // Function will trigger on select event
-                // onRemove={BusinessPartners} Function will trigger on remove event
-                displayValue='name' // Property name to display in the dropdown options
-              />
-            </div> */}
-                {/* <div style={{ width: '23.5rem' ,marginLeft:'3rem'}}>
-            <label> Document Date</label>
-            <input
-              type='date'
-              name='DocumentDate'
-              class='form-control'
-              value={SelectedPRDocEntry && SelectedPRDocEntry.DocDueDate||HeaderData && HeaderData.DocDueDate}
-              onChange={e => {
-                dateChange(e)
-              }}
-            />
-            </div> */}
-                <br />
-              </Container>
-            </DIV3>
-          </CardGroup>
+              </div>
+              <div className="header_items_container">
+                <label> Status</label>
+
+                <Select
+                  placeholder={getStatus}
+                  isDisabled={getStatus ? true : false}
+                  options={[
+                    { label: "Open", value: "bost_Open" },
+                    { label: "Close", value: "bost_Close" },
+                    { label: "All", value: null },
+                    // { label: 'Draft', value: 'bost_Draft' }
+                  ]} // Options to display in the dropdown
+                  onChange={(e) => {
+                    setgetdocumentstatus(e.value);
+                  }} // Function will trigger on select event
+                  // onRemove={BusinessPartners} Function will trigger on remove event
+                  displayValue="name" // Property name to display in the dropdown options
+                />
+              </div>
+              <div className="order header_items_container">
+                <a
+                  onClick={(e) => {
+                    SearchAll_Filter_Data();
+                  }}
+                  style={{ cursor: "pointer" }}
+                >
+                  <svg class="svg-icon13" viewBox="0 0 20 20">
+                    <path d="M18.125,15.804l-4.038-4.037c0.675-1.079,1.012-2.308,1.01-3.534C15.089,4.62,12.199,1.75,8.584,1.75C4.815,1.75,1.982,4.726,2,8.286c0.021,3.577,2.908,6.549,6.578,6.549c1.241,0,2.417-0.347,3.44-0.985l4.032,4.026c0.167,0.166,0.43,0.166,0.596,0l1.479-1.478C18.292,16.234,18.292,15.968,18.125,15.804 M8.578,13.99c-3.198,0-5.716-2.593-5.733-5.71c-0.017-3.084,2.438-5.686,5.74-5.686c3.197,0,5.625,2.493,5.64,5.624C14.242,11.548,11.621,13.99,8.578,13.99 M16.349,16.981l-3.637-3.635c0.131-0.11,0.721-0.695,0.876-0.884l3.642,3.639L16.349,16.981z"></path>
+                  </svg>
+                </a>
+                <input
+                  name={"SearchPRNumber"}
+                  type="Number"
+                  placeholder="Number"
+                  class="input"
+                  onKeyDown={keyHandler}
+                  style={{ outline: "none" }}
+                  ref={searchRef}
+                  onChange={(e) => {
+                    setSearchNumber(e.target.value);
+                  }}
+                />
+              </div>
+
+              <div className="header_items_container">
+                <label> Posting Date</label>
+                <input
+                  type="date"
+                  name="DocDate"
+                  class="input"
+                  onChange={(e) => {
+                    setgetpostingdate(e.target.value);
+                  }}
+                  defaultValue={
+                    HeaderData && HeaderData.DocDueDate
+                      ? HeaderData && HeaderData.DocDueDate
+                      : getpostingdate
+                  }
+                />
+              </div>
+              <div className="header_items_container">
+                <label> Delivery Date</label>
+                <input
+                  type="date"
+                  name="DocDate"
+                  class="input"
+                  onChange={(e) => {
+                    setgetdeliverydate(e.target.value);
+                  }}
+                  defaultValue={
+                    HeaderData && HeaderData.DocDueDate
+                      ? HeaderData && HeaderData.DocDueDate
+                      : getdeliverydate
+                  }
+                />
+              </div>
+            </div>
+          </div>
           {/* Table+++++++++ */}
           <Tabs
             defaultActiveKey="Contents"
@@ -2315,40 +2308,84 @@ export default function PurchaseOrder() {
           >
             <Tab eventKey="Contents" title="Contents">
               {gettablecontroller === "selectedItems" ? (
-                <Table responsive striped bordered hover>
+                <Table responsive bordered>
                   <TableHead>
                     <tr>
-                      <th>#</th>
-                      <th>Bar Code</th>
-                      <th>Item No.</th>
-                      <th>Item Description</th>
-                      <th>UoM Name</th>
-                      <th>Free Text</th>
-                      <th>Required Date</th>
-                      {/* <th>Open Qty</th> */}
-                      <th>Quantity</th>
-                      <th>Unit Price</th>
-                      <th>Discount</th>
-                      <th>Tax Code</th>
-                      {/* <th>Tax Percentage</th> */}
-                      <th>Price after Discount</th>
-                      <th>Gross Price after Disc.</th>
-                      <th>Freight Code</th>
-                      <th>Freight 1</th>
-                      <th>Tax Amount</th>
-                      <th>Gross Total</th>
-                      <th>Total(LC)</th>
-                      <th>Whse</th>
-                      <th>Project</th>
-                      <th>Buyer</th>
-                      <th>Cost Centre</th>
+                      <th>
+                        <div className="first_column">#</div>
+                      </th>
+                      <th>
+                        <div>Bar Code</div>
+                      </th>
+                      <th>
+                        <div>Item No.</div>
+                      </th>
+                      <th>
+                        <div>Item Description</div>
+                      </th>
+                      <th>
+                        <div>UoM Name</div>
+                      </th>
+                      <th>
+                        <div>Free Text</div>
+                      </th>
+                      <th>
+                        <div>Required Date</div>
+                      </th>
+                      {/* <th> <div>Open Qty</div></th> */}
+                      <th>
+                        <div>Quantity</div>
+                      </th>
+                      <th>
+                        <div>Unit Price</div>
+                      </th>
+                      <th>
+                        <div>Discount</div>
+                      </th>
+                      <th>
+                        <div>Tax Code</div>
+                      </th>
+                      {/* <th> <div>Tax Percentage</div></th> */}
+                      <th>
+                        <div>Price after Discount</div>
+                      </th>
+                      <th>
+                        <div>Gross Price after Disc.</div>
+                      </th>
+                      <th>
+                        <div>Freight Code</div>
+                      </th>
+                      <th>
+                        <div>Freight 1</div>
+                      </th>
+                      <th>
+                        <div>Tax Amount</div>
+                      </th>
+                      <th>
+                        <div>Gross Total</div>
+                      </th>
+                      <th>
+                        <div>Total(LC)</div>
+                      </th>
+                      <th>
+                        <div>Whse</div>
+                      </th>
+                      <th>
+                        <div>Project</div>
+                      </th>
+                      <th>
+                        <div>Buyer</div>
+                      </th>
+                      <th>
+                        <div>Cost Centre</div>
+                      </th>
                     </tr>
                   </TableHead>
                   <tbody>
                     {SelectedItems &&
                       SelectedItems.map((item, index) => (
                         <tr key={`${index}`}>
-                          <TD>
+                          <td>
                             {index + 1}
                             <a
                               style={{ color: "black" }}
@@ -2361,13 +2398,11 @@ export default function PurchaseOrder() {
                                 deleteobject(e, item, index);
                               }}
                             >
-                              {" "}
-                              <MdDelete />{" "}
+                              <MdDelete />
                             </a>
-                          </TD>
-                          <TD>{item.BarCode}</TD>
-                          <TD>
-                            {" "}
+                          </td>
+                          <td>{item.BarCode}</td>
+                          <td>
                             <div style={{ width: "13.5rem", height: "auto" }}>
                               {ItemsDropDown && (
                                 <Select
@@ -2388,10 +2423,14 @@ export default function PurchaseOrder() {
                                 />
                               )}
                             </div>
-                          </TD>
-                          <TD>{item.ItemName}</TD>
-                          <TD>{item.PurchaseUnit}</TD>
-                          <TD>
+                          </td>
+                          <td>
+                            <div className="inside_td">{item.ItemName}</div>
+                          </td>
+                          <td>
+                            <div className="inside_td">{item.PurchaseUnit}</div>
+                          </td>
+                          <td>
                             <div style={{ width: "14rem", height: "auto" }}>
                               <input
                                 type="text"
@@ -2404,8 +2443,8 @@ export default function PurchaseOrder() {
                                 }}
                               />
                             </div>
-                          </TD>
-                          <TD>
+                          </td>
+                          <td>
                             <div style={{ width: "14rem", height: "auto" }}>
                               <input
                                 type="date"
@@ -2419,25 +2458,24 @@ export default function PurchaseOrder() {
                                 value={getpostingdate}
                               />
                             </div>
-                          </TD>
-                          {/* <TD>
-                      <div style={{ width: '14rem', height: 'auto' }}>
-                        <input
-                          type='number'
-                          name='OpenQty'
-                          // onChange={e => {
-                          //   ontextChanged2222(e, item)
-                          // }}
-                          readOnly="readOnly"
-                          class='form-control'
-                          aria-describedby='Requesterid'
-                          defaultValue={ItemsDetails[item].ItemWarehouseInfoCollection[0].InStock}
-                        />
-                      </div>
-                    </TD> */}
+                          </td>
+                          {/* <td>
+                    <div style={{ width: '14rem', height: 'auto' }}>
+                      <input
+                        type='number'
+                        name='OpenQty'
+                        // onChange={e => {
+                        //   ontextChanged2222(e, item)
+                        // }}
+                        readOnly="readOnly"
+                        class='form-control'
+                        aria-describedby='Requesterid'
+                        defaultValue={ItemsDetails[item].ItemWarehouseInfoCollection[0].InStock}
+                      />
+                    </div>
+                  </td> */}
 
-                          <TD>
-                            {" "}
+                          <td>
                             {getautounitprice &&
                             getautounitprice[item.ItemCode] ? (
                               <div style={{ width: "14rem", height: "auto" }}>
@@ -2468,8 +2506,8 @@ export default function PurchaseOrder() {
                                 />
                               </div>
                             )}
-                          </TD>
-                          <TD>
+                          </td>
+                          <td>
                             {getautounitprice &&
                             getautounitprice[item.ItemCode] ? (
                               <div style={{ width: "14rem", height: "auto" }}>
@@ -2501,9 +2539,8 @@ export default function PurchaseOrder() {
                                 />
                               </div>
                             )}
-                          </TD>
-                          <TD>
-                            {" "}
+                          </td>
+                          <td>
                             {getautounitprice &&
                             getautounitprice[item.ItemCode] ? (
                               <div style={{ width: "14rem", height: "auto" }}>
@@ -2537,8 +2574,8 @@ export default function PurchaseOrder() {
                                 />
                               </div>
                             )}
-                          </TD>
-                          <TD>
+                          </td>
+                          <td>
                             {getseriesnumbring == "2" ? (
                               <div style={{ width: "14rem", height: "auto" }}>
                                 {TaxCode && (
@@ -2577,21 +2614,20 @@ export default function PurchaseOrder() {
                                 />
                               </div>
                             )}
-                          </TD>
-                          {/* <TD>
-                      <div style={{ width: '14rem', height: 'auto' }}>
-                        <input
-                          type='number'
-                          name='TaxCode'
-                          readOnly="readOnly"
-                          class='form-control'
-                          aria-describedby='Requesterid'
-                          value={item.ItemCode ? item.TaxAmount : null}
-                        />
-                      </div>
-                    </TD> */}
-                          <TD>
-                            {" "}
+                          </td>
+                          {/* <td>
+                    <div style={{ width: '14rem', height: 'auto' }}>
+                      <input
+                        type='number'
+                        name='TaxCode'
+                        readOnly="readOnly"
+                        class='form-control'
+                        aria-describedby='Requesterid'
+                        value={item.ItemCode ? item.TaxAmount : null}
+                      />
+                    </div>
+                  </td> */}
+                          <td>
                             {getautounitprice &&
                             getautounitprice[item.ItemCode] ? (
                               <div style={{ width: "14rem", height: "auto" }}>
@@ -2629,9 +2665,8 @@ export default function PurchaseOrder() {
                                 />
                               </div>
                             )}
-                          </TD>
-                          <TD>
-                            {" "}
+                          </td>
+                          <td>
                             {getautounitprice &&
                             getautounitprice[item.ItemCode] ? (
                               <div style={{ width: "14rem", height: "auto" }}>
@@ -2675,8 +2710,8 @@ export default function PurchaseOrder() {
                                 />
                               </div>
                             )}
-                          </TD>
-                          <TD>
+                          </td>
+                          <td>
                             <div style={{ width: "14rem", height: "auto" }}>
                               <Select
                                 menuPortalTarget={document.body}
@@ -2694,8 +2729,8 @@ export default function PurchaseOrder() {
                                 displayValue="name" // Property name to display in the dropdown options
                               />
                             </div>
-                          </TD>
-                          <TD>
+                          </td>
+                          <td>
                             <div style={{ width: "14rem", height: "auto" }}>
                               <input
                                 type="number"
@@ -2709,8 +2744,8 @@ export default function PurchaseOrder() {
                                 // defaultValue={item.RemainingOpenQuantity}
                               />
                             </div>
-                          </TD>
-                          <TD>
+                          </td>
+                          <td>
                             <div style={{ width: "14rem", height: "auto" }}>
                               <input
                                 type="number"
@@ -2724,8 +2759,8 @@ export default function PurchaseOrder() {
                                 value={item.ItemCode ? item.TaxTotalAmount : ""}
                               />
                             </div>
-                          </TD>
-                          <TD>
+                          </td>
+                          <td>
                             {getautounitprice &&
                             getautounitprice[item.ItemCode] ? (
                               <div style={{ width: "14rem", height: "auto" }}>
@@ -2762,8 +2797,8 @@ export default function PurchaseOrder() {
                                 />
                               </div>
                             )}
-                          </TD>
-                          <TD>
+                          </td>
+                          <td>
                             <div style={{ width: "14rem", height: "auto" }}>
                               <input
                                 type="number"
@@ -2774,8 +2809,8 @@ export default function PurchaseOrder() {
                                 value={item.ItemCode ? item.Total_LC : ""}
                               />
                             </div>
-                          </TD>
-                          <TD>
+                          </td>
+                          <td>
                             <div style={{ width: "14rem", height: "auto" }}>
                               {PrWhse && (
                                 <Select
@@ -2797,9 +2832,9 @@ export default function PurchaseOrder() {
                                 />
                               )}
                             </div>
-                          </TD>
+                          </td>
 
-                          <TD>
+                          <td>
                             <div style={{ width: "14rem", height: "auto" }}>
                               {PrProject && (
                                 <Select
@@ -2822,8 +2857,8 @@ export default function PurchaseOrder() {
                                 />
                               )}
                             </div>
-                          </TD>
-                          <TD>
+                          </td>
+                          <td>
                             <div style={{ width: "14rem", height: "auto" }}>
                               {PrBuyer && (
                                 <Select
@@ -2846,8 +2881,8 @@ export default function PurchaseOrder() {
                                 />
                               )}
                             </div>
-                          </TD>
-                          <TD>
+                          </td>
+                          <td>
                             <div style={{ width: "14rem", height: "auto" }}>
                               {PrCost && (
                                 <Select
@@ -2870,7 +2905,7 @@ export default function PurchaseOrder() {
                                 />
                               )}
                             </div>
-                          </TD>
+                          </td>
                         </tr>
                       ))}
                   </tbody>
@@ -2881,29 +2916,75 @@ export default function PurchaseOrder() {
                   PQDocumentLines.length > 0 ? (
                     <TableHead>
                       <tr>
-                        <th>#</th>
-                        <th>Bar Code</th>
-                        <th>Item No.</th>
-                        <th>Item Description</th>
-                        <th>UoM Name</th>
-                        <th>Free Text</th>
-                        <th>Quantity</th>
-                        <th>Delivery Date</th>
-                        <th>Open Qty</th>
-                        <th>Whse</th>
-                        <th>Unit Price</th>
-                        <th>Discount</th>
-                        <th>Price after Discount</th>
-                        <th>Tax Code : Rate</th>
-                        <th>Tax Amount(LC)</th>
-                        <th>Gross Price After Disc.</th>
-                        <th>Freight 1</th>
-                        <th>Freight 1 (LC)</th>
-                        <th>Line Total</th>
-                        <th>Gross Total(LC)</th>
-                        <th>Project</th>
-                        <th>Buyer</th>
-                        <th>Cost Centre</th>
+                        <th>
+                          <div className="first_column">#</div>
+                        </th>
+                        <th>
+                          <div>Bar Code</div>
+                        </th>
+                        <th>
+                          <div>Item No.</div>
+                        </th>
+                        <th>
+                          <div>Item Description</div>
+                        </th>
+                        <th>
+                          <div>UoM Name</div>
+                        </th>
+                        <th>
+                          <div>Free Text</div>
+                        </th>
+                        <th>
+                          <div>Quantity</div>
+                        </th>
+                        <th>
+                          <div>Delivery Date</div>
+                        </th>
+                        <th>
+                          <div>Open Qty</div>
+                        </th>
+                        <th>
+                          <div>Whse</div>
+                        </th>
+                        <th>
+                          <div>Unit Price</div>
+                        </th>
+                        <th>
+                          <div>Discount</div>
+                        </th>
+                        <th>
+                          <div>Price after Discount</div>
+                        </th>
+                        <th>
+                          <div>Tax Code : Rate</div>
+                        </th>
+                        <th>
+                          <div>Tax Amount(LC)</div>
+                        </th>
+                        <th>
+                          <div>Gross Price After Disc.</div>
+                        </th>
+                        <th>
+                          <div>Freight 1</div>
+                        </th>
+                        <th>
+                          <div>Freight 1 (LC)</div>
+                        </th>
+                        <th>
+                          <div>Line Total</div>
+                        </th>
+                        <th>
+                          <div>Gross Total(LC)</div>
+                        </th>
+                        <th>
+                          <div>Project</div>
+                        </th>
+                        <th>
+                          <div>Buyer</div>
+                        </th>
+                        <th>
+                          <div>Cost Centre</div>
+                        </th>
                       </tr>
                     </TableHead>
                   ) : null}
@@ -2917,12 +2998,24 @@ export default function PurchaseOrder() {
                               item.isSelected &&
                               item.LineStatus === "bost_Open" && (
                                 <tr key={`${index}`}>
-                                  <TD>{index + 1}</TD>
-                                  <TD></TD>
-                                  <TD>{item.ItemCode}</TD>
-                                  <TD>{item.ItemDescription}</TD>
-                                  <TD>{item.MeasureUnit}</TD>
-                                  <TD>
+                                  <td>{index + 1}</td>
+                                  <td></td>
+                                  <td>
+                                    <div className="inside_td">
+                                      {item.ItemCode}
+                                    </div>
+                                  </td>
+                                  <td>
+                                    <div className="inside_td">
+                                      {item.ItemDescription}
+                                    </div>
+                                  </td>
+                                  <td>
+                                    <div className="inside_td">
+                                      {item.MeasureUnit}
+                                    </div>
+                                  </td>
+                                  <td>
                                     {/* { ()=>{ontextChanged2222( index,PrReIndex)}} */}
                                     <div
                                       style={{ width: "14rem", height: "auto" }}
@@ -2935,8 +3028,8 @@ export default function PurchaseOrder() {
                                         defaultValue={item.FreeText}
                                       />
                                     </div>
-                                  </TD>
-                                  <TD>
+                                  </td>
+                                  <td>
                                     <div
                                       style={{ width: "14rem", height: "auto" }}
                                     >
@@ -2951,8 +3044,8 @@ export default function PurchaseOrder() {
                                         }
                                       />
                                     </div>
-                                  </TD>
-                                  <TD>
+                                  </td>
+                                  <td>
                                     <div
                                       style={{ width: "14rem", height: "auto" }}
                                     >
@@ -2967,11 +3060,13 @@ export default function PurchaseOrder() {
                                         defaultValue={item.ShipDate}
                                       />
                                     </div>
-                                  </TD>
-                                  <TD>
-                                    {item.RemainingOpenQuantity || OpenQty}{" "}
-                                  </TD>
-                                  <TD>
+                                  </td>
+                                  <td>
+                                    <div className="inside_td">
+                                      {item.RemainingOpenQuantity || OpenQty}
+                                    </div>
+                                  </td>
+                                  <td>
                                     <div style={{ width: "15em" }}>
                                       {PrWhse && (
                                         <Select
@@ -2997,11 +3092,23 @@ export default function PurchaseOrder() {
                                         />
                                       )}
                                     </div>
-                                  </TD>
-                                  <TD>{item.UnitPrice}</TD>
-                                  <TD>{item.DiscountPercent}</TD>
-                                  <TD>{item.Price}</TD>
-                                  <TD>
+                                  </td>
+                                  <td>
+                                    <div className="inside_td">
+                                      {item.UnitPrice}
+                                    </div>
+                                  </td>
+                                  <td>
+                                    <div className="inside_td">
+                                      {item.DiscountPercent}
+                                    </div>
+                                  </td>
+                                  <td>
+                                    <div className="inside_td">
+                                      {item.Price}
+                                    </div>
+                                  </td>
+                                  <td>
                                     <div style={{ width: "14rem" }}>
                                       <Select
                                         menuPortalTarget={document.body}
@@ -3021,77 +3128,95 @@ export default function PurchaseOrder() {
                                         displayValue="name" // Property name to display in the dropdown options
                                       />
                                     </div>
-                                  </TD>
-                                  <TD>{item.TaxTotal}</TD>
-                                  <TD>{item.GrossTotalSC}</TD>
-                                  <TD>
+                                  </td>
+                                  <td>
+                                    <div className="inside_td">
+                                      {item.TaxTotal}
+                                    </div>
+                                  </td>
+                                  <td>
+                                    <div className="inside_td">
+                                      {item.GrossTotalSC}
+                                    </div>
+                                  </td>
+                                  <td>
                                     <div style={{ width: "14rem" }}>
                                       <Select
                                         menuPortalTarget={document.body}
                                         // placeholder= {item.DocumentLineAdditionalExpenses[0].ExpenseCode || "null"}
                                         options={Frieght} // Options to display in the dropdown
                                         // onChange={e => {
-                                        //   FreightDropDownOnChange(e, index, 'Freight')
+                                        //   FreightdropDownOnChange(e, index, 'Freight')
                                         // }}
                                         // onSelect={CostCentre} // Function will trigger on select event
                                         // onRemove={CostCentre} //Function will trigger on remove event
                                         displayValue="name" // Property name to display in the dropdown options
                                       />
                                     </div>
-                                  </TD>
-                                  <TD>
-                                    {item.DocumentLineAdditionalExpenses[0]
-                                      ? item.DocumentLineAdditionalExpenses[0]
-                                          .LineTotal
-                                      : ""}
-                                  </TD>
-                                  <TD>{item.LineTotal}</TD>
-                                  <TD>{item.GrossTotal}</TD>
-                                  <TD>
+                                  </td>
+                                  <td>
+                                    <div className="inside_td">
+                                      {item.DocumentLineAdditionalExpenses[0]
+                                        ? item.DocumentLineAdditionalExpenses[0]
+                                            .LineTotal
+                                        : ""}
+                                    </div>
+                                  </td>
+                                  <td>
+                                    <div className="inside_td">
+                                      {item.LineTotal}
+                                    </div>
+                                  </td>
+                                  <td>
+                                    <div className="inside_td">
+                                      {item.GrossTotal}
+                                    </div>
+                                  </td>
+                                  <td>
                                     <div style={{ width: "14rem" }}>
                                       <Select
                                         menuPortalTarget={document.body}
                                         placeholder={item.ProjectCode}
                                         // options={Frieght} // Options to display in the dropdown
                                         // onChange={e => {
-                                        //   FreightDropDownOnChange(e, index, 'Freight')
+                                        //   FreightdropDownOnChange(e, index, 'Freight')
                                         // }}
                                         // onSelect={CostCentre} // Function will trigger on select event
                                         // onRemove={CostCentre} //Function will trigger on remove event
                                         displayValue="name" // Property name to display in the dropdown options
                                       />
                                     </div>
-                                  </TD>
-                                  <TD>
+                                  </td>
+                                  <td>
                                     <div style={{ width: "14rem" }}>
                                       <Select
                                         menuPortalTarget={document.body}
                                         placeholder={item.SalesPersonCode}
                                         // options={Frieght} // Options to display in the dropdown
                                         // onChange={e => {
-                                        //   FreightDropDownOnChange(e, index, 'Freight')
+                                        //   FreightdropDownOnChange(e, index, 'Freight')
                                         // }}
                                         // onSelect={CostCentre} // Function will trigger on select event
                                         // onRemove={CostCentre} //Function will trigger on remove event
                                         displayValue="name" // Property name to display in the dropdown options
                                       />
                                     </div>
-                                  </TD>
-                                  <TD>
+                                  </td>
+                                  <td>
                                     <div style={{ width: "14rem" }}>
                                       <Select
                                         menuPortalTarget={document.body}
                                         placeholder={item.CostingCode}
                                         // options={Frieght} // Options to display in the dropdown
                                         // onChange={e => {
-                                        //   FreightDropDownOnChange(e, index, 'Freight')
+                                        //   FreightdropDownOnChange(e, index, 'Freight')
                                         // }}
                                         // onSelect={CostCentre} // Function will trigger on select event
                                         // onRemove={CostCentre} //Function will trigger on remove event
                                         displayValue="name" // Property name to display in the dropdown options
                                       />
                                     </div>
-                                  </TD>
+                                  </td>
                                 </tr>
                               )
                           )
@@ -3104,29 +3229,75 @@ export default function PurchaseOrder() {
                   SearchDocumentLines.length > 0 ? (
                     <TableHead>
                       <tr>
-                        <th>#</th>
-                        <th>Bar Code</th>
-                        <th>Item No.</th>
-                        <th>Item Description</th>
-                        <th>UoM Name</th>
-                        <th>Free Text</th>
-                        <th>Quantity</th>
-                        <th>Required Date</th>
-                        <th>Open Qty</th>
-                        <th>Whse</th>
-                        <th>Unit Price</th>
-                        <th>Discount</th>
-                        <th>Price after Discount</th>
-                        <th>Tax Code : Rate</th>
-                        <th>Tax Amount(LC)</th>
-                        <th>Gross Price After Disc.</th>
-                        <th>Freight 1</th>
-                        <th>Freight 1 (LC)</th>
-                        <th>Line Total</th>
-                        <th>Gross Total(LC)</th>
-                        <th>Project</th>
-                        <th>Buyer</th>
-                        <th>Cost Centre</th>
+                        <th>
+                          <div className="first_column">#</div>
+                        </th>
+                        <th>
+                          <div>Bar Code</div>
+                        </th>
+                        <th>
+                          <div>Item No.</div>
+                        </th>
+                        <th>
+                          <div>Item Description</div>
+                        </th>
+                        <th>
+                          <div>UoM Name</div>
+                        </th>
+                        <th>
+                          <div>Free Text</div>
+                        </th>
+                        <th>
+                          <div>Quantity</div>
+                        </th>
+                        <th>
+                          <div>Required Date</div>
+                        </th>
+                        <th>
+                          <div>Open Qty</div>
+                        </th>
+                        <th>
+                          <div>Whse</div>
+                        </th>
+                        <th>
+                          <div>Unit Price</div>
+                        </th>
+                        <th>
+                          <div>Discount</div>
+                        </th>
+                        <th>
+                          <div>Price after Discount</div>
+                        </th>
+                        <th>
+                          <div>Tax Code : Rate</div>
+                        </th>
+                        <th>
+                          <div>Tax Amount(LC)</div>
+                        </th>
+                        <th>
+                          <div>Gross Price After Disc.</div>
+                        </th>
+                        <th>
+                          <div>Freight 1</div>
+                        </th>
+                        <th>
+                          <div>Freight 1 (LC)</div>
+                        </th>
+                        <th>
+                          <div>Line Total</div>
+                        </th>
+                        <th>
+                          <div>Gross Total(LC)</div>
+                        </th>
+                        <th>
+                          <div>Project</div>
+                        </th>
+                        <th>
+                          <div>Buyer</div>
+                        </th>
+                        <th>
+                          <div>Cost Centre</div>
+                        </th>
                       </tr>
                     </TableHead>
                   ) : null}
@@ -3136,12 +3307,22 @@ export default function PurchaseOrder() {
                         (item, index) =>
                           item.LineStatus === "bost_Open" && (
                             <tr key={`${index}`}>
-                              <TD>{index + 1}</TD>
-                              <TD></TD>
-                              <TD>{item.ItemCode}</TD>
-                              <TD>{item.ItemDescription}</TD>
-                              <TD>{item.MeasureUnit}</TD>
-                              <TD>
+                              <td>{index + 1}</td>
+                              <td></td>
+                              <td>
+                                <div className="inside_td">{item.ItemCode}</div>
+                              </td>
+                              <td>
+                                <div className="inside_td">
+                                  {item.ItemDescription}
+                                </div>
+                              </td>
+                              <td>
+                                <div className="inside_td">
+                                  {item.MeasureUnit}
+                                </div>
+                              </td>
+                              <td>
                                 <div style={{ width: "14rem", height: "auto" }}>
                                   <input
                                     type="text"
@@ -3155,8 +3336,8 @@ export default function PurchaseOrder() {
                                     }}
                                   />
                                 </div>
-                              </TD>
-                              <TD>
+                              </td>
+                              <td>
                                 <div style={{ width: "14rem", height: "auto" }}>
                                   <input
                                     type="number"
@@ -3169,8 +3350,8 @@ export default function PurchaseOrder() {
                                     }}
                                   />
                                 </div>
-                              </TD>
-                              <TD>
+                              </td>
+                              <td>
                                 <div style={{ width: "14rem", height: "auto" }}>
                                   <input
                                     type="date"
@@ -3183,9 +3364,13 @@ export default function PurchaseOrder() {
                                     defaultValue={item.ShipDate}
                                   />
                                 </div>
-                              </TD>
-                              <TD>{item.RemainingOpenQuantity || OpenQty} </TD>
-                              <TD>
+                              </td>
+                              <td>
+                                <div className="inside_td">
+                                  {item.RemainingOpenQuantity || OpenQty}{" "}
+                                </div>
+                              </td>
+                              <td>
                                 <div style={{ width: "15em" }}>
                                   {/* {PrWhse && ( */}
                                   <Select
@@ -3207,11 +3392,21 @@ export default function PurchaseOrder() {
                                   />
                                   {/* )} */}
                                 </div>
-                              </TD>
-                              <TD>{item.UnitPrice}</TD>
-                              <TD>{item.DiscountPercent}</TD>
-                              <TD>{item.Price}</TD>
-                              <TD>
+                              </td>
+                              <td>
+                                <div className="inside_td">
+                                  {item.UnitPrice}
+                                </div>
+                              </td>
+                              <td>
+                                <div className="inside_td">
+                                  {item.DiscountPercent}
+                                </div>
+                              </td>
+                              <td>
+                                <div className="inside_td">{item.Price}</div>
+                              </td>
+                              <td>
                                 <div style={{ width: "14rem" }}>
                                   <Select
                                     menuPortalTarget={document.body}
@@ -3231,33 +3426,49 @@ export default function PurchaseOrder() {
                                     displayValue="name" // Property name to display in the dropdown options
                                   />
                                 </div>
-                              </TD>
-                              <TD>{item.TaxTotal}</TD>
-                              <TD>{item.GrossTotalSC}</TD>
-                              <TD>
+                              </td>
+                              <td>
+                                <div className="inside_td">{item.TaxTotal}</div>
+                              </td>
+                              <td>
+                                <div className="inside_td">
+                                  {item.GrossTotalSC}
+                                </div>
+                              </td>
+                              <td>
                                 <div style={{ width: "14rem" }}>
                                   <Select
                                     menuPortalTarget={document.body}
                                     // placeholder= {item.DocumentLineAdditionalExpenses[0].ExpenseCode || "null"}
                                     options={Frieght} // Options to display in the dropdown
                                     // onChange={e => {
-                                    //   FreightDropDownOnChange(e, index, 'Freight')
+                                    //   FreightdropDownOnChange(e, index, 'Freight')
                                     // }}
                                     // onSelect={CostCentre} // Function will trigger on select event
                                     // onRemove={CostCentre} //Function will trigger on remove event
                                     displayValue="name" // Property name to display in the dropdown options
                                   />
                                 </div>
-                              </TD>
-                              <TD>
-                                {item.DocumentLineAdditionalExpenses[0]
-                                  ? item.DocumentLineAdditionalExpenses[0]
-                                      .LineTotal
-                                  : ""}
-                              </TD>
-                              <TD>{item.LineTotal}</TD>
-                              <TD>{item.GrossTotal}</TD>
-                              <TD>
+                              </td>
+                              <td>
+                                <div className="inside_td">
+                                  {item.DocumentLineAdditionalExpenses[0]
+                                    ? item.DocumentLineAdditionalExpenses[0]
+                                        .LineTotal
+                                    : ""}
+                                </div>
+                              </td>
+                              <td>
+                                <div className="inside_td">
+                                  {item.LineTotal}
+                                </div>
+                              </td>
+                              <td>
+                                <div className="inside_td">
+                                  {item.GrossTotal}
+                                </div>
+                              </td>
+                              <td>
                                 <div style={{ width: "14rem", height: "auto" }}>
                                   {PrProject && (
                                     <Select
@@ -3281,37 +3492,37 @@ export default function PurchaseOrder() {
                                     />
                                   )}
                                 </div>
-                              </TD>
-                              <TD>
+                              </td>
+                              <td>
                                 <div style={{ width: "14rem" }}>
                                   <Select
                                     menuPortalTarget={document.body}
                                     placeholder={item.SalesPersonCode}
                                     // options={Frieght} // Options to display in the dropdown
                                     // onChange={e => {
-                                    //   FreightDropDownOnChange(e, index, 'Freight')
+                                    //   FreightdropDownOnChange(e, index, 'Freight')
                                     // }}
                                     // onSelect={CostCentre} // Function will trigger on select event
                                     // onRemove={CostCentre} //Function will trigger on remove event
                                     displayValue="name" // Property name to display in the dropdown options
                                   />
                                 </div>
-                              </TD>
-                              <TD>
+                              </td>
+                              <td>
                                 <div style={{ width: "14rem" }}>
                                   <Select
                                     menuPortalTarget={document.body}
                                     placeholder={item.CostingCode}
                                     // options={Frieght} // Options to display in the dropdown
                                     // onChange={e => {
-                                    //   FreightDropDownOnChange(e, index, 'Freight')
+                                    //   FreightdropDownOnChange(e, index, 'Freight')
                                     // }}
                                     // onSelect={CostCentre} // Function will trigger on select event
                                     // onRemove={CostCentre} //Function will trigger on remove event
                                     displayValue="name" // Property name to display in the dropdown options
                                   />
                                 </div>
-                              </TD>
+                              </td>
                             </tr>
                           )
                       )}
@@ -3342,182 +3553,127 @@ export default function PurchaseOrder() {
           </Tabs>
 
           {/* Bottom Side+++++++++ */}
-          <CardGroup>
-            <DIV3>
-              <Container fluid>
-                <div style={{ width: "23.5em", height: "auto" }}>
-                  <label>Buyer</label>
+          <div className="main_container ">
+            <div className="left">
+              <div className="header_items_container">
+                <label>Buyer</label>
 
-                  <Select
-                    placeholder={HeaderData && HeaderData.SalesPersonCode}
-                    options={PrBuyer} // Options to display in the dropdown
-                    onChange={(e) => setSelectedBuyer(e.value)}
-                    displayValue="name" // Property name to display in the dropdown options
+                <Select
+                  placeholder={HeaderData && HeaderData.SalesPersonCode}
+                  options={PrBuyer} // Options to display in the dropdown
+                  onChange={(e) => setSelectedBuyer(e.value)}
+                  displayValue="name" // Property name to display in the dropdown options
+                />
+              </div>
+              <div className="header_items_container">
+                <label>Owner</label>
+
+                <Select
+                  options={PrOwner}
+                  onChange={(e) => setSelectedOwner(e.value)} // Options to display in the dropdown
+                  // onSelect={Owner} // Function will trigger on select event
+                  // onRemove={Owner} //Function will trigger on remove event
+                  displayValue="name" // Property name to display in the dropdown options
+                />
+              </div>
+              <div class="header_items_container">
+                <label for="exampleFormControlTextarea1">Remarks</label>
+                <div>
+                  <textarea
+                    defaultValue={
+                      HeaderData &&
+                      +"Document Entry" + HeaderData &&
+                      HeaderData.DocEntry + ":" + HeaderData.Comments
+                    }
+                    type="text"
+                    class="textArea"
+                    id="exampleFormControlTextarea1"
+                    name="Comments"
+                    rows="3"
+                    onChange={(e) => {
+                      setgetcomments(e.target.value);
+                    }}
                   />
                 </div>
-                <div style={{ width: "23.5rem", height: "auto" }}>
-                  <label>Owner</label>
-                  <Select
-                    options={PrOwner}
-                    onChange={(e) => setSelectedOwner(e.value)} // Options to display in the dropdown
-                    // onSelect={Owner} // Function will trigger on select event
-                    // onRemove={Owner} //Function will trigger on remove event
-                    displayValue="name" // Property name to display in the dropdown options
-                  />
-                </div>
-                <div class="form-group">
-                  <label for="exampleFormControlTextarea1">Remarks</label>
-                  <div style={{ width: "23.5rem" }}>
-                    <textarea
-                      defaultValue={
-                        HeaderData &&
-                        +"Document Entry" + HeaderData &&
-                        HeaderData.DocEntry + ":" + HeaderData.Comments
-                      }
-                      type="text"
-                      class="form-control rounded-0"
-                      id="exampleFormControlTextarea1"
-                      name="Comments"
-                      rows="3"
+              </div>
+            </div>
+            <div className="right">
+              <div className="header_items_container">
+                <label>Net Total </label>
+                <input
+                  readOnly
+                  type="number"
+                  step="any"
+                  value={
+                    getnetTotal
+                      ? getnetTotal
+                      : HeaderData &&
+                        (HeaderData.DocTotalFc != 0
+                          ? HeaderData.DocTotalFc +
+                            HeaderData.TotalDiscountFC -
+                            HeaderData.VatSumFc
+                          : HeaderData.DocTotal +
+                            HeaderData.TotalDiscount -
+                            HeaderData.VatSum)
+                  }
+                  //value={((SelectedPRDocEntry && SelectedPRDocEntry.DocTotal ||  HeaderData && HeaderData.DocTotal || 0) + (SelectedPRDocEntry && SelectedPRDocEntry.TotalDiscountSC || HeaderData && HeaderData.TotalDiscountSC || 0)) - ((PQDocumentLines[0] && PQDocumentLines[0].DocumentLineAdditionalExpenses[0].LineTotal || 0) + (SelectedPRDocEntry && SelectedPRDocEntry.VatSumSys || HeaderData && HeaderData.VatSumSys || 0))}
+                  // placeholder={PQFindDocumentLines && PQFindDocumentLines.DocumentsOwner}
+                  class="input"
+                />
+              </div>
+              <div className="header_items_container">
+                <label>Discount</label>
+                <div className="innerpart">
+                  <div className="discountfirst">
+                    <input
+                      type="number"
+                      value={disc || (HeaderData && HeaderData.DiscountPercent)}
                       onChange={(e) => {
-                        setgetcomments(e.target.value);
+                        setdisc(e.target.value);
+                        setDiscountTotal((e.target.value * getnetTotal) / 100);
                       }}
+                      name="TaxAmount(LC)"
+                    />
+                  </div>
+                  <div className="discountsecond">
+                    <input
+                      type="number"
+                      // value={DiscountTotal}
+                      onChange={(e) => {
+                        setDiscountTotal(e.target.value);
+                        setdisc((e.target.value / getnetTotal) * 100);
+                      }}
+                      class=""
+                      style={{ width: "7rem" }}
+                      name="TaxAmount(LC)"
+                      value={
+                        DiscountTotal ||
+                        (HeaderData &&
+                          (HeaderData.DocTotalFc != 0
+                            ? HeaderData.TotalDiscountFC
+                            : HeaderData.TotalDiscount))
+                      }
                     />
                   </div>
                 </div>
-                <br />
-                <br />
-                <br />
-                <br />
-                {localStorage.getItem("documentcontroller") === "R" ? (
-                  <div>
-                    <Button
-                      style={{ marginLeft: "5%" }}
-                      onClick={() => {
-                        window.location.href = "/Home";
-                      }}
-                    >
-                      OK
-                    </Button>
-                    <Button
-                      variant="secondary"
-                      style={{ marginLeft: "5%" }}
-                      onClick={() => {
-                        window.location.href = "/Home";
-                      }}
-                    >
-                      Cancel
-                    </Button>
-                  </div>
-                ) : (
-                  <div>
-                    <Button
-                      style={{ marginLeft: "5%" }}
-                      onClick={() => {
-                        Submit_PatchFunc();
-                      }}
-                      disabled={isSubmitting}
-                    >
-                      {ButtonName}
-                    </Button>
-                    <Button
-                      variant="secondary"
-                      style={{ marginLeft: "5%" }}
-                      onClick={() => {
-                        window.location.href = "/Home";
-                      }}
-                    >
-                      Cancel
-                    </Button>
-                  </div>
-                )}
-              </Container>
-            </DIV3>
-            <DIV4></DIV4>
-            <DIV3>
-              <div>
-                <div style={{ width: "23.5rem", marginLeft: "4rem" }}>
-                  <label style={{ marginTop: "10%" }}>Net Total </label>
-                  <input
-                    readOnly
-                    type="number"
-                    step="any"
-                    value={
-                      getnetTotal
-                        ? getnetTotal
-                        : HeaderData &&
-                          (HeaderData.DocTotalFc != 0
-                            ? HeaderData.DocTotalFc +
-                              HeaderData.TotalDiscountFC -
-                              HeaderData.VatSumFc
-                            : HeaderData.DocTotal +
-                              HeaderData.TotalDiscount -
-                              HeaderData.VatSum)
-                    }
-                    //value={((SelectedPRDocEntry && SelectedPRDocEntry.DocTotal ||  HeaderData && HeaderData.DocTotal || 0) + (SelectedPRDocEntry && SelectedPRDocEntry.TotalDiscountSC || HeaderData && HeaderData.TotalDiscountSC || 0)) - ((PQDocumentLines[0] && PQDocumentLines[0].DocumentLineAdditionalExpenses[0].LineTotal || 0) + (SelectedPRDocEntry && SelectedPRDocEntry.VatSumSys || HeaderData && HeaderData.VatSumSys || 0))}
-                    // placeholder={PQFindDocumentLines && PQFindDocumentLines.DocumentsOwner}
-                    class="form-control"
-                  />
-                </div>
-                <div style={{ marginLeft: "4rem" }}>
-                  <label>Discount</label>
-                  <CardGroup>
-                    <div style={{ width: "11.75rem" }}>
-                      <input
-                        type="number"
-                        value={
-                          disc || (HeaderData && HeaderData.DiscountPercent)
-                        }
-                        onChange={(e) => {
-                          setdisc(e.target.value);
-                          setDiscountTotal(
-                            (e.target.value * getnetTotal) / 100
-                          );
-                        }}
-                        class="form-control"
-                        name="TaxAmount(LC)"
-                      />
-                    </div>
-                    <div style={{ width: "11.75rem" }}>
-                      <input
-                        type="number"
-                        // value={DiscountTotal}
-                        onChange={(e) => {
-                          setDiscountTotal(e.target.value);
-                          setdisc((e.target.value / getnetTotal) * 100);
-                        }}
-                        class="form-control"
-                        name="TaxAmount(LC)"
-                        value={
-                          DiscountTotal ||
-                          (HeaderData &&
-                            (HeaderData.DocTotalFc != 0
-                              ? HeaderData.TotalDiscountFC
-                              : HeaderData.TotalDiscount))
-                        }
-                      />
-                    </div>
-                  </CardGroup>
-                </div>
               </div>
-              <div style={{ width: "23.5rem", marginLeft: "4rem" }}>
+              <div className="header_items_container">
                 <label>Freight</label>
                 <input
                   value={totalFreight}
                   readOnly="readOnly"
-                  class="form-control"
+                  class="input"
                   //value={PQDocumentLines[0] && PQDocumentLines[0].DocumentLineAdditionalExpenses[0].LineTotal || "null"}
                   // value={PQDocumentLines && PQDocumentLines.DocumentLineAdditionalExpenses[0].LineTotal}
                 />
               </div>
-              <br />
-              <div style={{ width: "23.5rem", marginLeft: "4rem" }}>
+              <div className="header_items_container">
                 <label>Tax</label>
                 <input
                   type="number"
                   // onChange={e => setBottomTax(+e.target.value)}
                   // defaultValue={gettaxtotal}
-                  class="form-control"
+                  class="input"
                   name="TaxAmount(LC)"
                   readOnly="readOnly"
                   defaultValue={
@@ -3529,10 +3685,10 @@ export default function PurchaseOrder() {
                   }
                 />
               </div>
-              <div style={{ width: "23.5rem", marginLeft: "4rem" }}>
+              <div className="header_items_container">
                 <label>Total Payment Due:</label>
                 <input
-                  type="text"
+                  type="number"
                   value={
                     getnetTotal -
                       DiscountTotal +
@@ -3544,13 +3700,113 @@ export default function PurchaseOrder() {
                         : HeaderData.DocTotal))
                   }
                   readOnly="readOnly"
-                  class="form-control"
+                  class="input"
                 />
               </div>
-            </DIV3>
-          </CardGroup>
+            </div>
+          </div>
+          {localStorage.getItem("documentcontroller") === "R" ? (
+            <div className="button_main_container">
+              <div className="button_container">
+                <button
+                  onClick={() => {
+                    window.location.href = "/Home";
+                  }}
+                  className="form_button"
+                  style={{ backgroundColor: `${redux_response.color}` }}
+                >
+                  OK
+                </button>
+                <button
+                  variant="secondary"
+                  onClick={() => {
+                    window.location.href = "/Home";
+                  }}
+                  className="form_button"
+                  style={{ backgroundColor: `${redux_response.color}` }}
+                >
+                  Cancel
+                </button>
+              </div>
+              <div className="button_container">
+                <button
+                  style={{ backgroundColor: `${redux_response.color}` }}
+                  className="form_button"
+                >
+                  Copy From
+                </button>{" "}
+                <button
+                  style={{ backgroundColor: `${redux_response.color}` }}
+                  className="form_button"
+                >
+                  Copy To
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="button_main_container">
+              <div className="button_container">
+                <button
+                  onClick={() => {
+                    Submit_PatchFunc();
+                  }}
+                  disabled={isSubmitting}
+                  className="form_button"
+                  style={{ backgroundColor: `${redux_response.color}` }}
+                >
+                  {ButtonName}
+                </button>
+                <button
+                  variant="secondary"
+                  onClick={() => {
+                    window.location.href = "/Home";
+                  }}
+                  className="form_button"
+                  style={{ backgroundColor: `${redux_response.color}` }}
+                >
+                  Cancel
+                </button>
+              </div>
+              <div className="button_container">
+                <button
+                  style={{ backgroundColor: `${redux_response.color}` }}
+                  className="form_button"
+                >
+                  Copy From
+                </button>
+                <button
+                  style={{ backgroundColor: `${redux_response.color}` }}
+                  className="form_button"
+                >
+                  Copy To
+                </button>
+              </div>
+            </div>
+          )}
         </>
       )}
+      {/* <label htmlFor="xlsfile">
+        <input
+          type="file"
+          name="xlsfile"
+          id="xlsfile"
+          onChange={fileHandler}
+          style={{ display: "none" }}
+        />
+
+        <FaFileUpload />
+      </label>
+      <OutTable
+        data={state.rows}
+        columns={state.cols}
+        tableClassName="ExcelTable2007"
+        tableHeaderRowClass="heading"
+        withoutRowNum={true}
+      />
+      <br />
+      <br />
+      <br />
+      <br /> */}
     </>
   );
 }

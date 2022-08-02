@@ -27,6 +27,8 @@ import MaterialTable from "material-table";
 import XLSX from "xlsx";
 import "./index.css";
 import Switch from "react-switch";
+import { useSelector } from "react-redux";
+
 const axios = require("axios");
 const useStyles = makeStyles((theme) => ({
   backdrop: {
@@ -35,6 +37,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 export default function PurchaseRequest() {
+  const redux_response = useSelector((state) => state.colorReducer);
   const alert = useAlert();
   const classes = useStyles();
   const [show, setShow] = React.useState(false);
@@ -1071,6 +1074,20 @@ export default function PurchaseRequest() {
   };
   return (
     <>
+      <style>{`
+            .nav-tabs .nav-link{
+              color: white !important;
+              background-color: ${
+                redux_response.color ? redux_response.color : "rgb(69 70 73)"
+              } !important;  
+              width: 12rem  !important;
+              height: 24px !important;
+              padding: 0 !important;
+              text-align: center !important;
+            }
+           
+               
+          `}</style>
       <Navbar
         setgetserviceseries={setgetserviceseries}
         getdocumentname={getdocumentname}
@@ -1083,13 +1100,12 @@ export default function PurchaseRequest() {
         <>
           <h1 style={{ textAlign: "center" }}>Purchase Quotation</h1>
           <Form onSubmit={handleSubmitted}>
-            <CardGroup>
-              <DIV3>
-                <Container fluid>
+            <div className="main_container">
+              <div className="left">
+                <div className="header_items_container">
                   <label>Vendor</label>
                   <div
-                    style={{ width: "23.5rem", height: "auto" }}
-                    // onClick={BusinessPartners}
+                  // onClick={BusinessPartners}
                   >
                     <Select
                       placeholder={
@@ -1103,12 +1119,10 @@ export default function PurchaseRequest() {
                       displayValue="name" // Property name to display in the dropdown options
                     />
                   </div>
+                </div>
+                <div className="header_items_container">
                   <label>Contact Person</label>
-                  <div
-                    style={{ width: "23.5rem", height: "auto" }}
-                    variant="primary"
-                    onClick={ContactPerson}
-                  >
+                  <div variant="primary" onClick={ContactPerson}>
                     <Select
                       placeholder={
                         PQFindDocumentLines &&
@@ -1122,384 +1136,374 @@ export default function PurchaseRequest() {
                       // onRemove={GroupNo} Function will trigger on remove event
                       displayValue="name" // Property name to display in the dropdown options
                     />
-                  </div>{" "}
-                  <br />
-                  {/* Upper Side++++++++ */}
-                  <Button variant="primary" onClick={PurchaseRequest}>
-                    Copy From
-                  </Button>
-                  <Modal
-                    show={show}
-                    onHide={handleClose}
-                    className="Modal-big"
-                    size="lg"
-                  >
-                    <Modal.Header closeButton>
-                      <Modal.Title id="example-modal-sizes-title-lg">
-                        List of Purchase Requests
-                      </Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                      {PrRe && (
-                        <Table responsive>
-                          <TableHead>
-                            <tr>
-                              <th>#</th>
-                              <th>Document No.</th>
-                              <th>Requester</th>
-                              <th>Requester Name</th>
-                              <th>Posting Date</th>
-                            </tr>
-                          </TableHead>
-                          <tbody>
-                            {PrRe.map((item, index) => (
-                              <tr key={`${index}`}>
-                                <TD>
-                                  {index + 1}
-                                  <input
-                                    type="checkbox"
-                                    onChange={() => {
-                                      checkboxSelect(item, index);
-                                    }}
-                                    checked={item.isSelected}
-                                  />
-                                </TD>
-                                <TD>{item.DocNum}</TD>
-                                <TD>{item.Requester}</TD>
-                                <TD>{item.RequesterName}</TD>
-                                <TD>{item.DocDate}</TD>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </Table>
-                      )}
-                    </Modal.Body>
-                    <Modal.Footer>
-                      <Button
-                        variant="secondary"
-                        onClick={() => {
-                          handleShowModalTwo();
-                          handleClose();
-                        }}
-                      >
-                        Choose
-                      </Button>
-                      <Button variant="primary" onClick={handleClose}>
-                        Cancel
-                      </Button>
-                    </Modal.Footer>
-                  </Modal>
-                  <br />
-                  <Modal
-                    show={modalTwo === "modal-two"}
-                    className="Modal-big"
-                    size="lg"
-                  >
+                  </div>
+                </div>
+
+                <Modal
+                  show={show}
+                  onHide={handleClose}
+                  className="Modal-big"
+                  size="lg"
+                >
+                  <Modal.Header closeButton>
                     <Modal.Title id="example-modal-sizes-title-lg">
                       List of Purchase Requests
                     </Modal.Title>
-                    <Modal.Body>
-                      <Table responsive striped bordered hover>
+                  </Modal.Header>
+                  <Modal.Body>
+                    {PrRe && (
+                      <Table responsive>
                         <TableHead>
                           <tr>
                             <th>#</th>
-                            <th>Item No.</th>
-                            <th>Item Description</th>
-                            <th>UoM Name</th>
-                            <th>Free Text</th>
-                            <th>Quantity</th>
-                            <th>Delivery Date</th>
-                            <th>Open Qty</th>
+                            <th>Document No.</th>
+                            <th>Requester</th>
+                            <th>Requester Name</th>
+                            <th>Posting Date</th>
                           </tr>
                         </TableHead>
                         <tbody>
-                          {PQDocumentLines &&
-                            PQDocumentLines.map(
-                              (PrReItem, PrReIndex) =>
-                                PrReItem.isSelected &&
-                                PrReItem.DocumentLines.map(
-                                  (item, index) =>
-                                    item.LineStatus === "bost_Open" && (
-                                      <tr key={`${index}`}>
-                                        <TD>
-                                          {index + 1}
-                                          <input
-                                            type="checkbox"
-                                            onChange={() => {
-                                              docLineSelectedSwitch(
-                                                PrReIndex,
-                                                item,
-                                                index
-                                              );
-                                            }}
-                                            checked={item.isSelected}
-                                          />
-                                        </TD>
-
-                                        <TD>{item.ItemCode}</TD>
-                                        <TD>{item.ItemDescription}</TD>
-                                        <TD>{item.MeasureUnit}</TD>
-                                        <TD>
-                                          <div
-                                            style={{
-                                              width: "14rem",
-                                              height: "auto",
-                                            }}
-                                          >
-                                            <input
-                                              type="text"
-                                              name="FreeText"
-                                              class="form-control"
-                                              aria-describedby="Requesterid"
-                                              defaultValue={item.FreeText}
-                                            />
-                                          </div>
-                                        </TD>
-                                        <TD>
-                                          <div
-                                            style={{
-                                              width: "14rem",
-                                              height: "auto",
-                                            }}
-                                          >
-                                            <input
-                                              type="number"
-                                              name="QuotedQty"
-                                              readOnly="readOnly"
-                                              class="form-control"
-                                              aria-describedby="Requesterid"
-                                              defaultValue={
-                                                item.RemainingOpenQuantity
-                                              }
-                                              // onChange={e=>OpenQtyFunction(e, index)
-                                              // setOpenQty(e.target.value)
-                                              // }
-                                              // onChange={e => {
-                                              //   OpenQtyFunction(e, index)
-                                              //   setOpenQty(e.target.value)
-                                              // }}
-                                            />
-                                          </div>
-                                        </TD>
-                                        <TD>
-                                          <div
-                                            style={{
-                                              width: "14rem",
-                                              height: "auto",
-                                            }}
-                                          >
-                                            <input
-                                              type="date"
-                                              name="ShipDate"
-                                              readOnly="readOnly"
-                                              class="form-control"
-                                              defaultValue={item.ShipDate}
-                                            />
-                                          </div>
-                                        </TD>
-                                        <TD>
-                                          {item.RemainingOpenQuantity ||
-                                            OpenQty}{" "}
-                                        </TD>
-                                      </tr>
-                                    )
-                                )
-                            )}
+                          {PrRe.map((item, index) => (
+                            <tr key={`${index}`}>
+                              <TD>
+                                {index + 1}
+                                <input
+                                  type="checkbox"
+                                  onChange={() => {
+                                    checkboxSelect(item, index);
+                                  }}
+                                  checked={item.isSelected}
+                                />
+                              </TD>
+                              <TD>{item.DocNum}</TD>
+                              <TD>{item.Requester}</TD>
+                              <TD>{item.RequesterName}</TD>
+                              <TD>{item.DocDate}</TD>
+                            </tr>
+                          ))}
                         </tbody>
                       </Table>
-                    </Modal.Body>
-                    <Modal.Footer>
-                      <Button variant="secondary" onClick={handleCloseee}>
-                        Choose
-                      </Button>
-                    </Modal.Footer>
-                  </Modal>
-                  <Modal show={show1} onHide={handleClose2}>
-                    <Modal.Header closeButton>
-                      <Modal.Title>Purchase Quotation List</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                      {ModalHeaderData && (
-                        <Table responsive>
-                          <TableHead>
-                            <tr>
-                              <th>#</th>
-                              <th>Document Status</th>
-                              <th>DocNum</th>
-                              <th>DocEntry</th>
-                              <th>Code</th>
-                              <th>Name</th>
-                              <th>Posting Date</th>
-                            </tr>
-                          </TableHead>
-                          <tbody>
-                            {ModalHeaderData.map((item, index) => (
-                              <tr
-                                key={`${index}`}
-                                onClick={(e) => {
-                                  selectPR(item);
-                                  handleClose2();
-                                }}
-                              >
-                                <TD>{index + 1}</TD>
-
-                                <TD>
-                                  {item.DocumentStatus === "bost_Open" ? (
-                                    <p
-                                      style={{
-                                        background: "gray",
-                                        color: "white",
-                                      }}
-                                    >
-                                      Open
-                                    </p>
-                                  ) : item.DocumentStatus === "bost_Close" ? (
-                                    <p
-                                      style={{
-                                        background: "red",
-                                        color: "white",
-                                      }}
-                                    >
-                                      Closed
-                                    </p>
-                                  ) : null}
-                                </TD>
-                                <TD>{item.DocNum}</TD>
-                                <TD>{item.DocEntry}</TD>
-                                <TD>{item.CardCode}</TD>
-                                <TD>{item.CardName}</TD>
-                                <TD>{item.DocDate}</TD>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </Table>
-                      )}
-                    </Modal.Body>
-                    <Modal.Footer>
-                      <Button variant="secondary" onClick={handleClose2}>
-                        Close
-                      </Button>
-                      <Button variant="primary" onClick={handleClose2}>
-                        Cancel
-                      </Button>
-                    </Modal.Footer>
-                  </Modal>
-                  <div style={{ width: "23.5rem", height: "auto" }}>
-                    <label>Vendor Ref. No.</label>
-                    <input
-                      defaultValue={
-                        PQFindDocumentLines && PQFindDocumentLines.NumAtCard
-                      }
-                      type="text"
-                      name={"NumAtCard"}
-                      class="form-control"
-                      // placeholder={SelectedPRDocEntry && SelectedPRDocEntry.NumAtCard}
-                      onChange={(e) => {
-                        NumAtCardFun(e);
+                    )}
+                  </Modal.Body>
+                  <Modal.Footer>
+                    <Button
+                      variant="secondary"
+                      onClick={() => {
+                        handleShowModalTwo();
+                        handleClose();
                       }}
-                    ></input>
-                  </div>
-                  <div style={{ width: "23.5rem", height: "auto" }}>
-                    <label>Group No</label>
-                    <input
-                      defaultValue={
-                        PQFindDocumentLines && PQFindDocumentLines.GroupNumber
-                      }
-                      type="text"
-                      class="form-control"
-                      id="GropNO"
-                      aria-describedby="B"
-                      //placeholder={PQFindDocumentLines && PQFindDocumentLines.GroupNumber}
-                    ></input>
-                  </div>
-                </Container>
-              </DIV3>
-              <DIV4></DIV4>
-              <DIV3>
-                <Container fluid>
-                  <div style={{ marginLeft: "3rem" }}>
-                    <label>No.</label>
-                    <CardGroup>
-                      <br />
-                      <div style={{ width: "11.5rem", height: "auto" }}>
-                        <Select
-                          // placeholder={HeaderData && HeaderData.RequesterName}
-                          options={getserviceseries} // Options to display in the dropdown
-                          onChange={(e) => {
-                            getseriesvaluefunction(e);
-                            // TableTaxCode(e.item.Name)
-                            Whse(e.item.Name);
-                          }} // Function will trigger on select event
-                          // onRemove={RequesterCodeDropdownfunc} // Function will trigger on remove event
-                          displayValue="name" // Property name to display in the dropdown options
-                        />
-                      </div>
-                      <div style={{ width: "11.5rem", height: "auto" }}>
-                        <input
-                          type="number"
-                          name="Discount"
-                          readOnly
-                          value={getnextnumber}
-                          placeholder=""
-                          class="form-control"
-                        />{" "}
-                        <br />
-                      </div>
-                    </CardGroup>
-                  </div>
-                  <div style={{ width: "23.5rem", marginLeft: "3rem" }}>
-                    <label> Status</label>
-                    <Select
-                      placeholder={getStatus}
-                      isDisabled={getStatus ? true : false}
-                      options={[
-                        { label: "Open", value: "bost_Open" },
-                        { label: "Close", value: "bost_Close" },
-                        { label: "All", value: null },
-                        // { label: 'Draft', value: 'bost_Draft' }
-                      ]} // Options to display in the dropdown
-                      onChange={(e) => {
-                        setgetdocumentstatus(e.value);
-                      }} // Function will trigger on select event
-                      // onRemove={BusinessPartners} Function will trigger on remove event
-                      displayValue="name" // Property name to display in the dropdown options
-                    />
-                  </div>
-                  <br />
-                  <div
-                    className="Quotation"
-                    style={{
-                      width: "23.5rem",
-                      height: "auto",
-                      marginLeft: "3rem",
-                      border: "1px solid",
-                      borderColor: "lightgray",
-                      borderRadius: "4px",
-                    }}
-                  >
-                    <a
-                      onClick={(e) => {
-                        SearchAll_Filter_Data();
-                      }}
-                      style={{ cursor: "pointer" }}
                     >
-                      {" "}
-                      <svg class="svg-icon12" viewBox="0 0 20 20">
-                        <path d="M18.125,15.804l-4.038-4.037c0.675-1.079,1.012-2.308,1.01-3.534C15.089,4.62,12.199,1.75,8.584,1.75C4.815,1.75,1.982,4.726,2,8.286c0.021,3.577,2.908,6.549,6.578,6.549c1.241,0,2.417-0.347,3.44-0.985l4.032,4.026c0.167,0.166,0.43,0.166,0.596,0l1.479-1.478C18.292,16.234,18.292,15.968,18.125,15.804 M8.578,13.99c-3.198,0-5.716-2.593-5.733-5.71c-0.017-3.084,2.438-5.686,5.74-5.686c3.197,0,5.625,2.493,5.64,5.624C14.242,11.548,11.621,13.99,8.578,13.99 M16.349,16.981l-3.637-3.635c0.131-0.11,0.721-0.695,0.876-0.884l3.642,3.639L16.349,16.981z"></path>
-                      </svg>
-                    </a>
-                    <input
-                      name={"SearchPRNumber"}
-                      type="Number"
-                      placeholder="Number"
-                      class="form-control12"
+                      Choose
+                    </Button>
+                    <Button variant="primary" onClick={handleClose}>
+                      Cancel
+                    </Button>
+                  </Modal.Footer>
+                </Modal>
+                <Modal
+                  show={modalTwo === "modal-two"}
+                  className="Modal-big"
+                  size="lg"
+                >
+                  <Modal.Title id="example-modal-sizes-title-lg">
+                    List of Purchase Requests
+                  </Modal.Title>
+                  <Modal.Body>
+                    <Table responsive striped bordered hover>
+                      <TableHead>
+                        <tr>
+                          <th>#</th>
+                          <th>Item No.</th>
+                          <th>Item Description</th>
+                          <th>UoM Name</th>
+                          <th>Free Text</th>
+                          <th>Quantity</th>
+                          <th>Delivery Date</th>
+                          <th>Open Qty</th>
+                        </tr>
+                      </TableHead>
+                      <tbody>
+                        {PQDocumentLines &&
+                          PQDocumentLines.map(
+                            (PrReItem, PrReIndex) =>
+                              PrReItem.isSelected &&
+                              PrReItem.DocumentLines.map(
+                                (item, index) =>
+                                  item.LineStatus === "bost_Open" && (
+                                    <tr key={`${index}`}>
+                                      <TD>
+                                        {index + 1}
+                                        <input
+                                          type="checkbox"
+                                          onChange={() => {
+                                            docLineSelectedSwitch(
+                                              PrReIndex,
+                                              item,
+                                              index
+                                            );
+                                          }}
+                                          checked={item.isSelected}
+                                        />
+                                      </TD>
+
+                                      <TD>{item.ItemCode}</TD>
+                                      <TD>{item.ItemDescription}</TD>
+                                      <TD>{item.MeasureUnit}</TD>
+                                      <TD>
+                                        <div
+                                          style={{
+                                            width: "14rem",
+                                            height: "auto",
+                                          }}
+                                        >
+                                          <input
+                                            type="text"
+                                            name="FreeText"
+                                            class="form-control"
+                                            aria-describedby="Requesterid"
+                                            defaultValue={item.FreeText}
+                                          />
+                                        </div>
+                                      </TD>
+                                      <TD>
+                                        <div
+                                          style={{
+                                            width: "14rem",
+                                            height: "auto",
+                                          }}
+                                        >
+                                          <input
+                                            type="number"
+                                            name="QuotedQty"
+                                            readOnly="readOnly"
+                                            class="form-control"
+                                            aria-describedby="Requesterid"
+                                            defaultValue={
+                                              item.RemainingOpenQuantity
+                                            }
+                                            // onChange={e=>OpenQtyFunction(e, index)
+                                            // setOpenQty(e.target.value)
+                                            // }
+                                            // onChange={e => {
+                                            //   OpenQtyFunction(e, index)
+                                            //   setOpenQty(e.target.value)
+                                            // }}
+                                          />
+                                        </div>
+                                      </TD>
+                                      <TD>
+                                        <div
+                                          style={{
+                                            width: "14rem",
+                                            height: "auto",
+                                          }}
+                                        >
+                                          <input
+                                            type="date"
+                                            name="ShipDate"
+                                            readOnly="readOnly"
+                                            class="form-control"
+                                            defaultValue={item.ShipDate}
+                                          />
+                                        </div>
+                                      </TD>
+                                      <TD>
+                                        {item.RemainingOpenQuantity || OpenQty}{" "}
+                                      </TD>
+                                    </tr>
+                                  )
+                              )
+                          )}
+                      </tbody>
+                    </Table>
+                  </Modal.Body>
+                  <Modal.Footer>
+                    <Button variant="secondary" onClick={handleCloseee}>
+                      Choose
+                    </Button>
+                  </Modal.Footer>
+                </Modal>
+                <Modal show={show1} onHide={handleClose2}>
+                  <Modal.Header closeButton>
+                    <Modal.Title>Purchase Quotation List</Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                    {ModalHeaderData && (
+                      <Table responsive>
+                        <TableHead>
+                          <tr>
+                            <th>#</th>
+                            <th>Document Status</th>
+                            <th>DocNum</th>
+                            <th>DocEntry</th>
+                            <th>Code</th>
+                            <th>Name</th>
+                            <th>Posting Date</th>
+                          </tr>
+                        </TableHead>
+                        <tbody>
+                          {ModalHeaderData.map((item, index) => (
+                            <tr
+                              key={`${index}`}
+                              onClick={(e) => {
+                                selectPR(item);
+                                handleClose2();
+                              }}
+                            >
+                              <TD>{index + 1}</TD>
+
+                              <TD>
+                                {item.DocumentStatus === "bost_Open" ? (
+                                  <p
+                                    style={{
+                                      background: "gray",
+                                      color: "white",
+                                    }}
+                                  >
+                                    Open
+                                  </p>
+                                ) : item.DocumentStatus === "bost_Close" ? (
+                                  <p
+                                    style={{
+                                      background: "red",
+                                      color: "white",
+                                    }}
+                                  >
+                                    Closed
+                                  </p>
+                                ) : null}
+                              </TD>
+                              <TD>{item.DocNum}</TD>
+                              <TD>{item.DocEntry}</TD>
+                              <TD>{item.CardCode}</TD>
+                              <TD>{item.CardName}</TD>
+                              <TD>{item.DocDate}</TD>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </Table>
+                    )}
+                  </Modal.Body>
+                  <Modal.Footer>
+                    <Button variant="secondary" onClick={handleClose2}>
+                      Close
+                    </Button>
+                    <Button variant="primary" onClick={handleClose2}>
+                      Cancel
+                    </Button>
+                  </Modal.Footer>
+                </Modal>
+                <div className="header_items_container">
+                  <label>Vendor Ref. No.</label>
+                  <input
+                    defaultValue={
+                      PQFindDocumentLines && PQFindDocumentLines.NumAtCard
+                    }
+                    type="text"
+                    name={"NumAtCard"}
+                    class="input"
+                    // placeholder={SelectedPRDocEntry && SelectedPRDocEntry.NumAtCard}
+                    onChange={(e) => {
+                      NumAtCardFun(e);
+                    }}
+                  ></input>
+                </div>
+                <div className="header_items_container">
+                  <label>Group No</label>
+                  <input
+                    defaultValue={
+                      PQFindDocumentLines && PQFindDocumentLines.GroupNumber
+                    }
+                    type="text"
+                    class="input"
+                    id="GropNO"
+                    aria-describedby="B"
+                    //placeholder={PQFindDocumentLines && PQFindDocumentLines.GroupNumber}
+                  ></input>
+                </div>
+              </div>
+              <div className="right">
+                <div className="header_items_container">
+                  <label>No.</label>
+                  <div className="innerpart">
+                    <select
+                      className="select_inner"
+                      name=""
+                      id=""
                       onChange={(e) => {
-                        setSearchNumber(e.target.value);
+                        getseriesvaluefunction(e);
+                        Whse(e.item.Name);
                       }}
-                    />
+                      displayValue="name"
+                    >
+                      {getserviceseries
+                        ? getserviceseries.map((e) => (
+                            <option value={e.value}>{e.label}</option>
+                          ))
+                        : ""}
+                    </select>
+                    <div className="number_inner">
+                      <input
+                        type="number"
+                        name="Discount"
+                        readOnly
+                        value={getnextnumber}
+                        placeholder=""
+                        class="form-control"
+                      />
+                    </div>
                   </div>
-                  <br />
-                  {/* <div style={{ width: '23.5rem' ,marginLeft:'3rem'}}>
+                </div>
+                <div className="header_items_container">
+                  <label> Status</label>
+                  <Select
+                    placeholder={getStatus}
+                    isDisabled={getStatus ? true : false}
+                    options={[
+                      { label: "Open", value: "bost_Open" },
+                      { label: "Close", value: "bost_Close" },
+                      { label: "All", value: null },
+                      // { label: 'Draft', value: 'bost_Draft' }
+                    ]} // Options to display in the dropdown
+                    onChange={(e) => {
+                      setgetdocumentstatus(e.value);
+                    }} // Function will trigger on select event
+                    // onRemove={BusinessPartners} Function will trigger on remove event
+                    displayValue="name" // Property name to display in the dropdown options
+                  />
+                </div>
+                <div
+                  className="order header_items_container"
+                  // style={{
+                  //   width: "23.5rem",
+                  //   height: "auto",
+                  //   marginLeft: "3rem",
+                  //   border: "1px solid",
+                  //   borderColor: "lightgray",
+                  //   borderRadius: "4px",
+                  // }}
+                >
+                  <a
+                    onClick={(e) => {
+                      SearchAll_Filter_Data();
+                    }}
+                    style={{ cursor: "pointer" }}
+                  >
+                    <svg class="svg-icon12" viewBox="0 0 20 20">
+                      <path d="M18.125,15.804l-4.038-4.037c0.675-1.079,1.012-2.308,1.01-3.534C15.089,4.62,12.199,1.75,8.584,1.75C4.815,1.75,1.982,4.726,2,8.286c0.021,3.577,2.908,6.549,6.578,6.549c1.241,0,2.417-0.347,3.44-0.985l4.032,4.026c0.167,0.166,0.43,0.166,0.596,0l1.479-1.478C18.292,16.234,18.292,15.968,18.125,15.804 M8.578,13.99c-3.198,0-5.716-2.593-5.733-5.71c-0.017-3.084,2.438-5.686,5.74-5.686c3.197,0,5.625,2.493,5.64,5.624C14.242,11.548,11.621,13.99,8.578,13.99 M16.349,16.981l-3.637-3.635c0.131-0.11,0.721-0.695,0.876-0.884l3.642,3.639L16.349,16.981z"></path>
+                    </svg>
+                  </a>
+                  <input
+                    name={"SearchPRNumber"}
+                    type="Number"
+                    class="input"
+                    placeholder="Number"
+                    onChange={(e) => {
+                      setSearchNumber(e.target.value);
+                    }}
+                  />
+                </div>
+                {/* <div style={{ width: '23.5rem' ,marginLeft:'3rem'}}>
                 <label>No</label>
                 <input
                   type='number'
@@ -1513,41 +1517,40 @@ export default function PurchaseRequest() {
                 />
               </div> */}
 
-                  <div style={{ width: "23.5rem", marginLeft: "3rem" }}>
-                    <label> Posting Date</label>
-                    <input
-                      type="date"
-                      name="DocDate"
-                      class="form-control"
-                      defaultValue={
-                        PQFindDocumentLines && PQFindDocumentLines.DocDate
-                          ? PQFindDocumentLines && PQFindDocumentLines.DocDate
-                          : currentDate
-                      }
-                      // value={SelectedPRDocEntry && SelectedPRDocEntry.DocDate}
-                      onChange={(e) => {
-                        DocDateChange(e);
-                      }}
-                    />
-                  </div>
-                  <div style={{ width: "23.5rem", marginLeft: "3rem" }}>
-                    <label> Valid Date</label>
-                    <input
-                      type="date"
-                      name="DocDueDate"
-                      class="form-control"
-                      defaultValue={
-                        PQFindDocumentLines && PQFindDocumentLines.DocDueDate
-                          ? PQFindDocumentLines &&
-                            PQFindDocumentLines.DocDueDate
-                          : currentDate
-                      }
-                      onChange={(e) => {
-                        DocDueDateChange(e);
-                      }}
-                    />
-                  </div>
-                  {/* <div style={{ width: '23.5rem',marginLeft:'3rem' }}>
+                <div className="header_items_container">
+                  <label> Posting Date</label>
+                  <input
+                    type="date"
+                    name="DocDate"
+                    class="input"
+                    defaultValue={
+                      PQFindDocumentLines && PQFindDocumentLines.DocDate
+                        ? PQFindDocumentLines && PQFindDocumentLines.DocDate
+                        : currentDate
+                    }
+                    // value={SelectedPRDocEntry && SelectedPRDocEntry.DocDate}
+                    onChange={(e) => {
+                      DocDateChange(e);
+                    }}
+                  />
+                </div>
+                <div className="header_items_container">
+                  <label> Valid Date</label>
+                  <input
+                    type="date"
+                    name="DocDueDate"
+                    class="input"
+                    defaultValue={
+                      PQFindDocumentLines && PQFindDocumentLines.DocDueDate
+                        ? PQFindDocumentLines && PQFindDocumentLines.DocDueDate
+                        : currentDate
+                    }
+                    onChange={(e) => {
+                      DocDueDateChange(e);
+                    }}
+                  />
+                </div>
+                {/* <div style={{ width: '23.5rem',marginLeft:'3rem' }}>
                 <label> Document Date</label>
                 <input
                   type='date'
@@ -1562,31 +1565,31 @@ export default function PurchaseRequest() {
                   }}
                 />
               </div> */}
-                  <div style={{ width: "23.5rem", marginLeft: "3rem" }}>
-                    <label>Required Date</label>
-                    <input
-                      type="date"
-                      name="RequriedDate"
-                      class="form-control"
-                      defaultValue={
-                        PQFindDocumentLines && PQFindDocumentLines.RequriedDate
-                          ? PQFindDocumentLines &&
-                            PQFindDocumentLines.RequriedDate
-                          : currentDate
-                      }
-                      onChange={(e) => {
-                        requireDateChange(e);
-                      }}
-                    />
-                  </div>
-                  {/* <br/>
+                <div className="header_items_container">
+                  <label>Required Date</label>
+                  <input
+                    type="date"
+                    name="RequriedDate"
+                    class="input"
+                    defaultValue={
+                      PQFindDocumentLines && PQFindDocumentLines.RequriedDate
+                        ? PQFindDocumentLines &&
+                          PQFindDocumentLines.RequriedDate
+                        : currentDate
+                    }
+                    onChange={(e) => {
+                      requireDateChange(e);
+                    }}
+                  />
+                </div>
+                {/* <br/>
             <div class="form-check form-check-inline" style={{marginLeft:'3rem'}}>
           <input class="form-check-input" checked={bothbodies} name='Sync' onChange={e => setbothbodies(!bothbodies)} type="checkbox" id="inlineCheckbox1" value="option1" />
           <label class="form-check-label" for="inlineCheckbox1">Sync A</label>
         </div> */}
-                </Container>
-              </DIV3>
-            </CardGroup>
+              </div>
+            </div>
+
             <Tabs
               defaultActiveKey="Contents"
               transition={false}
@@ -2288,189 +2291,117 @@ export default function PurchaseRequest() {
             {/* Table+++++++++ */}
 
             {/* Bottom Side+++++++++ */}
-            <CardGroup>
-              <DIV3>
-                <Container fluid>
-                  <div style={{ width: "23.5rem", height: "auto" }}>
-                    <label>Buyer</label>
-                    {/* <input
-                  type='text'
-                  class='form-control'
-                  placeholder=''
-                  defaultValue={
-                    PQFindDocumentLines && PQFindDocumentLines.SalesEmployeeName
-                  }
-                /> */}
-                    <Select
-                      placeholder={
+            <div className="main_container">
+              <div className="left">
+                <div className="header_items_container">
+                  <label>Buyer</label>
+
+                  <Select
+                    placeholder={
+                      PQFindDocumentLines &&
+                      PQFindDocumentLines.SalesEmployeeName
+                    }
+                    options={PrBuyer} // Options to display in the dropdown
+                    displayValue="name" // Property name to display in the dropdown options
+                  />
+                </div>
+                <div className="header_items_container">
+                  <label>Owner</label>
+                  <Select
+                    placeholder={
+                      PQFindDocumentLines && PQFindDocumentLines.Owner
+                    }
+                    options={OwnerDropdown}
+                    onChange={(e) => setSelectedOwner(e.value)} // Options to display in the dropdown
+                    // onSelect={Owner} // Function will trigger on select event
+                    // onRemove={Owner} //Function will trigger on remove event
+                    displayValue="name" // Property name to display in the dropdown options
+                  />
+                </div>
+
+                <div className="header_items_container">
+                  <label for="exampleFormControlTextarea1">Remarks</label>
+                  <div>
+                    <textarea
+                      defaultValue={
                         PQFindDocumentLines &&
-                        PQFindDocumentLines.SalesEmployeeName
+                        "Based On Purchase Request : " +
+                          PQFindDocumentLines.DocNum +
+                          ". " +
+                          PQFindDocumentLines.Comments
                       }
-                      options={PrBuyer} // Options to display in the dropdown
-                      displayValue="name" // Property name to display in the dropdown options
+                      // placeholder={SelectedPRDocEntry && "Base On Purchase Request : " + SelectedPRDocEntry.DocNum + ". " + SelectedPRDocEntry.Comments}
+                      type="text"
+                      class="textArea"
+                      id="exampleFormControlTextarea1"
+                      name="Comments"
+                      rows="3"
+                      onChange={(e) => {
+                        CommentsFun(e);
+                      }}
                     />
                   </div>
-                  <div
-                    style={{ width: "23.5rem", height: "auto" }}
-                    onClick={Owner}
-                  >
-                    <label>Owner</label>
-                    <Select
-                      placeholder={
-                        PQFindDocumentLines && PQFindDocumentLines.Owner
-                      }
-                      options={OwnerDropdown}
-                      onChange={(e) => setSelectedOwner(e.value)} // Options to display in the dropdown
-                      // onSelect={Owner} // Function will trigger on select event
-                      // onRemove={Owner} //Function will trigger on remove event
-                      displayValue="name" // Property name to display in the dropdown options
-                    />
-                  </div>
-                  <br />
-                  <div class="form-group">
-                    <label for="exampleFormControlTextarea1">Remarks</label>
-                    <div style={{ width: "23.5rem" }}>
-                      <textarea
-                        defaultValue={
-                          PQFindDocumentLines &&
-                          "Based On Purchase Request : " +
-                            PQFindDocumentLines.DocNum +
-                            ". " +
-                            PQFindDocumentLines.Comments
+                </div>
+              </div>
+              <div className="right">
+                <div className="header_items_container">
+                  <label>Total Before Disc:</label>
+                  <input
+                    type="number"
+                    readOnly
+                    defaultValue={totalbforeDiscount}
+                    placeholder=""
+                    class="input"
+                  />
+                </div>
+                <div className="header_items_container">
+                  <label>Discount</label>
+                  <div className="innerpart">
+                    <div className="discountfirst">
+                      <input
+                        type="number"
+                        name="Discount%"
+                        class=""
+                        value={
+                          disc ||
+                          (PQFindDocumentLines &&
+                            PQFindDocumentLines.DiscountPercent)
                         }
-                        // placeholder={SelectedPRDocEntry && "Base On Purchase Request : " + SelectedPRDocEntry.DocNum + ". " + SelectedPRDocEntry.Comments}
-                        type="text"
-                        class="form-control rounded-0"
-                        id="exampleFormControlTextarea1"
-                        name="Comments"
-                        rows="3"
                         onChange={(e) => {
-                          CommentsFun(e);
+                          setdisc(e.target.value);
+                          setDiscountTotal(
+                            (e.target.value * totalbforeDiscount) / 100
+                          );
+                        }}
+                        placeholder="%"
+                      />
+                    </div>
+                    <div className="discountsecond">
+                      <input
+                        type="number"
+                        name="Discount"
+                        // onChange={e => setBottomDiscount(e.target.value)}
+                        placeholder="PKR"
+                        class=""
+                        style={{ width: "7rem" }}
+                        value={DiscountTotal}
+                        onChange={(e) => {
+                          setDiscountTotal(e.target.value);
+                          setdisc((e.target.value / totalbforeDiscount) * 100);
                         }}
                       />
                     </div>
                   </div>
-                  <br />
-                  <br />
-                  <br />
-                  <br />
-                  {localStorage.getItem("documentcontroller") === "R" ? (
-                    <div>
-                      <Button
-                        style={{ marginLeft: "5%" }}
-                        onClick={() => {
-                          window.location.href = "/Home";
-                        }}
-                      >
-                        OK
-                      </Button>
-                      <Button
-                        variant="secondary"
-                        style={{ marginLeft: "5%" }}
-                        onClick={() => {
-                          window.location.href = "/Home";
-                        }}
-                      >
-                        Cancel
-                      </Button>
-                    </div>
-                  ) : (
-                    <div>
-                      <Button
-                        style={{ marginLeft: "5%" }}
-                        type="reset"
-                        onClick={() => {
-                          Submit_PatchFunc();
-                        }}
-                      >
-                        {ButtonName}
-                      </Button>
-
-                      <Button
-                        variant="secondary"
-                        style={{ marginLeft: "5%" }}
-                        onClick={() => {
-                          window.location.href = "/Home";
-                        }}
-                      >
-                        Cancel
-                      </Button>
-                      {/* <Button
-               
-              >
-               {ButtonName}
-              </Button> */}
-                    </div>
-                  )}
-                </Container>
-              </DIV3>
-              <DIV4></DIV4>
-              <DIV3>
-                <div>
-                  <div style={{ width: "23.5rem", marginLeft: "4rem" }}>
-                    <label style={{ marginTop: "10%" }}>
-                      Total Before Discount:
-                    </label>
-                    <input
-                      type="number"
-                      readOnly
-                      defaultValue={totalbforeDiscount}
-                      placeholder=""
-                      class="form-control"
-                    />
-                  </div>
-                  <div style={{ marginLeft: "4rem" }}>
-                    <label>Discount</label>
-                    <CardGroup>
-                      <div style={{ width: "11.75rem" }}>
-                        <input
-                          type="number"
-                          name="Discount%"
-                          class="form-control"
-                          value={
-                            disc ||
-                            (PQFindDocumentLines &&
-                              PQFindDocumentLines.DiscountPercent)
-                          }
-                          onChange={(e) => {
-                            setdisc(e.target.value);
-                            setDiscountTotal(
-                              (e.target.value * totalbforeDiscount) / 100
-                            );
-                          }}
-                          placeholder="%"
-                        />
-                      </div>
-
-                      <div style={{ width: "11.75rem" }}>
-                        <input
-                          type="number"
-                          name="Discount"
-                          // onChange={e => setBottomDiscount(e.target.value)}
-                          placeholder="PKR"
-                          class="form-control"
-                          value={DiscountTotal}
-                          onChange={(e) => {
-                            setDiscountTotal(e.target.value);
-                            setdisc(
-                              (e.target.value / totalbforeDiscount) * 100
-                            );
-                          }}
-                        />
-                      </div>
-                    </CardGroup>
-                  </div>
                 </div>
-                <div style={{ width: "23.5rem", marginLeft: "4rem" }}>
+                <div className="header_items_container">
                   <label>Freight</label>
                   <input
                     value={totalFreight || TotalFreightLC}
-                    class="form-control"
+                    class="input"
                     readOnly="readOnly"
                   />
                 </div>
-                <br />
-                <div style={{ width: "23.5rem", marginLeft: "4rem" }}>
+                <div className="header_items_container">
                   <label>Tax</label>
                   <input
                     type="number"
@@ -2478,14 +2409,14 @@ export default function PurchaseRequest() {
                     placeholder={TotalTaxRate}
                     // onChange={e => setBottomTax(+e.target.value)}
                     value={PQFindDocumentLines && PQFindDocumentLines.VatSumSys}
-                    class="form-control"
+                    class="input"
                     // value={SelectedPRDocEntry && SelectedPRDocEntry.VatSumSys || HeaderData && HeaderData.VatSumSys }
                     name="TaxAmount(LC)"
                   />
                 </div>
                 {/* <button onClick={TotalPaymentDue}>Total</button> */}
 
-                <div style={{ width: "23.5rem", marginLeft: "4rem" }}>
+                <div className="header_items_container">
                   <label>Total Payment Due:</label>
                   <input
                     type="number"
@@ -2494,12 +2425,92 @@ export default function PurchaseRequest() {
                     placeholder={
                       PQFindDocumentLines && PQFindDocumentLines.DocTotalSys
                     }
-                    class="form-control"
+                    class="input"
                   />
                 </div>
-              </DIV3>
-            </CardGroup>
+              </div>
+            </div>
           </Form>
+          {localStorage.getItem("documentcontroller") === "R" ? (
+            <div className="button_main_container">
+              <div className="button_container">
+                <button
+                  onClick={() => {
+                    window.location.href = "/Home";
+                  }}
+                  className="form_button"
+                  style={{ backgroundColor: `${redux_response.color}` }}
+                >
+                  OK
+                </button>
+                <button
+                  variant="secondary"
+                  onClick={() => {
+                    window.location.href = "/Home";
+                  }}
+                  className="form_button"
+                  style={{ backgroundColor: `${redux_response.color}` }}
+                >
+                  Cancel
+                </button>
+              </div>
+              <div className="button_container">
+                <button
+                  style={{ backgroundColor: `${redux_response.color}` }}
+                  className="form_button"
+                  onClick={PurchaseRequest}
+                >
+                  Copy From
+                </button>{" "}
+                <button
+                  style={{ backgroundColor: `${redux_response.color}` }}
+                  className="form_button"
+                >
+                  Copy To
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="button_main_container">
+              <div className="button_container">
+                <button
+                  onClick={() => {
+                    Submit_PatchFunc();
+                  }}
+                  // disabled={isSubmitting}
+                  className="form_button"
+                  style={{ backgroundColor: `${redux_response.color}` }}
+                >
+                  {ButtonName}
+                </button>
+                <button
+                  variant="secondary"
+                  onClick={() => {
+                    window.location.href = "/Home";
+                  }}
+                  className="form_button"
+                  style={{ backgroundColor: `${redux_response.color}` }}
+                >
+                  Cancel
+                </button>
+              </div>
+              <div className="button_container">
+                <button
+                  style={{ backgroundColor: `${redux_response.color}` }}
+                  className="form_button"
+                  onClick={PurchaseRequest}
+                >
+                  Copy From
+                </button>
+                <button
+                  style={{ backgroundColor: `${redux_response.color}` }}
+                  className="form_button"
+                >
+                  Copy To
+                </button>
+              </div>
+            </div>
+          )}
         </>
       )}
     </>

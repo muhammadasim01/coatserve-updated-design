@@ -6,18 +6,21 @@ import reportWebVitals from "./reportWebVitals";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { positions, Provider } from "react-alert";
 import AlertTemplate from "react-alert-template-basic";
-require('dotenv').config();
+import { Provider as Redux } from "react-redux";
+import store from "./redux/store";
+require("dotenv").config();
 const options = {
   timeout: 5000,
   position: positions.BOTTOM_CENTER,
-
 };
 
 ReactDOM.render(
   // <React.StrictMode>
+  <Redux store={store}>
     <Provider template={AlertTemplate} {...options}>
-    <App/>
-    </Provider>,
+      <App />
+    </Provider>
+  </Redux>,
   // </React.StrictMode>,
   document.getElementById("root")
 );

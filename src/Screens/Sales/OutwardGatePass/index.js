@@ -15,6 +15,8 @@ import { useAlert } from "react-alert";
 import CircularProgress from '@material-ui/core/CircularProgress';
 import './index.css';
 import Switch from "react-switch";
+import { useSelector } from "react-redux";
+
 const axios = require('axios')
 const useStyles = makeStyles((theme) => ({
   backdrop: {
@@ -23,6 +25,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 export default function OGP () {
+  const redux_response = useSelector((state) => state.colorReducer);
   const alert = useAlert();
   const classes = useStyles();
   const [bothbodies, setbothbodies] = React.useState(false)
@@ -915,14 +918,27 @@ function handleShowModalOne() {
 
   return (
     <>
+     <style>{`
+    .nav-tabs .nav-link{
+      color: white !important;
+      background-color: ${
+        redux_response.color ? redux_response.color : "rgb(69 70 73)"
+      } !important;  
+      width: 12rem  !important;
+      height: 24px !important;
+      padding: 0 !important;
+      text-align: center !important;
+    }
+   
+       
+  `}</style>
       <Navbar />
       <h1 style={{ textAlign: 'center' }}>Outward Gate Pass</h1>
     
-      <CardGroup>
-        <DIV3>
-          <Container fluid>
+      <div className='main_container'>
+        <div className='left'>
+            <div className="header_items_container">
             <label>Customer</label>
-            <div style={{ width: '23.5rem', height: 'auto' }} variant='primary' onClick={BusinessPartners}>
               <Select
                 placeholder={HeaderData && HeaderData.CardCode}
                 options={VendorCodeDropdown} // Options to display in the dropdown
@@ -932,10 +948,7 @@ function handleShowModalOne() {
                  displayValue='name' // Property name to display in the dropdown options
               />
             </div>
-         <br/>
-            <Button variant='primary' onClick={handleShow}>
-              Copy From
-            </Button><br/>
+          
             <Modal show={show} onHide={handleClose} className="Modal-big" size="lg">
               <Modal.Header closeButton>
                 <Modal.Title  id="example-modal-sizes-title-lg">Open Delivery List</Modal.Title>
@@ -1073,8 +1086,9 @@ function handleShowModalOne() {
   </Button>
     </Modal.Footer>
               </Modal>
-            <br />
-            <div style={{ width: '23.5rem', height: 'auto' }}>
+              <div className="header_items_container">
+              <label></label>
+
               <Select
                options={[
                   { label: 'Cylinder - Cylinder', value: 'Cylinder' },
@@ -1086,12 +1100,12 @@ function handleShowModalOne() {
                  displayValue='name' // Property name to display in the dropdown options
               />
             </div>
-            <div style={{ width: '23.5rem', height: 'auto' ,marginLeft:''}}>
+            <div className="header_items_container">
               <label>Vehicle</label>
               <input
                 defaultValue={HeaderData && HeaderData.DocEntry}
                 type='number'
-                class='form-control'
+                class='input'
                 name='Vehicle'
                 aria-describedby='emailHelp'
                 placeholder=''
@@ -1203,16 +1217,11 @@ function handleShowModalOne() {
                  displayValue='name' // Property name to display in the dropdown options
               />
             </div> */}
-            <br />
-          </Container>
-        </DIV3>
-        <DIV4>
-        </DIV4>
-        <DIV3>
-          <Container fluid>
-          <div className="Outward"
-              style={{ width: '23.5rem', height: 'auto', marginLeft: '3rem' ,border:'1px solid',borderColor:'lightgray',borderRadius:'4px'}}
-            >
+        </div>
+       
+        <div className='right'>
+        <div className="Outward header_items_container">
+
               <a onClick={e => {
                   SearchAll_Filter_Data()
                 }} style={{cursor:'pointer'}}> <svg class="svg-icon7" viewBox="0 0 20 20">
@@ -1222,13 +1231,12 @@ function handleShowModalOne() {
               name={'SearchPRNumber'}
               type='Number'
               placeholder='Number'
-              class='form-control7'
+              class='input'
               onChange={e => {
                 setSearchNumber(e.target.value)
               }}
             />
             </div>
-            <br/>
             <Modal show={show1} onHide={handleClose2}>
         <Modal.Header closeButton>
           <Modal.Title>Open Outward GatePass List</Modal.Title>
@@ -1275,19 +1283,19 @@ function handleShowModalOne() {
           </Button>
         </Modal.Footer>
       </Modal>
-            <div style={{ width: '23.5rem', height: 'auto',marginLeft:'3rem' }}>
+      <div className="header_items_container">
               <label>DocNum</label>
               <input
               readOnly
                 defaultValue={HeaderData && HeaderData.DocNum}
                 type='text'
-                class='form-control'
+                class='input'
                 id='DocNum'
                 aria-describedby='emailHelp'
                 placeholder=''
               />
             </div><br/>
-            <div style={{ width: '23.5rem', height: 'auto',marginLeft:'3rem'}}>
+            <div className="header_items_container">
             <label>Reversible</label>
               <Select
                options={[
@@ -1300,12 +1308,12 @@ function handleShowModalOne() {
                  displayValue='name' // Property name to display in the dropdown options
               />
             </div>
-            <div style={{ width: '23.5rem', height: 'auto',marginLeft:'3rem' }}>
+            <div className="header_items_container">
               <label>Date</label>
               <input
                 //value={SelectedPRDocEntry && SelectedPRDocEntry.CardName}
                 type='Date'
-                class='form-control'
+                class='input'
                 name='Date'
                 aria-describedby='emailHelp'
                 defaultValue={HeaderData && HeaderData.CreateTime ? HeaderData && HeaderData.CreateTime : currentDate}
@@ -1410,14 +1418,13 @@ function handleShowModalOne() {
                   TimeOutChangeFun(e)
                 }}
               />
-            </div> */} <br/>
-            <div class="form-check form-check-inline" style={{marginLeft:'3rem'}}>
-          <input class="form-check-input" checked={bothbodies} name='Sync' onChange={e => setbothbodies(!bothbodies)} type="checkbox" id="inlineCheckbox1" value="option1" />
+            </div> */} 
+              <div className="header_items_container">
           <label class="form-check-label" for="inlineCheckbox1">Sync A</label>
+          <input class="form-check-input" checked={bothbodies} name='Sync' onChange={e => setbothbodies(!bothbodies)} type="checkbox" id="inlineCheckbox1" value="option1" />
         </div>
-          </Container>
-        </DIV3>
-      </CardGroup>
+        </div>
+      </div>
       {/* Table+++++++++ */}
       <Tabs defaultActiveKey="Contents" transition={false} id="noanim-tab-example">
     <Tab eventKey="Contents" title="Contents">
@@ -1659,29 +1666,93 @@ function handleShowModalOne() {
         </Tab>
     </Tabs>
       {/* Bottom Side+++++++++ */}
-      <CardGroup>
-        <DIV3>
-          <Container fluid>
+      <div className='main_container'>
+        <div className='left'>
            
-          <div>
-            <Button 
-               style={{ marginLeft: '5%' }}
-               type="reset"
-               onClick={() => {
-                Submit_PatchFunc()
-              }}
-              >{ButtonName}</Button>
+       
              
-              <Button style={{ marginLeft: '5%' }}
-               onClick={() => {
-                  window.location.href="/Home"
-                }}
-              >Cancel</Button>
+        </div>
+        <div className="right"></div>
+      </div>
+      {localStorage.getItem("documentcontroller") === "R" ? (
+            <div className="button_main_container">
+              <div className="button_container">
+                <button
+                  onClick={() => {
+                    window.location.href = "/Home";
+                  }}
+                  className="form_button"
+                  style={{ backgroundColor: `${redux_response.color}` }}
+                >
+                  OK
+                </button>
+                <button
+                  variant="secondary"
+                  onClick={() => {
+                    window.location.href = "/Home";
+                  }}
+                  className="form_button"
+                  style={{ backgroundColor: `${redux_response.color}` }}
+                >
+                  Cancel
+                </button>
+              </div>
+              <div className="button_container">
+                <button
+                  style={{ backgroundColor: `${redux_response.color}` }}
+                  className="form_button"
+                  onClick={handleShow}
+                >
+                  Copy From
+                </button>{" "}
+                <button
+                  style={{ backgroundColor: `${redux_response.color}` }}
+                  className="form_button"
+                >
+                  Copy To
+                </button>
+              </div>
             </div>
-             
-          </Container>
-        </DIV3>
-      </CardGroup>
+          ) : (
+            <div className="button_main_container">
+              <div className="button_container">
+                <button
+                  onClick={() => {
+                    Submit_PatchFunc();
+                  }}
+                  className="form_button"
+                  style={{ backgroundColor: `${redux_response.color}` }}
+                >
+                  {ButtonName}
+                </button>
+                <button
+                  variant="secondary"
+                  onClick={() => {
+                    window.location.href = "/Home";
+                  }}
+                  className="form_button"
+                  style={{ backgroundColor: `${redux_response.color}` }}
+                >
+                  Cancel
+                </button>
+              </div>
+              <div className="button_container">
+                <button
+                  style={{ backgroundColor: `${redux_response.color}` }}
+                  className="form_button"
+                  onClick={handleShow}
+                >
+                  Copy From
+                </button>
+                <button
+                  style={{ backgroundColor: `${redux_response.color}` }}
+                  className="form_button"
+                >
+                  Copy To
+                </button>
+              </div>
+            </div>
+          )}
     </>
   )
 }

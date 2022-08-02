@@ -42,7 +42,11 @@ const Header = () => {
 
   //     })();
   // }, []);
-
+  const [color, setColor] = React.useState("");
+  const colorHandler = (e) => {
+    console.log("COLOR", e.target.value);
+    setColor(e.target.value);
+  };
   const TrialBalanceReport = async () => {
     console.log("body2");
     let cook2 = await localStorage.getItem("cookiee");
@@ -88,7 +92,11 @@ const Header = () => {
   };
   return (
     <>
-      <Navbar bg="light" expand="lg">
+      <Navbar
+        expand="lg"
+        variant="dark"
+        style={{ backgroundColor: color ? color : "#535b62" }}
+      >
         <Navbar.Brand href="Home">UI</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
@@ -617,6 +625,14 @@ const Header = () => {
             <Nav.Link href="#link">Tools</Nav.Link>
             <Nav.Link href="#link">Window</Nav.Link>
             <Nav.Link href="#link">Help</Nav.Link>
+            <Nav.Link href="#link">
+              <input
+                type="color"
+                name="color"
+                id="color"
+                onChange={colorHandler}
+              />
+            </Nav.Link>
           </Nav>
           <Form inline>
             <FormControl type="text" placeholder="Search" className="mr-sm-2" />

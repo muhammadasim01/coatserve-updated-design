@@ -22,6 +22,8 @@ import { CONSTANTS, LINKS } from "../../../Utils";
 import { Navbar } from "../../../Component/Global";
 import { useAlert } from "react-alert";
 import { input, DIV3, DIV4, InputD, TableHead, TD } from "./Style";
+import { useSelector } from "react-redux";
+
 import "./index.css";
 
 const axios = require("axios");
@@ -33,6 +35,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function PurchaseOrder() {
+  const redux_response = useSelector((state) => state.colorReducer);
+
   const alert = useAlert();
   const [SelectShow, setSelectShow] = React.useState();
   const [currentDate, setcurrentDate] = React.useState();
@@ -784,6 +788,20 @@ export default function PurchaseOrder() {
   };
   return (
     <>
+      <style>{`
+            .nav-tabs .nav-link{
+              color: white !important;
+              background-color: ${
+                redux_response.color ? redux_response.color : "rgb(69 70 73)"
+              } !important;  
+              width: 12rem  !important;
+              height: 24px !important;
+              padding: 0 !important;
+              text-align: center !important;
+            }
+           
+               
+          `}</style>
       <Navbar
         setgetserviceseries={setgetserviceseries}
         getdocumenttype={getdocumenttype}
@@ -798,14 +816,11 @@ export default function PurchaseOrder() {
           <h1 style={{ textAlign: "center" }}>Returns</h1>
           {/* Upper Side++++++++ */}
           <Form onSubmit={handleSubmitted}>
-            <CardGroup>
-              <DIV3>
-                <Container fluid>
+            <div className="main_container">
+              <div className="left">
+                  <div className="header_items_container">
                   <label>Customer</label>
-                  <div
-                    style={{ width: "23.5rem", height: "auto" }}
-                    variant="primary"
-                  >
+
                     <Select
                       placeholder={HeaderData && HeaderData.CardCode}
                       options={VendorCodeDropdown}
@@ -815,12 +830,9 @@ export default function PurchaseOrder() {
                       displayValue="name"
                     />
                   </div>
+                  <div className="header_items_container">
                   <label>Contact Person</label>
-                  <div
-                    style={{ width: "23.5rem", height: "auto" }}
-                    variant="primary"
-                    onClick={ContactPerson}
-                  >
+
                     <Select
                       placeholder={HeaderData && HeaderData.ContactPersonCode}
                       options={ContactPersonDropdown}
@@ -830,10 +842,7 @@ export default function PurchaseOrder() {
                       }}
                     />
                   </div>
-                  <br />
-                  <Button variant="primary" onClick={handleShow}>
-                    Copy From
-                  </Button>
+                
                   <Modal
                     show={show}
                     onHide={handleClose}
@@ -1126,8 +1135,7 @@ export default function PurchaseOrder() {
                       </Button>
                     </Modal.Footer>
                   </Modal>
-                  <br />
-                  <div style={{ width: "23.5rem", height: "auto" }}>
+                  <div className="header_items_container">
                     <label>Customer Ref.No</label>
                     <input
                       value={HeaderData && HeaderData.NumAtCard}
@@ -1135,13 +1143,12 @@ export default function PurchaseOrder() {
                         setCustomerRefNo(e.target.value);
                       }}
                       type="text"
-                      class="form-control"
+                      class="input"
                       id="exampleInputEmail1"
                     ></input>
                   </div>
-                  <div
-                    style={{ marginTop: "5%", marginLeft: "47%", width: "50%" }}
-                  >
+                  <div className="header_items_container">
+
                     {RequesterCodeDropdown && (
                       <Select
                         placeholder=""
@@ -1150,42 +1157,43 @@ export default function PurchaseOrder() {
                       />
                     )}
                   </div>
-                </Container>
-              </DIV3>
-              <DIV4></DIV4>
-              <DIV3>
-                <Container>
-                  <div style={{ marginLeft: "3rem" }}>
-                    <label>No.</label>
-                    <CardGroup>
-                      <br />
-                      <div style={{ width: "11.5rem", height: "auto" }}>
-                        <Select
-                          // placeholder={HeaderData && HeaderData.RequesterName}
-                          options={getserviceseries} // Options to display in the dropdown
-                          onChange={(e) => {
-                            getseriesvaluefunction(e);
-                            // TableTaxCode(e.item.Name)
-                            Whse(e.item.Name);
-                          }} // Function will trigger on select event
-                          // onRemove={RequesterCodeDropdownfunc} // Function will trigger on remove event
-                          displayValue="name" // Property name to display in the dropdown options
-                        />
-                      </div>
-                      <div style={{ width: "11.5rem", height: "auto" }}>
-                        <input
-                          type="number"
-                          name="Discount"
-                          readOnly
-                          value={getnextnumber}
-                          placeholder=""
-                          class="form-control"
-                        />{" "}
-                        <br />
-                      </div>
-                    </CardGroup>
+              </div>
+              <div className="right">
+              <div className="header_items_container">
+                <label>No.</label>
+                <div className="innerpart">
+                  <select
+                    className="select_inner"
+                    name=""
+                    id=""
+                    onChange={(e) => {
+                      getseriesvaluefunction(e);
+                      Whse(e.item.Name);
+                    }}
+                    displayValue="name"
+                  >
+                    {getserviceseries
+                      ? getserviceseries.map((e) => (
+                          <option value={e.value}>{e.label}</option>
+                        ))
+                      : ""}
+                  </select>
+                  <div className="number_inner">
+                    <input
+                      type="number"
+                      name="Discount"
+                      readOnly
+                      value={
+                        getnextnumber
+                      
+                      }
+                      placeholder=""
+                      class=""
+                    />
                   </div>
-                  <div style={{ width: "23.5rem", marginLeft: "3rem" }}>
+                </div>
+              </div>
+              <div className="header_items_container">
                     <label> Status</label>
                     <Select
                       placeholder={DocStatus}
@@ -1203,18 +1211,8 @@ export default function PurchaseOrder() {
                       displayValue="name" // Property name to display in the dropdown options
                     />
                   </div>
-                  <br />
-                  <div
-                    className="Return"
-                    style={{
-                      width: "23.5rem",
-                      height: "auto",
-                      marginLeft: "3rem",
-                      border: "1px solid",
-                      borderColor: "lightgray",
-                      borderRadius: "4px",
-                    }}
-                  >
+                  <div className="header_items_container">
+
                     <a
                       onClick={(e) => {
                         SearchAll_Filter_Data();
@@ -1230,14 +1228,13 @@ export default function PurchaseOrder() {
                       name={"SearchPRNumber"}
                       type="Number"
                       placeholder="Number"
-                      class="form-control8"
+                      class="input"
                       onChange={(e) => {
                         setSearchNumber(e.target.value);
                       }}
                     />
                   </div>
-                  <br />
-                  <div style={{ width: "23.5rem", marginLeft: "3rem" }}>
+                  <div className="header_items_container">
                     <label> Posting Date</label>
                     <input
                       type="date"
@@ -1245,7 +1242,7 @@ export default function PurchaseOrder() {
                       onChange={(e) => {
                         DocDateChange(e);
                       }}
-                      class="form-control"
+                      class="input"
                       defaultValue={
                         HeaderData && HeaderData.DocDate
                           ? HeaderData && HeaderData.DocDate
@@ -1253,12 +1250,12 @@ export default function PurchaseOrder() {
                       }
                     />
                   </div>
-                  <div style={{ width: "23.5rem", marginLeft: "3rem" }}>
+                  <div className="header_items_container">
                     <label> Due Date</label>
                     <input
                       type="date"
                       name="DocDuDate"
-                      class="form-control"
+                      class="input"
                       defaultValue={
                         HeaderData && HeaderData.DocDuDate
                           ? HeaderData && HeaderData.DocDuDate
@@ -1269,11 +1266,11 @@ export default function PurchaseOrder() {
                       }}
                     />
                   </div>
-                  <div style={{ width: "23.5rem", marginLeft: "3rem" }}>
+                  <div className="header_items_container">
                     <label>Document Date</label>
 
                     <input
-                      class="form-control"
+                      class="input"
                       aria-describedby="emailHelp"
                       type="date"
                       defaultValue={
@@ -1287,9 +1284,8 @@ export default function PurchaseOrder() {
                       }}
                     />
                   </div>
-                </Container>
-              </DIV3>
-            </CardGroup>
+              </div>
+            </div>
             {/* Table+++++++++ */}
             <Tabs
               defaultActiveKey="Contents"
@@ -1632,10 +1628,9 @@ export default function PurchaseOrder() {
               </Tab>
             </Tabs>
             {/* Bottom Side+++++++++ */}
-            <CardGroup>
-              <DIV3>
-                <Container fluid>
-                  <div style={{ width: "23.5em", height: "auto" }}>
+            <div className="main_container">
+              <div className="left">
+              <div className="header_items_container">
                     <label>Sales Employee</label>
                     <Select
                       placeholder={HeaderData && HeaderData.SalesPersonCode}
@@ -1643,7 +1638,7 @@ export default function PurchaseOrder() {
                       displayValue="name" // Property name to display in the dropdown options
                     />
                   </div>
-                  <div style={{ width: "23.5rem", height: "auto" }}>
+                  <div className="header_items_container">
                     <label>Owner</label>
                     <Select
                       placeholder={HeaderData && HeaderData.DocumentsOwner}
@@ -1652,10 +1647,8 @@ export default function PurchaseOrder() {
                       displayValue="name" // Property name to display in the dropdown options
                     />
                   </div>
-                  <br />
-                  <div class="form-group">
+                    <div className="header_items_container">
                     <label for="exampleFormControlTextarea1">Remarks</label>
-                    <div style={{ width: "23.5rem" }}>
                       <textarea
                         defaultValue={
                           HeaderData &&
@@ -1665,7 +1658,7 @@ export default function PurchaseOrder() {
                             HeaderData.Comments
                         }
                         type="text"
-                        class="form-control rounded-0"
+                        class="textArea"
                         id="exampleFormControlTextarea1"
                         name="Comments"
                         rows="3"
@@ -1674,57 +1667,12 @@ export default function PurchaseOrder() {
                         }}
                       />
                     </div>
-                  </div>
-                  <br />
-                  <br />
-                  {localStorage.getItem("documentcontroller") === "R" ? (
-                    <div>
-                      <Button
-                        style={{ marginLeft: "5%" }}
-                        onClick={() => {
-                          window.location.href = "/Home";
-                        }}
-                      >
-                        OK
-                      </Button>
-                      <Button
-                        variant="secondary"
-                        style={{ marginLeft: "5%" }}
-                        onClick={() => {
-                          window.location.href = "/Home";
-                        }}
-                      >
-                        Cancel
-                      </Button>
-                    </div>
-                  ) : (
-                    <div>
-                      <Button
-                        style={{ marginLeft: "5%" }}
-                        type="reset"
-                        onClick={() => {
-                          Submit_PatchFunc();
-                        }}
-                      >
-                        {ButtonName}
-                      </Button>
-                      <Button
-                        style={{ marginLeft: "5%" }}
-                        onClick={() => {
-                          window.location.href = "/Home";
-                        }}
-                      >
-                        Cancel
-                      </Button>
-                    </div>
-                  )}
-                </Container>
-              </DIV3>
-              <DIV4></DIV4>
-              <DIV3>
-                <div>
-                  <div style={{ width: "23.5rem", marginLeft: "4rem" }}>
-                    <label style={{ marginTop: "10%" }}>Net Total </label>
+             
+                
+              </div>
+              <div className="right">
+              <div className="header_items_container">
+                    <label >Net Total </label>
                     <input
                       readOnly="readOnly"
                       type="number"
@@ -1736,64 +1684,58 @@ export default function PurchaseOrder() {
                               HeaderData.TotalDiscountSC -
                               HeaderData.VatSumSys
                       }
-                      class="form-control"
+                      class="input"
                     />
                   </div>
-                  <div style={{ marginLeft: "4rem" }}>
-                    <label>Discount</label>
-                    <CardGroup>
-                      <div style={{ width: "11.75rem" }}>
-                        <input
-                          type="number"
-                          onChange={(e) => {
-                            setdisc(e.target.value);
-                            setDiscountTotal(
-                              (e.target.value * totalbforeDiscount) / 100
-                            );
-                          }}
-                          class="form-control"
-                          name="TaxAmount(LC)"
-                          value={
-                            disc || (HeaderData && HeaderData.DiscountPercent)
-                          }
-                        />
-                      </div>
-                      <div style={{ width: "11.75rem" }}>
-                        <input
-                          type="number"
-                          onChange={(e) => {
-                            setDiscountTotal(e.target.value);
-                            setdisc(
-                              (e.target.value / totalbforeDiscount) * 100
-                            );
-                          }}
-                          class="form-control"
-                          name="TaxAmount(LC)"
-                          value={
-                            DiscountTotal ||
-                            (HeaderData && HeaderData.TotalDiscountSC)
-                          }
-                        />
-                      </div>
-                    </CardGroup>
+                  <div className="header_items_container">
+                <label>Discount</label>
+                <div className="innerpart">
+                  <div className="discountfirst">
+                    <input
+                      type="number"
+                      value={disc || (HeaderData && HeaderData.DiscountPercent)}
+                      onChange={(e) => {
+                        setdisc(e.target.value);
+                        setDiscountTotal((e.target.value * totalbforeDiscount) / 100);
+                      }}
+                      name="TaxAmount(LC)"
+                    />
+                  </div>
+                  <div className="discountsecond">
+                    <input
+                     type="number"
+                     style={{ width: "7rem" }}
+
+                     onChange={(e) => {
+                       setDiscountTotal(e.target.value);
+                       setdisc(
+                         (e.target.value / totalbforeDiscount) * 100
+                       );
+                     }}
+                     name="TaxAmount(LC)"
+                     value={
+                       DiscountTotal ||
+                       (HeaderData && HeaderData.TotalDiscountSC)
+                     }
+                    />
                   </div>
                 </div>
-                <div style={{ width: "23.5rem", marginLeft: "4rem" }}>
+              </div>
+              <div className="header_items_container">
                   <label>Freight</label>
-                  <input readOnly="readOnly" class="form-control" />
+                  <input readOnly="readOnly" class="input" />
                 </div>
-                <br />
-                <div style={{ width: "23.5rem", marginLeft: "4rem" }}>
+                <div className="header_items_container">
                   <label>Tax</label>
                   <input
                     type="number"
-                    class="form-control"
+                    class="input"
                     name="TaxAmount(LC)"
                     readOnly="readOnly"
                     value={gettaxtotal || (HeaderData && HeaderData.VatSumSys)}
                   />
                 </div>
-                <div style={{ width: "23.5rem", marginLeft: "4rem" }}>
+                <div className="header_items_container">
                   <label>Total Payment Due:</label>
                   <input
                     type="text"
@@ -1803,11 +1745,90 @@ export default function PurchaseOrder() {
                     }
                     placeholder=""
                     readOnly="readOnly"
-                    class="form-control"
+                    class="input"
                   />
                 </div>
-              </DIV3>
-            </CardGroup>
+              </div>
+            </div>
+            {localStorage.getItem("documentcontroller") === "R" ? (
+            <div className="button_main_container">
+              <div className="button_container">
+                <button
+                  onClick={() => {
+                    window.location.href = "/Home";
+                  }}
+                  className="form_button"
+                  style={{ backgroundColor: `${redux_response.color}` }}
+                >
+                  OK
+                </button>
+                <button
+                  variant="secondary"
+                  onClick={() => {
+                    window.location.href = "/Home";
+                  }}
+                  className="form_button"
+                  style={{ backgroundColor: `${redux_response.color}` }}
+                >
+                  Cancel
+                </button>
+              </div>
+              <div className="button_container">
+                <button
+                  style={{ backgroundColor: `${redux_response.color}` }}
+                  className="form_button"
+                  onClick={handleShow}
+                >
+                  Copy From
+                </button>{" "}
+                <button
+                  style={{ backgroundColor: `${redux_response.color}` }}
+                  className="form_button"
+                >
+                  Copy To
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="button_main_container">
+              <div className="button_container">
+                <button
+                  onClick={() => {
+                    Submit_PatchFunc();
+                  }}
+                  className="form_button"
+                  style={{ backgroundColor: `${redux_response.color}` }}
+                >
+                  {ButtonName}
+                </button>
+                <button
+                  variant="secondary"
+                  onClick={() => {
+                    window.location.href = "/Home";
+                  }}
+                  className="form_button"
+                  style={{ backgroundColor: `${redux_response.color}` }}
+                >
+                  Cancel
+                </button>
+              </div>
+              <div className="button_container">
+                <button
+                  style={{ backgroundColor: `${redux_response.color}` }}
+                  className="form_button"
+                  onClick={handleShow}
+                >
+                  Copy From
+                </button>
+                <button
+                  style={{ backgroundColor: `${redux_response.color}` }}
+                  className="form_button"
+                >
+                  Copy To
+                </button>
+              </div>
+            </div>
+          )}
           </Form>
         </>
       )}

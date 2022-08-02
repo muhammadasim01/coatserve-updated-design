@@ -1,5 +1,5 @@
 import React from "react";
-
+import store from "../../redux/store";
 import {
   Navbar,
   Nav,
@@ -27,6 +27,7 @@ import { GrDocumentWord } from "react-icons/gr";
 import SkipNextIcon from "@material-ui/icons/SkipNext";
 import { GrDocumentPdf } from "react-icons/gr";
 import { GrDocumentConfig } from "react-icons/gr";
+import { FaSearch } from "react-icons/fa";
 import { BiCalendar } from "react-icons/bi";
 import { GrDocumentTransfer } from "react-icons/gr";
 import { GrDocument } from "react-icons/gr";
@@ -47,8 +48,11 @@ import ScreenLockPortraitIcon from "@material-ui/icons/ScreenLockPortrait";
 import SortByAlphaIcon from "@material-ui/icons/SortByAlpha";
 import { LINKS } from "../../Utils";
 import "../Global/Navbar.css";
-const axios = require("axios");
+import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { ChangeColor } from "../../../src/redux/actions/dynamicColorAction";
 
+const axios = require("axios");
 const Header = ({
   ModuleName,
   HeaderData,
@@ -58,6 +62,7 @@ const Header = ({
   getdocumentname,
   getdocentryforreport,
 }) => {
+  const dispatch = useDispatch();
   const alert = useAlert();
   const [getfromdate, setgetfromdate] = React.useState();
   const [gettodate, setgettodate] = React.useState();
@@ -68,6 +73,13 @@ const Header = ({
     REPORTPOST: `${LINKS.api}/ReportPOSTApi`,
     PATCH: `${LINKS.api}/PATCHApi`,
   };
+  const [color, setColor] = useState("");
+  const colorHandler = (e) => {
+    // console.log("COLOR", e.target.value);
+    dispatch(ChangeColor(e.target.value));
+    setColor(e.target.value);
+  };
+
   React.useEffect(() => {
     (async () => {
       await localStorage.removeItem("getDocEntry");
@@ -340,16 +352,30 @@ const Header = ({
   };
   return (
     <>
-      <Navbar bg="light" expand="lg">
+      <Navbar
+        expand="lg"
+        style={{ backgroundColor: color ? color : "#535b62" }}
+        variant="dark"
+      >
         <Navbar.Brand href="Home">UI</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="mr-auto">
-            <Nav.Link href="">File</Nav.Link>
-            <Nav.Link href="#link">Edit</Nav.Link>
-            <Nav.Link href="#link">View</Nav.Link>
-            <Nav.Link href="#link">Data</Nav.Link>
-            <Nav.Link href="#link">Go To</Nav.Link>
+            <Nav.Link className="ui_nav_link" href="">
+              File
+            </Nav.Link>
+            <Nav.Link className="ui_nav_link" href="#link">
+              Edit
+            </Nav.Link>
+            <Nav.Link className="ui_nav_link" href="#link">
+              View
+            </Nav.Link>
+            <Nav.Link className="ui_nav_link" href="#link">
+              Data
+            </Nav.Link>
+            <Nav.Link className="ui_nav_link" href="#link">
+              Go To
+            </Nav.Link>
             <NavDropdown title="Modules" id="basic-nav-dropdown">
               <div className="mb-2">
                 <DropdownButton
@@ -871,6 +897,14 @@ const Header = ({
             <Nav.Link href="#link">Tools</Nav.Link>
             <Nav.Link href="#link">Window</Nav.Link>
             <Nav.Link href="#link">Help</Nav.Link>
+            <Nav.Link href="#link">
+              <input
+                type="color"
+                name="color"
+                id="color"
+                onChange={colorHandler}
+              />
+            </Nav.Link>
           </Nav>
           <Form inline>
             <FormControl type="text" placeholder="Search" className="mr-sm-2" />
@@ -945,7 +979,12 @@ const Header = ({
 
       <div
         className="col-sm-12 "
-        style={{ backgroundColor: "white", height: "2.5rem", width: "100%" }}
+        style={{
+          backgroundColor: "white",
+          height: "2.5rem",
+          width: "100%",
+          border: "1px solid #ede2e2",
+        }}
       >
         <a
           style={{ color: "black" }}
@@ -1308,6 +1347,20 @@ const Header = ({
           }}
         >
           <HelpOutlineIcon style={{ marginTop: "5px", margin: "5px" }} />{" "}
+        </a>
+        <a
+          style={{ color: "black" }}
+          class=""
+          data-bs-toggle="tooltip"
+          data-bs-placement="top"
+          title="Find"
+          rel=""
+          href="#"
+          onClick={() => {
+            clicHelp();
+          }}
+        >
+          <FaSearch style={{ marginTop: "5px", margin: "5px" }} />{" "}
         </a>
       </div>
     </>

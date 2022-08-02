@@ -30,6 +30,8 @@ import NumberFormat from "react-number-format";
 import { FcCancel } from "react-icons/fc";
 import { GrClose, GrView } from "react-icons/gr";
 import { IoReload } from "react-icons/io5";
+import { useSelector } from "react-redux";
+
 const axios = require("axios");
 const useStyles = makeStyles((theme) => ({
   backdrop: {
@@ -39,6 +41,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Invoice() {
+  const redux_response = useSelector((state) => state.colorReducer);
+
   const alert = useAlert();
   const [SelectShow, setSelectShow] = React.useState();
   const [loading, setLoading] = React.useState(false);
@@ -1945,6 +1949,20 @@ export default function Invoice() {
   };
   return (
     <>
+      <style>{`
+            .nav-tabs .nav-link{
+              color: white !important;
+              background-color: ${
+                redux_response.color ? redux_response.color : "rgb(69 70 73)"
+              } !important;  
+              width: 12rem  !important;
+              height: 24px !important;
+              padding: 0 !important;
+              text-align: center !important;
+            }
+           
+               
+          `}</style>
       <Navbar
         setgetserviceseries={setgetserviceseries}
         getdocumentname={getdocumentname}
@@ -1959,794 +1977,671 @@ export default function Invoice() {
           {/* Upper Side++++++++ */}
           <Form onSubmit={handleSubmitted}>
             <ContextMenuTrigger id="contextmenu">
-              <CardGroup>
-                <DIV3>
-                  <Container fluid>
+              <div className="main_container">
+                <div className="left">
+                  <div className="header_items_container">
                     <label>Vendor</label>
-                    <div
-                      style={{ width: "23.5rem", height: "auto" }}
-                      variant="primary"
-                    >
-                      <Select
-                        isDisabled={changer}
-                        placeholder={
-                          HeaderData &&
-                          HeaderData.VendorCode + " : +" + HeaderData.VendorName
-                        }
-                        options={VendorCodeDropdown} // Options to display in the dropdown
-                        onChange={(e) => {
-                          getdropdownvalue(e, "Vendor");
-                          VendorChange(e);
-                          getvendorvaluefunction(e);
-                        }}
-                        displayValue="name" // Property name to display in the dropdown options
-                      />
-                    </div>
 
+                    <Select
+                      isDisabled={changer}
+                      placeholder={
+                        HeaderData &&
+                        HeaderData.VendorCode + " : +" + HeaderData.VendorName
+                      }
+                      options={VendorCodeDropdown} // Options to display in the dropdown
+                      onChange={(e) => {
+                        getdropdownvalue(e, "Vendor");
+                        VendorChange(e);
+                        getvendorvaluefunction(e);
+                      }}
+                      displayValue="name" // Property name to display in the dropdown options
+                    />
+                  </div>
+
+                  <div className="header_items_container">
                     <label>Broker</label>
-                    <div
-                      style={{ width: "23.5rem", height: "auto" }}
-                      variant="primary"
-                      // onClick={ContactPerson}
-                    >
-                      <Select
-                        isDisabled={changer}
-                        placeholder={
-                          HeaderData &&
-                          HeaderData.Broker + " : +" + HeaderData.BrokerName
-                        }
-                        options={VendorCodeDropdown}
-                        displayValue="name" // Property name to display in the dropdown options
-                        onChange={(e) => {
-                          getdropdownvalue(e, "Broker");
-                          getBrokervaluefunction(e);
-                        }}
-                      />
-                      {/* )} */}
-                    </div>
 
-                    <br />
+                    <Select
+                      isDisabled={changer}
+                      placeholder={
+                        HeaderData &&
+                        HeaderData.Broker + " : +" + HeaderData.BrokerName
+                      }
+                      options={VendorCodeDropdown}
+                      displayValue="name" // Property name to display in the dropdown options
+                      onChange={(e) => {
+                        getdropdownvalue(e, "Broker");
+                        getBrokervaluefunction(e);
+                      }}
+                    />
+                    {/* )} */}
+                  </div>
 
-                    {/* <Button variant='primary' onClick={handleShow}>
+                  {/* <Button variant='primary' onClick={handleShow}>
               Copy From
       </Button> */}
-                    {/* --------------------Start Journal Entry Modal------------------ */}
-                    <Modal
-                      show={JEshow}
-                      onHide={handleClosee}
-                      className="Modal-big"
-                      size="lg"
-                    >
-                      <Modal.Header closeButton>
-                        <Modal.Title id="example-modal-sizes-title-lg">
-                          Journal Entry
-                        </Modal.Title>
-                      </Modal.Header>
-                      <Modal.Body>
-                        <Form>
-                          <CardGroup>
-                            <DIV7>
-                              <Container fluid>
-                                <CardGroup>
-                                  <div
-                                    style={{ width: "10em", height: "auto" }}
-                                  >
-                                    <label>Series</label>
-                                    <Select
-                                      style={{ height: "2px" }}
-                                      options={[
-                                        { label: "Primary", value: "Primary" },
-                                      ]}
-                                    />
-                                  </div>
-                                  <div
-                                    style={{
-                                      width: "10rem",
-                                      height: "auto",
-                                      marginLeft: "2rem",
-                                    }}
-                                  >
-                                    <label>Number</label>
-                                    <input
-                                      type="text"
-                                      readOnly
-                                      class="form-control"
-                                      defaultValue={
-                                        JEHeaderData && JEHeaderData.Number
-                                      }
-                                    ></input>
-                                  </div>
-                                  <div
-                                    style={{
-                                      width: "10rem",
-                                      height: "auto",
-                                      marginLeft: "2rem",
-                                    }}
-                                  >
-                                    <label>Posting Date</label>
-                                    <input
-                                      type="date"
-                                      name="PostingDate"
-                                      class="form-control"
-                                      defaultValue={
-                                        JEHeaderData && JEHeaderData.TaxDate
-                                      }
-                                    ></input>
-                                  </div>
-                                  <div
-                                    style={{
-                                      width: "10rem",
-                                      height: "auto",
-                                      marginLeft: "2rem",
-                                    }}
-                                  >
-                                    <label>Due Date</label>
-                                    <input
-                                      type="date"
-                                      name="DueDate"
-                                      class="form-control"
-                                      defaultValue={
-                                        JEHeaderData && JEHeaderData.TaxDate
-                                      }
-                                    ></input>
-                                  </div>
-                                  <div
-                                    style={{
-                                      width: "10rem",
-                                      height: "auto",
-                                      marginLeft: "2rem",
-                                    }}
-                                  >
-                                    <label>Doc Date</label>
-                                    <input
-                                      type="date"
-                                      name="DocDate"
-                                      class="form-control"
-                                      defaultValue={
-                                        JEHeaderData && JEHeaderData.TaxDate
-                                      }
-                                    ></input>
-                                  </div>
-                                  <div
-                                    style={{
-                                      width: "20rem",
-                                      height: "auto",
-                                      marginLeft: "2rem",
-                                    }}
-                                  >
-                                    <label>Remarks</label>
-                                    <input
-                                      type="text"
-                                      name="Remarks"
-                                      class="form-control"
-                                      defaultValue={
-                                        JEHeaderData && JEHeaderData.Memo
-                                      }
-                                    ></input>
-                                  </div>
-                                </CardGroup>
-                                <CardGroup>
-                                  <div
-                                    style={{ width: "10rem", height: "auto" }}
-                                  >
-                                    <label>Origin No.</label>
-                                    <input
-                                      type="text"
-                                      name="OriginNo"
-                                      class="form-control"
-                                      defaultValue={
-                                        JEHeaderData && JEHeaderData.Reference
-                                      }
-                                    ></input>
-                                  </div>
-                                  <div
-                                    style={{
-                                      width: "10rem",
-                                      height: "auto",
-                                      marginLeft: "2rem",
-                                    }}
-                                  >
-                                    <label>Trans. No</label>
-                                    <input
-                                      type="text"
-                                      name="TransNo"
-                                      class="form-control"
-                                      readOnly
-                                      defaultValue={
-                                        JEHeaderData && JEHeaderData.JdtNum
-                                      }
-                                    ></input>
-                                  </div>
-                                  <div
-                                    style={{
-                                      width: "10rem",
-                                      height: "auto",
-                                      marginLeft: "2rem",
-                                    }}
-                                  >
-                                    <label>Project</label>
-                                    <Select
-                                      placeholder={
-                                        JEHeaderData && JEHeaderData.ProjectCode
-                                      }
-                                    />
-                                  </div>
-                                </CardGroup>
-                                <CardGroup>
-                                  <div
-                                    style={{ width: "10rem", height: "auto" }}
-                                  >
-                                    <label>Ref.1</label>
-                                    <input
-                                      type="text"
-                                      name="Ref_1"
-                                      class="form-control"
-                                      defaultValue={
-                                        JEHeaderData && JEHeaderData.Reference
-                                      }
-                                    ></input>
-                                  </div>
-                                  <div
-                                    style={{
-                                      width: "10rem",
-                                      height: "auto",
-                                      marginLeft: "2rem",
-                                    }}
-                                  >
-                                    <label>Ref.2</label>
-                                    <input
-                                      type="text"
-                                      name="Ref_2"
-                                      class="form-control"
-                                      defaultValue={
-                                        JEHeaderData && JEHeaderData.Reference2
-                                      }
-                                    ></input>
-                                  </div>
-                                  <div
-                                    style={{
-                                      width: "10rem",
-                                      height: "auto",
-                                      marginLeft: "2rem",
-                                    }}
-                                  >
-                                    <label>Ref.3</label>
-                                    <input
-                                      type="text"
-                                      name="Ref_3"
-                                      class="form-control"
-                                      defaultValue={
-                                        JEHeaderData && JEHeaderData.Reference3
-                                      }
-                                    ></input>
-                                  </div>
-                                  <br />
-                                  <br />
-                                </CardGroup>
-                                <div style={{ width: "22rem", height: "auto" }}>
-                                  <label>Charts Of Accounts</label>
+                  {/* --------------------Start Journal Entry Modal------------------ */}
+                  <Modal
+                    show={JEshow}
+                    onHide={handleClosee}
+                    className="Modal-big"
+                    size="lg"
+                  >
+                    <Modal.Header closeButton>
+                      <Modal.Title id="example-modal-sizes-title-lg">
+                        Journal Entry
+                      </Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                      <Form>
+                        <CardGroup>
+                          <DIV7>
+                            <Container fluid>
+                              <CardGroup>
+                                <div style={{ width: "10em", height: "auto" }}>
+                                  <label>Series</label>
                                   <Select
-                                    isMulti
-                                    placeholder="Select"
-                                    options={ItemsDropDown}
-                                    // onChange={ItemsDropDownfunc}
-                                    displayValue="name"
+                                    style={{ height: "2px" }}
+                                    options={[
+                                      { label: "Primary", value: "Primary" },
+                                    ]}
                                   />
                                 </div>
-                              </Container>
-                              <br />
-                              <br />
-                              <br />
-                              <br />
-                              <br />
-                            </DIV7>
-                            <DIV6>
-                              <Container></Container>
-                            </DIV6>
-                          </CardGroup>
-                          <Tabs
-                            defaultActiveKey="Contents"
-                            transition={false}
-                            id="noanim-tab-example"
-                          >
-                            <Tab eventKey="Contents" title="Contents">
-                              <div>
-                                {JournalEntryLines && (
-                                  <Table responsive striped bordered hover>
-                                    {Array.isArray(JournalEntryLines) &&
-                                    JournalEntryLines.length > 0 ? (
-                                      <TableHead>
-                                        <tr>
-                                          <th> #</th>
-                                          <th>G/L Acct/BP Code</th>
-                                          <th>G/L Acct/BP Name</th>
-                                          <th>Debit</th>
-                                          <th>Credit</th>
-                                          <th>Empolee id</th>
-                                          <th>Remarks</th>
-                                          <th>Ref. 1</th>
-                                          <th>Ref.3</th>
-                                          <th>Project</th>
-                                          <th>Cost Center</th>
-                                        </tr>
-                                      </TableHead>
-                                    ) : null}
-                                    <tbody>
-                                      {JournalEntryLines.map((item, index) => (
-                                        <tr key={`${index}`}>
-                                          <TD>{index + 1}</TD>
-                                          <TD>{item.AccountCode}</TD>
-                                          <TD>{item.AccountName}</TD>
-                                          <TD>{item.Debit}</TD>
-                                          <TD>{item.Credit}</TD>
-                                          <TD>{item.U_EmployeeID}</TD>
-                                          <TD>{item.LineMemo}</TD>
-                                          <TD>{item.Reference1}</TD>
-                                          <TD>{item.Reference2}</TD>
-                                          <TD>{item.ProjectCode}</TD>
-                                          <TD>{item.CostingCode}</TD>
-                                        </tr>
-                                      ))}
-                                      <tr>
-                                        <TD></TD>
-                                        <TD></TD>
-                                        <TD></TD>
-                                        <TD>{gettotaldebit}</TD>
-                                        <TD>{gettotalcredit}</TD>
-                                        <TD></TD>
-                                        <TD></TD>
-                                        <TD></TD>
-                                        <TD></TD>
-                                        <TD></TD>
-                                        <TD></TD>
-                                      </tr>
-                                    </tbody>
-                                  </Table>
-                                )}
+                                <div
+                                  style={{
+                                    width: "10rem",
+                                    height: "auto",
+                                    marginLeft: "2rem",
+                                  }}
+                                >
+                                  <label>Number</label>
+                                  <input
+                                    type="text"
+                                    readOnly
+                                    class="form-control"
+                                    defaultValue={
+                                      JEHeaderData && JEHeaderData.Number
+                                    }
+                                  ></input>
+                                </div>
+                                <div
+                                  style={{
+                                    width: "10rem",
+                                    height: "auto",
+                                    marginLeft: "2rem",
+                                  }}
+                                >
+                                  <label>Posting Date</label>
+                                  <input
+                                    type="date"
+                                    name="PostingDate"
+                                    class="form-control"
+                                    defaultValue={
+                                      JEHeaderData && JEHeaderData.TaxDate
+                                    }
+                                  ></input>
+                                </div>
+                                <div
+                                  style={{
+                                    width: "10rem",
+                                    height: "auto",
+                                    marginLeft: "2rem",
+                                  }}
+                                >
+                                  <label>Due Date</label>
+                                  <input
+                                    type="date"
+                                    name="DueDate"
+                                    class="form-control"
+                                    defaultValue={
+                                      JEHeaderData && JEHeaderData.TaxDate
+                                    }
+                                  ></input>
+                                </div>
+                                <div
+                                  style={{
+                                    width: "10rem",
+                                    height: "auto",
+                                    marginLeft: "2rem",
+                                  }}
+                                >
+                                  <label>Doc Date</label>
+                                  <input
+                                    type="date"
+                                    name="DocDate"
+                                    class="form-control"
+                                    defaultValue={
+                                      JEHeaderData && JEHeaderData.TaxDate
+                                    }
+                                  ></input>
+                                </div>
+                                <div
+                                  style={{
+                                    width: "20rem",
+                                    height: "auto",
+                                    marginLeft: "2rem",
+                                  }}
+                                >
+                                  <label>Remarks</label>
+                                  <input
+                                    type="text"
+                                    name="Remarks"
+                                    class="form-control"
+                                    defaultValue={
+                                      JEHeaderData && JEHeaderData.Memo
+                                    }
+                                  ></input>
+                                </div>
+                              </CardGroup>
+                              <CardGroup>
+                                <div style={{ width: "10rem", height: "auto" }}>
+                                  <label>Origin No.</label>
+                                  <input
+                                    type="text"
+                                    name="OriginNo"
+                                    class="form-control"
+                                    defaultValue={
+                                      JEHeaderData && JEHeaderData.Reference
+                                    }
+                                  ></input>
+                                </div>
+                                <div
+                                  style={{
+                                    width: "10rem",
+                                    height: "auto",
+                                    marginLeft: "2rem",
+                                  }}
+                                >
+                                  <label>Trans. No</label>
+                                  <input
+                                    type="text"
+                                    name="TransNo"
+                                    class="form-control"
+                                    readOnly
+                                    defaultValue={
+                                      JEHeaderData && JEHeaderData.JdtNum
+                                    }
+                                  ></input>
+                                </div>
+                                <div
+                                  style={{
+                                    width: "10rem",
+                                    height: "auto",
+                                    marginLeft: "2rem",
+                                  }}
+                                >
+                                  <label>Project</label>
+                                  <Select
+                                    placeholder={
+                                      JEHeaderData && JEHeaderData.ProjectCode
+                                    }
+                                  />
+                                </div>
+                              </CardGroup>
+                              <CardGroup>
+                                <div style={{ width: "10rem", height: "auto" }}>
+                                  <label>Ref.1</label>
+                                  <input
+                                    type="text"
+                                    name="Ref_1"
+                                    class="form-control"
+                                    defaultValue={
+                                      JEHeaderData && JEHeaderData.Reference
+                                    }
+                                  ></input>
+                                </div>
+                                <div
+                                  style={{
+                                    width: "10rem",
+                                    height: "auto",
+                                    marginLeft: "2rem",
+                                  }}
+                                >
+                                  <label>Ref.2</label>
+                                  <input
+                                    type="text"
+                                    name="Ref_2"
+                                    class="form-control"
+                                    defaultValue={
+                                      JEHeaderData && JEHeaderData.Reference2
+                                    }
+                                  ></input>
+                                </div>
+                                <div
+                                  style={{
+                                    width: "10rem",
+                                    height: "auto",
+                                    marginLeft: "2rem",
+                                  }}
+                                >
+                                  <label>Ref.3</label>
+                                  <input
+                                    type="text"
+                                    name="Ref_3"
+                                    class="form-control"
+                                    defaultValue={
+                                      JEHeaderData && JEHeaderData.Reference3
+                                    }
+                                  ></input>
+                                </div>
+                                <br />
+                                <br />
+                              </CardGroup>
+                              <div style={{ width: "22rem", height: "auto" }}>
+                                <label>Charts Of Accounts</label>
+                                <Select
+                                  isMulti
+                                  placeholder="Select"
+                                  options={ItemsDropDown}
+                                  // onChange={ItemsDropDownfunc}
+                                  displayValue="name"
+                                />
                               </div>
-                            </Tab>
-                            <Tab eventKey="Attachment" title="Attachment">
-                              <Attachment
-                                setattachmentresponse={setattachmentresponse}
-                              />
-                            </Tab>
-                          </Tabs>
-                          <DIV3>
-                            <Container fluid></Container>
-                          </DIV3>
-                          <br />
-                          <br />
-                          <div style={{ marginLeft: "2rem" }}>
-                            <Button
-                              style={{ marginLeft: "5%" }}
-                              type="reset"
-                              onClick={() => {
-                                handleClosee();
-                              }}
-                            >
-                              OK
-                            </Button>
-                            <Button
-                              style={{ marginLeft: "5%" }}
-                              onClick={() => {
-                                handleClosee();
-                              }}
-                              type="reset"
-                            >
-                              Cancel
-                            </Button>
-                          </div>
-                        </Form>
-                      </Modal.Body>
-                      <Modal.Footer></Modal.Footer>
-                    </Modal>
-                    {/* --------------------End Journal Entry Modal------------------ */}
-                    <br />
-                    <Dropdown>
-                      <Dropdown.Toggle variant="secondary" id="dropdown-basic">
-                        Copy From
-                      </Dropdown.Toggle>
-                      <Dropdown.Menu>
-                        <Dropdown.Item onClick={handleShow}>
-                          Goods Receipt PO
-                        </Dropdown.Item>
-                        {/* <Dropdown.Item onClick={handleShowLC}>Landed Cost</Dropdown.Item> */}
-                        <Dropdown.Item onClick={handleShowAR}>
-                          A/P Invoice
-                        </Dropdown.Item>
-                        {/* <Dropdown.Item  onClick={handleShowAP}>A/P Invoice</Dropdown.Item> */}
-                      </Dropdown.Menu>
-                    </Dropdown>
-                    <Modal
-                      show={show}
-                      onHide={handleClose}
-                      className="Modal-big"
-                      size="lg"
-                    >
-                      <Modal.Header closeButton>
-                        <Modal.Title id="example-modal-sizes-title-lg">
-                          Open GRPO List
-                        </Modal.Title>
-                      </Modal.Header>
-                      <Modal.Body>
-                        {PrRe && (
-                          <Table responsive>
-                            <TableHead>
-                              <tr>
-                                <th>#</th>
-                                <th>Document No.</th>
-                                <th>Vendor</th>
-                                <th>Remarks</th>
-                                <th>DocumentStatus</th>
-                              </tr>
-                            </TableHead>
-                            <tbody>
-                              {PrRe.map((item, index) => (
-                                <tr
-                                  key={`${index}`}
-                                  onClick={(e) => {
-                                    selectPR(item);
-                                    handleClose();
-                                  }}
-                                >
-                                  <TD>{index + 1}</TD>
-                                  <TD>{item.DocNum}</TD>
-                                  <TD>{item.CardName}</TD>
-                                  <TD>{item.Comments}</TD>
-                                  <TD>{item.DocumentStatus}</TD>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </Table>
-                        )}
-                      </Modal.Body>
-                      <Modal.Footer>
-                        <Button
-                          variant="secondary"
-                          onClick={() => {
-                            handleShowModalTwo();
-                            handleClose();
-                          }}
+                            </Container>
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                          </DIV7>
+                          <DIV6>
+                            <Container></Container>
+                          </DIV6>
+                        </CardGroup>
+                        <Tabs
+                          defaultActiveKey="Contents"
+                          transition={false}
+                          id="noanim-tab-example"
                         >
-                          Choose
-                        </Button>
-                        <Button variant="primary" onClick={handleClose}>
-                          Cancel
-                        </Button>
-                      </Modal.Footer>
-                    </Modal>
-                    <Modal
-                      show={showLC}
-                      onHide={handleCloseLC}
-                      className="Modal-big"
-                      size="lg"
-                    >
-                      <Modal.Header closeButton>
-                        <Modal.Title id="example-modal-sizes-title-lg">
-                          Document List
-                        </Modal.Title>
-                      </Modal.Header>
-                      <Modal.Body>
-                        {LACO && (
-                          <Table responsive>
-                            <TableHead>
-                              <tr>
-                                <th>#</th>
-                                <th>Vendor</th>
-                                <th>Remarks</th>
-                                <th>Posting Date</th>
+                          <Tab eventKey="Contents" title="Contents">
+                            <div>
+                              {JournalEntryLines && (
+                                <Table responsive striped bordered hover>
+                                  {Array.isArray(JournalEntryLines) &&
+                                  JournalEntryLines.length > 0 ? (
+                                    <TableHead>
+                                      <tr>
+                                        <th> #</th>
+                                        <th>G/L Acct/BP Code</th>
+                                        <th>G/L Acct/BP Name</th>
+                                        <th>Debit</th>
+                                        <th>Credit</th>
+                                        <th>Empolee id</th>
+                                        <th>Remarks</th>
+                                        <th>Ref. 1</th>
+                                        <th>Ref.3</th>
+                                        <th>Project</th>
+                                        <th>Cost Center</th>
+                                      </tr>
+                                    </TableHead>
+                                  ) : null}
+                                  <tbody>
+                                    {JournalEntryLines.map((item, index) => (
+                                      <tr key={`${index}`}>
+                                        <TD>{index + 1}</TD>
+                                        <TD>{item.AccountCode}</TD>
+                                        <TD>{item.AccountName}</TD>
+                                        <TD>{item.Debit}</TD>
+                                        <TD>{item.Credit}</TD>
+                                        <TD>{item.U_EmployeeID}</TD>
+                                        <TD>{item.LineMemo}</TD>
+                                        <TD>{item.Reference1}</TD>
+                                        <TD>{item.Reference2}</TD>
+                                        <TD>{item.ProjectCode}</TD>
+                                        <TD>{item.CostingCode}</TD>
+                                      </tr>
+                                    ))}
+                                    <tr>
+                                      <TD></TD>
+                                      <TD></TD>
+                                      <TD></TD>
+                                      <TD>{gettotaldebit}</TD>
+                                      <TD>{gettotalcredit}</TD>
+                                      <TD></TD>
+                                      <TD></TD>
+                                      <TD></TD>
+                                      <TD></TD>
+                                      <TD></TD>
+                                      <TD></TD>
+                                    </tr>
+                                  </tbody>
+                                </Table>
+                              )}
+                            </div>
+                          </Tab>
+                          <Tab eventKey="Attachment" title="Attachment">
+                            <Attachment
+                              setattachmentresponse={setattachmentresponse}
+                            />
+                          </Tab>
+                        </Tabs>
+                        <DIV3>
+                          <Container fluid></Container>
+                        </DIV3>
+                        <br />
+                        <br />
+                        <div style={{ marginLeft: "2rem" }}>
+                          <Button
+                            style={{ marginLeft: "5%" }}
+                            type="reset"
+                            onClick={() => {
+                              handleClosee();
+                            }}
+                          >
+                            OK
+                          </Button>
+                          <Button
+                            style={{ marginLeft: "5%" }}
+                            onClick={() => {
+                              handleClosee();
+                            }}
+                            type="reset"
+                          >
+                            Cancel
+                          </Button>
+                        </div>
+                      </Form>
+                    </Modal.Body>
+                    <Modal.Footer></Modal.Footer>
+                  </Modal>
+                  {/* --------------------End Journal Entry Modal------------------ */}
+                  <br />
+                  <Dropdown>
+                    <Dropdown.Toggle variant="secondary" id="dropdown-basic">
+                      Copy From
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                      <Dropdown.Item onClick={handleShow}>
+                        Goods Receipt PO
+                      </Dropdown.Item>
+                      {/* <Dropdown.Item onClick={handleShowLC}>Landed Cost</Dropdown.Item> */}
+                      <Dropdown.Item onClick={handleShowAR}>
+                        A/P Invoice
+                      </Dropdown.Item>
+                      {/* <Dropdown.Item  onClick={handleShowAP}>A/P Invoice</Dropdown.Item> */}
+                    </Dropdown.Menu>
+                  </Dropdown>
+                  <Modal
+                    show={show}
+                    onHide={handleClose}
+                    className="Modal-big"
+                    size="lg"
+                  >
+                    <Modal.Header closeButton>
+                      <Modal.Title id="example-modal-sizes-title-lg">
+                        Open GRPO List
+                      </Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                      {PrRe && (
+                        <Table responsive>
+                          <TableHead>
+                            <tr>
+                              <th>#</th>
+                              <th>Document No.</th>
+                              <th>Vendor</th>
+                              <th>Remarks</th>
+                              <th>DocumentStatus</th>
+                            </tr>
+                          </TableHead>
+                          <tbody>
+                            {PrRe.map((item, index) => (
+                              <tr
+                                key={`${index}`}
+                                onClick={(e) => {
+                                  selectPR(item);
+                                  handleClose();
+                                }}
+                              >
+                                <TD>{index + 1}</TD>
+                                <TD>{item.DocNum}</TD>
+                                <TD>{item.CardName}</TD>
+                                <TD>{item.Comments}</TD>
+                                <TD>{item.DocumentStatus}</TD>
                               </tr>
-                            </TableHead>
-                            <tbody>
-                              {LACO.map((item, index) => (
-                                <tr
-                                  key={`${index}`}
-                                  onClick={(e) => {
-                                    selectLandedcost(item);
-                                    handleCloseLC();
-                                  }}
-                                >
-                                  <TD>{index + 1}</TD>
-                                  <TD>{item.VendorName}</TD>
-                                  <TD>{item.Remarks}</TD>
-                                  <TD>{item.PostingDate}</TD>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </Table>
-                        )}
-                      </Modal.Body>
-                      <Modal.Footer>
-                        <Button
-                          variant="secondary"
-                          onClick={() => {
-                            handleCloseLC();
-                          }}
-                        >
-                          Choose
-                        </Button>
-                        <Button variant="primary" onClick={handleClose}>
-                          Cancel
-                        </Button>
-                      </Modal.Footer>
-                    </Modal>
-                    <Modal
-                      show={showAR}
-                      onHide={handleCloseAR}
-                      className="Modal-big"
-                      size="lg"
-                    >
-                      <Modal.Header closeButton>
-                        <Modal.Title id="example-modal-sizes-title-lg">
-                          Open Invoice List
-                        </Modal.Title>
-                      </Modal.Header>
-                      <Modal.Body>
-                        {ARIN && (
-                          <Table responsive>
-                            <TableHead>
-                              <tr>
-                                <th>#</th>
-                                <th>Document No.</th>
-                                <th>Vendor</th>
-                                <th>Remarks</th>
-                                <th>DocumentStatus</th>
+                            ))}
+                          </tbody>
+                        </Table>
+                      )}
+                    </Modal.Body>
+                    <Modal.Footer>
+                      <Button
+                        variant="secondary"
+                        onClick={() => {
+                          handleShowModalTwo();
+                          handleClose();
+                        }}
+                      >
+                        Choose
+                      </Button>
+                      <Button variant="primary" onClick={handleClose}>
+                        Cancel
+                      </Button>
+                    </Modal.Footer>
+                  </Modal>
+                  <Modal
+                    show={showLC}
+                    onHide={handleCloseLC}
+                    className="Modal-big"
+                    size="lg"
+                  >
+                    <Modal.Header closeButton>
+                      <Modal.Title id="example-modal-sizes-title-lg">
+                        Document List
+                      </Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                      {LACO && (
+                        <Table responsive>
+                          <TableHead>
+                            <tr>
+                              <th>#</th>
+                              <th>Vendor</th>
+                              <th>Remarks</th>
+                              <th>Posting Date</th>
+                            </tr>
+                          </TableHead>
+                          <tbody>
+                            {LACO.map((item, index) => (
+                              <tr
+                                key={`${index}`}
+                                onClick={(e) => {
+                                  selectLandedcost(item);
+                                  handleCloseLC();
+                                }}
+                              >
+                                <TD>{index + 1}</TD>
+                                <TD>{item.VendorName}</TD>
+                                <TD>{item.Remarks}</TD>
+                                <TD>{item.PostingDate}</TD>
                               </tr>
-                            </TableHead>
-                            <tbody>
-                              {ARIN.map((item, index) => (
-                                <tr
-                                  key={`${index}`}
-                                  onClick={(e) => {
-                                    selectAR(item);
-                                    handleCloseAR();
-                                  }}
-                                >
-                                  <TD>{index + 1}</TD>
-                                  <TD>{item.DocNum}</TD>
-                                  <TD>{item.CardName}</TD>
-                                  <TD>{item.Comments}</TD>
-                                  <TD>{item.DocumentStatus}</TD>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </Table>
-                        )}
-                      </Modal.Body>
-                      <Modal.Footer>
-                        <Button
-                          variant="secondary"
-                          onClick={() => {
-                            handleCloseAR();
-                          }}
-                        >
-                          Choose
-                        </Button>
-                        <Button variant="primary" onClick={handleClose}>
-                          Cancel
-                        </Button>
-                      </Modal.Footer>
-                    </Modal>
-                    <Modal
-                      show={showAP}
-                      onHide={handleCloseAP}
-                      className="Modal-big"
-                      size="lg"
-                    >
-                      <Modal.Header closeButton>
-                        <Modal.Title id="example-modal-sizes-title-lg">
-                          Open Invoice List
-                        </Modal.Title>
-                      </Modal.Header>
-                      <Modal.Body>
-                        {APIN && (
-                          <Table responsive>
-                            <TableHead>
-                              <tr>
-                                <th>#</th>
-                                <th>Document No.</th>
-                                <th>Vendor</th>
-                                <th>Remarks</th>
-                                <th>DocumentStatus</th>
+                            ))}
+                          </tbody>
+                        </Table>
+                      )}
+                    </Modal.Body>
+                    <Modal.Footer>
+                      <Button
+                        variant="secondary"
+                        onClick={() => {
+                          handleCloseLC();
+                        }}
+                      >
+                        Choose
+                      </Button>
+                      <Button variant="primary" onClick={handleClose}>
+                        Cancel
+                      </Button>
+                    </Modal.Footer>
+                  </Modal>
+                  <Modal
+                    show={showAR}
+                    onHide={handleCloseAR}
+                    className="Modal-big"
+                    size="lg"
+                  >
+                    <Modal.Header closeButton>
+                      <Modal.Title id="example-modal-sizes-title-lg">
+                        Open Invoice List
+                      </Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                      {ARIN && (
+                        <Table responsive>
+                          <TableHead>
+                            <tr>
+                              <th>#</th>
+                              <th>Document No.</th>
+                              <th>Vendor</th>
+                              <th>Remarks</th>
+                              <th>DocumentStatus</th>
+                            </tr>
+                          </TableHead>
+                          <tbody>
+                            {ARIN.map((item, index) => (
+                              <tr
+                                key={`${index}`}
+                                onClick={(e) => {
+                                  selectAR(item);
+                                  handleCloseAR();
+                                }}
+                              >
+                                <TD>{index + 1}</TD>
+                                <TD>{item.DocNum}</TD>
+                                <TD>{item.CardName}</TD>
+                                <TD>{item.Comments}</TD>
+                                <TD>{item.DocumentStatus}</TD>
                               </tr>
-                            </TableHead>
-                            <tbody>
-                              {APIN.map((item, index) => (
-                                <tr
-                                  key={`${index}`}
-                                  onClick={(e) => {
-                                    selectAR(item);
-                                    handleCloseAP();
-                                  }}
-                                >
-                                  <TD>{index + 1}</TD>
-                                  <TD>{item.DocNum}</TD>
-                                  <TD>{item.CardName}</TD>
-                                  <TD>{item.Comments}</TD>
-                                  <TD>{item.DocumentStatus}</TD>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </Table>
-                        )}
-                      </Modal.Body>
-                      <Modal.Footer>
-                        <Button
-                          variant="secondary"
-                          onClick={() => {
-                            handleCloseAP();
-                          }}
-                        >
-                          Choose
-                        </Button>
-                        <Button variant="primary" onClick={handleCloseAP}>
-                          Cancel
-                        </Button>
-                      </Modal.Footer>
-                    </Modal>
-                    <Modal
-                      show={showLa}
-                      onHide={handleCloseLa}
-                      className="Modal-big"
-                      size="lg"
-                    >
-                      <Modal.Header closeButton>
-                        <Modal.Title id="example-modal-sizes-title-lg">
-                          Landed Cost - Setup
-                        </Modal.Title>
-                      </Modal.Header>
-                      <Modal.Body>
-                        {LaCost && (
-                          <Table responsive>
-                            <TableHead>
-                              <tr>
-                                <th>#</th>
-                                <th>Code</th>
-                                <th>Name</th>
-                                <th>Allocation By</th>
-                                <th>Landed Cost Alloc. Account</th>
+                            ))}
+                          </tbody>
+                        </Table>
+                      )}
+                    </Modal.Body>
+                    <Modal.Footer>
+                      <Button
+                        variant="secondary"
+                        onClick={() => {
+                          handleCloseAR();
+                        }}
+                      >
+                        Choose
+                      </Button>
+                      <Button variant="primary" onClick={handleClose}>
+                        Cancel
+                      </Button>
+                    </Modal.Footer>
+                  </Modal>
+                  <Modal
+                    show={showAP}
+                    onHide={handleCloseAP}
+                    className="Modal-big"
+                    size="lg"
+                  >
+                    <Modal.Header closeButton>
+                      <Modal.Title id="example-modal-sizes-title-lg">
+                        Open Invoice List
+                      </Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                      {APIN && (
+                        <Table responsive>
+                          <TableHead>
+                            <tr>
+                              <th>#</th>
+                              <th>Document No.</th>
+                              <th>Vendor</th>
+                              <th>Remarks</th>
+                              <th>DocumentStatus</th>
+                            </tr>
+                          </TableHead>
+                          <tbody>
+                            {APIN.map((item, index) => (
+                              <tr
+                                key={`${index}`}
+                                onClick={(e) => {
+                                  selectAR(item);
+                                  handleCloseAP();
+                                }}
+                              >
+                                <TD>{index + 1}</TD>
+                                <TD>{item.DocNum}</TD>
+                                <TD>{item.CardName}</TD>
+                                <TD>{item.Comments}</TD>
+                                <TD>{item.DocumentStatus}</TD>
                               </tr>
-                            </TableHead>
-                            <tbody>
-                              {LaCost.map((item, index) => (
-                                <tr
-                                  key={`${index}`}
-                                  //  onClick={e => {
-                                  // selectPR(item)
-                                  // handleClose()
-                                  // }}
-                                >
-                                  <TD>
-                                    {index + 1}
-                                    {/* {setCostindex(index + 1)} */}
-                                  </TD>
-                                  <TD>
-                                    <div>
-                                      <input
-                                        placeholder={item.Code}
-                                        type="text"
-                                        name="Code"
-                                        class="form-control"
-                                        readOnly
-                                      />
-                                    </div>
-                                  </TD>
-                                  <TD>
-                                    <div>
-                                      <input
-                                        placeholder={item.Name}
-                                        type="text"
-                                        name="Code"
-                                        class="form-control"
-                                        onChange={(e) => {
-                                          valuechangefunction(e);
-                                          setButtonNameLA("Update");
-                                        }}
-                                      />
-                                    </div>
-                                  </TD>
-                                  <TD>
-                                    {" "}
-                                    <div>
-                                      <Select
-                                        menuPortalTarget={document.body}
-                                        placeholder={
-                                          item.AllocationBy ===
-                                          "ab_CashValueBeforeCustoms" ? (
-                                            <p>Cash Value Before Customs</p>
-                                          ) : item.AllocationBy ===
-                                            "ab_CashValueAfterCustoms" ? (
-                                            <p>Cash Value After Customs</p>
-                                          ) : item.AllocationBy ===
-                                            "ab_Quantity" ? (
-                                            <p>Quantity</p>
-                                          ) : item.AllocationBy ===
-                                            "ab_Weight" ? (
-                                            <p>Weight</p>
-                                          ) : item.AllocationBy ===
-                                            "ab_Volume" ? (
-                                            <p>Volume</p>
-                                          ) : null
-                                        }
-                                        options={[
-                                          {
-                                            value: "asCashValueBeforeCustoms",
-                                            label: "Cash Value Before Customs",
-                                          },
-                                          {
-                                            value: "asCashValueAfterCustoms",
-                                            label: "Cash Value After Customs",
-                                          },
-                                          {
-                                            value: "asQuantity",
-                                            label: "Quantity",
-                                          },
-                                          {
-                                            value: "asWeight",
-                                            label: "Weight",
-                                          },
-                                          {
-                                            value: "asVolume",
-                                            label: "Volume",
-                                          },
-                                        ]} // Options to display in the dropdown
-                                        onChange={(e) => {
-                                          valuedropfunction(
-                                            e,
-                                            index,
-                                            "AllocationBy"
-                                          );
-                                        }}
-                                        displayValue="name" // Property name to display in the dropdown options
-                                      />
-                                    </div>
-                                  </TD>
-                                  <TD>
-                                    {" "}
-                                    <div>
-                                      <Select
-                                        menuPortalTarget={document.body}
-                                        placeholder={
-                                          item.LandedCostsAllocationAccount
-                                        }
-                                        options={ItemsDropDown} // Options to display in the dropdown
-                                        onChange={(e) => {
-                                          getVendordropdownvalue(
-                                            e,
-                                            "LandedCostsAllocationAccount"
-                                          );
-                                        }}
-                                        displayValue="name" // Property name to display in the dropdown options
-                                      />
-                                    </div>
-                                  </TD>
-                                </tr>
-                              ))}
-                              <tr>
-                                <TD></TD>
+                            ))}
+                          </tbody>
+                        </Table>
+                      )}
+                    </Modal.Body>
+                    <Modal.Footer>
+                      <Button
+                        variant="secondary"
+                        onClick={() => {
+                          handleCloseAP();
+                        }}
+                      >
+                        Choose
+                      </Button>
+                      <Button variant="primary" onClick={handleCloseAP}>
+                        Cancel
+                      </Button>
+                    </Modal.Footer>
+                  </Modal>
+                  <Modal
+                    show={showLa}
+                    onHide={handleCloseLa}
+                    className="Modal-big"
+                    size="lg"
+                  >
+                    <Modal.Header closeButton>
+                      <Modal.Title id="example-modal-sizes-title-lg">
+                        Landed Cost - Setup
+                      </Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                      {LaCost && (
+                        <Table responsive>
+                          <TableHead>
+                            <tr>
+                              <th>#</th>
+                              <th>Code</th>
+                              <th>Name</th>
+                              <th>Allocation By</th>
+                              <th>Landed Cost Alloc. Account</th>
+                            </tr>
+                          </TableHead>
+                          <tbody>
+                            {LaCost.map((item, index) => (
+                              <tr
+                                key={`${index}`}
+                                //  onClick={e => {
+                                // selectPR(item)
+                                // handleClose()
+                                // }}
+                              >
                                 <TD>
-                                  {" "}
+                                  {index + 1}
+                                  {/* {setCostindex(index + 1)} */}
+                                </TD>
+                                <TD>
                                   <div>
                                     <input
+                                      placeholder={item.Code}
                                       type="text"
                                       name="Code"
                                       class="form-control"
-                                      // defaultValue={item.FreeText}
-                                      onChange={(e) => {
-                                        valuechangefunction(e);
-                                        setButtonNameLA("Update");
-                                      }}
+                                      readOnly
                                     />
                                   </div>
                                 </TD>
                                 <TD>
-                                  {" "}
                                   <div>
                                     <input
+                                      placeholder={item.Name}
                                       type="text"
-                                      name="Name"
+                                      name="Code"
                                       class="form-control"
-                                      // defaultValue={item.FreeText}
                                       onChange={(e) => {
                                         valuechangefunction(e);
                                         setButtonNameLA("Update");
@@ -2759,29 +2654,52 @@ export default function Invoice() {
                                   <div>
                                     <Select
                                       menuPortalTarget={document.body}
-                                      placeholder="Select.."
+                                      placeholder={
+                                        item.AllocationBy ===
+                                        "ab_CashValueBeforeCustoms" ? (
+                                          <p>Cash Value Before Customs</p>
+                                        ) : item.AllocationBy ===
+                                          "ab_CashValueAfterCustoms" ? (
+                                          <p>Cash Value After Customs</p>
+                                        ) : item.AllocationBy ===
+                                          "ab_Quantity" ? (
+                                          <p>Quantity</p>
+                                        ) : item.AllocationBy ===
+                                          "ab_Weight" ? (
+                                          <p>Weight</p>
+                                        ) : item.AllocationBy ===
+                                          "ab_Volume" ? (
+                                          <p>Volume</p>
+                                        ) : null
+                                      }
                                       options={[
                                         {
-                                          value: "ab_CashValueBeforeCustoms",
+                                          value: "asCashValueBeforeCustoms",
                                           label: "Cash Value Before Customs",
                                         },
                                         {
-                                          value: "ab_CashValueAfterCustoms",
+                                          value: "asCashValueAfterCustoms",
                                           label: "Cash Value After Customs",
                                         },
                                         {
-                                          value: "ab_Quantity",
+                                          value: "asQuantity",
                                           label: "Quantity",
                                         },
-                                        { value: "ab_Weight", label: "Weight" },
-                                        { value: "ab_Volume", label: "Volume" },
+                                        {
+                                          value: "asWeight",
+                                          label: "Weight",
+                                        },
+                                        {
+                                          value: "asVolume",
+                                          label: "Volume",
+                                        },
                                       ]} // Options to display in the dropdown
                                       onChange={(e) => {
-                                        getVendordropdownvalue(
+                                        valuedropfunction(
                                           e,
+                                          index,
                                           "AllocationBy"
                                         );
-                                        setButtonNameLA("Update");
                                       }}
                                       displayValue="name" // Property name to display in the dropdown options
                                     />
@@ -2792,382 +2710,440 @@ export default function Invoice() {
                                   <div>
                                     <Select
                                       menuPortalTarget={document.body}
-                                      placeholder="Select.."
+                                      placeholder={
+                                        item.LandedCostsAllocationAccount
+                                      }
                                       options={ItemsDropDown} // Options to display in the dropdown
                                       onChange={(e) => {
                                         getVendordropdownvalue(
                                           e,
                                           "LandedCostsAllocationAccount"
                                         );
-                                        setButtonNameLA("Update");
                                       }}
                                       displayValue="name" // Property name to display in the dropdown options
                                     />
                                   </div>
                                 </TD>
                               </tr>
-                            </tbody>
-                          </Table>
-                        )}
-                      </Modal.Body>
-                      <Modal.Footer>
-                        <Button
-                          variant="secondary"
-                          onClick={() => {
-                            Submit_PatchLLCSFunc();
-                            LandedCostCode();
-                            // afterSubmission(e)
-                            // handleCloseLa()
-                          }}
-                        >
-                          {ButtonNameLA}
-                        </Button>
-                        <Button variant="primary" onClick={handleDelete}>
-                          Cancel
-                        </Button>
-                      </Modal.Footer>
-                    </Modal>
-                    <Modal
-                      show={modalTwo === "modal-two"}
-                      className="Modal-big"
-                      size="lg"
-                    >
-                      <Modal.Title id="example-modal-sizes-title-lg">
-                        List of GRPO
-                      </Modal.Title>
-                      <Modal.Body>
-                        {PQDocumentLines && (
-                          <Table responsive striped bordered hover>
-                            <TableHead>
-                              <tr>
-                                <th>#</th>
-                                <th>Bar Code</th>
-                                <th>Item No.</th>
-                                <th>Item Description</th>
-                                <th>UoM Name</th>
-                                <th>Free Text</th>
-                                <th>Quantity</th>
-                                <th>Delivery Date</th>
-                                <th>Open Qty</th>
-                                <th>Whse</th>
-                                <th>Unit Price</th>
-                                <th>Discount</th>
-                                <th>Price after Discount</th>
-                                <th>Tax Code : Rate</th>
-                                <th>Tax Amount(LC)</th>
-                                <th>Gross Price After Disc.</th>
-                                <th>Freight 1</th>
-                                <th>Freight 1 (LC)</th>
-                                <th>Line Total</th>
-                                <th>Gross Total(LC)</th>
-                                <th>Project</th>
-                                <th>Buyer</th>
-                                <th>Cost Centre</th>
-                              </tr>
-                            </TableHead>
-                            <tbody>
-                              {[...Array(PQDocumentLines)].map(
-                                (item, index) => (
-                                  <tr key={`${index}`}>
-                                    <TD>{index + 1}</TD>
-                                    <TD></TD>
-                                    <TD>{item.ItemCode}</TD>
-                                    <TD>{item.ItemDescription}</TD>
-                                    <TD>{item.MeasureUnit}</TD>
-                                    <TD>
-                                      <div
-                                        style={{
-                                          width: "14rem",
-                                          height: "auto",
-                                        }}
-                                      >
-                                        <input
-                                          type="text"
-                                          name="FreeText"
-                                          class="form-control"
-                                          aria-describedby="Requesterid"
-                                          defaultValue={item.FreeText}
-                                        />
-                                      </div>
-                                    </TD>
-                                    <TD>
-                                      <div
-                                        style={{
-                                          width: "14rem",
-                                          height: "auto",
-                                        }}
-                                      >
-                                        <input
-                                          type="number"
-                                          name="QuotedQty"
-                                          readOnly="readOnly"
-                                          class="form-control"
-                                          aria-describedby="Requesterid"
-                                          defaultValue={
-                                            item.RemainingOpenQuantity
-                                          }
-                                        />
-                                      </div>
-                                    </TD>
-                                    <TD>
-                                      <div
-                                        style={{
-                                          width: "14rem",
-                                          height: "auto",
-                                        }}
-                                      >
-                                        <input
-                                          type="date"
-                                          name="ShipDate"
-                                          readOnly="readOnly"
-                                          class="form-control"
-                                          defaultValue={item.ShipDate}
-                                        />
-                                      </div>
-                                    </TD>
-                                    <TD>
-                                      {item.RemainingOpenQuantity ? OpenQty : 0}{" "}
-                                    </TD>
-                                    <TD>
-                                      <div style={{ width: "15em" }}>
-                                        {PrWhse && (
-                                          <Select
-                                            menuPortalTarget={document.body}
-                                            value={PrWhse.filter(
-                                              (option) =>
-                                                option.value ===
-                                                item.WarehouseCode
-                                            )}
-                                            placeholder="Select.."
-                                            options={PrWhse} // Options to display in the dropdown
-                                            onChange={(e) => {
-                                              DocLinesDropDownOnChange(
-                                                e,
-                                                index,
-                                                "WarehouseCode"
-                                              );
-                                            }}
-                                            displayValue="name" // Property name to display in the dropdown options
-                                          />
-                                        )}
-                                      </div>
-                                    </TD>
-                                    <TD>{item.UnitPrice}</TD>
-                                    <TD>{item.DiscountPercent}</TD>
-                                    <TD>{item.Price}</TD>
-                                    <TD>
-                                      <div style={{ width: "14rem" }}>
-                                        <Select
-                                          menuPortalTarget={document.body}
-                                          placeholder={
-                                            item.VatGroup +
-                                            "  : " +
-                                            item.TaxPercentagePerRow +
-                                            "%"
-                                          }
-                                          displayValue="name" // Property name to display in the dropdown options
-                                        />
-                                      </div>
-                                    </TD>
-                                    <TD>{item.TaxTotal}</TD>
-                                    <TD>{item.GrossTotalSC}</TD>
-                                    <TD>
-                                      <div style={{ width: "14rem" }}>
-                                        <Select
-                                          menuPortalTarget={document.body}
-                                          options={Frieght} // Options to display in the dropdown
-                                          displayValue="name" // Property name to display in the dropdown options
-                                        />
-                                      </div>
-                                    </TD>
-                                    <TD>
-                                      {/* {item.DocumentLineAdditionalExpenses[0].LineTotal || "null"} */}
-                                    </TD>
-                                    <TD>{item.LineTotal}</TD>
-                                    <TD>{item.GrossTotal}</TD>
-                                    <TD>
-                                      <div style={{ width: "14rem" }}>
-                                        <Select
-                                          menuPortalTarget={document.body}
-                                          placeholder={item.ProjectCode}
-                                          displayValue="name" // Property name to display in the dropdown options
-                                        />
-                                      </div>
-                                    </TD>
-                                    <TD>
-                                      <div style={{ width: "14rem" }}>
-                                        <Select
-                                          menuPortalTarget={document.body}
-                                          placeholder={item.SalesPersonCode}
-                                          displayValue="name" // Property name to display in the dropdown options
-                                        />
-                                      </div>
-                                    </TD>
-                                    <TD>
-                                      <div style={{ width: "14rem" }}>
-                                        <Select
-                                          menuPortalTarget={document.body}
-                                          placeholder={item.CostingCode}
-                                          displayValue="name" // Property name to display in the dropdown options
-                                        />
-                                      </div>
-                                    </TD>
-                                  </tr>
-                                )
-                              )}
-                            </tbody>
-                          </Table>
-                        )}
-                      </Modal.Body>
-                      <Modal.Footer>
-                        <Button
-                          variant="secondary"
-                          onClick={() => {
-                            getvaluesformula();
-                            handleCloseee();
-                          }}
-                        >
-                          Choose
-                        </Button>
-                      </Modal.Footer>
-                    </Modal>
-                    <Modal show={show1} onHide={handleClose2}>
-                      <Modal.Header closeButton>
-                        <Modal.Title>Landed Cost List</Modal.Title>
-                      </Modal.Header>
-                      <Modal.Body>
-                        {ModalHeaderData && (
-                          <Table responsive>
-                            <TableHead>
-                              <tr>
-                                <th>#</th>
-                                <th>DocNum</th>
-                                <th>DocEntry</th>
-                                <th>Vendor</th>
-                                <th>Posting Date</th>
-                              </tr>
-                            </TableHead>
-                            <tbody>
-                              {ModalHeaderData.map((item, index) => (
-                                <tr
-                                  key={`${index}`}
-                                  onClick={(e) => {
-                                    selectPR(item);
-                                    handleClose2();
-                                  }}
-                                >
-                                  <TD>{index + 1}</TD>
-
-                                  <TD>{item.LandedCostNumber}</TD>
-                                  <TD>{item.DocEntry}</TD>
-                                  <TD>
-                                    {item.VendorCode + " : " + item.VendorName}
-                                  </TD>
-                                  <TD>{item.PostingDate}</TD>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </Table>
-                        )}
-                      </Modal.Body>
-                      <Modal.Footer>
-                        <Button variant="secondary" onClick={handleClose2}>
-                          Close
-                        </Button>
-                      </Modal.Footer>
-                    </Modal>
-                    <label>Currency</label>
-                    <div
-                      style={{ width: "23.5rem", height: "auto" }}
-                      variant="primary"
-                      // onClick={ContactPerson}
-                    >
-                      <Select
-                        placeholder={"PKR"}
-                        options={[{ label: "PKR", value: "PKR" }]}
-                        displayValue="name" // Property name to display in the dropdown options
-                        onChange={(e) => {
-                          getdropdownvalue(e, "Broker");
-                          getBrokervaluefunction(e);
+                            ))}
+                            <tr>
+                              <TD></TD>
+                              <TD>
+                                {" "}
+                                <div>
+                                  <input
+                                    type="text"
+                                    name="Code"
+                                    class="form-control"
+                                    // defaultValue={item.FreeText}
+                                    onChange={(e) => {
+                                      valuechangefunction(e);
+                                      setButtonNameLA("Update");
+                                    }}
+                                  />
+                                </div>
+                              </TD>
+                              <TD>
+                                {" "}
+                                <div>
+                                  <input
+                                    type="text"
+                                    name="Name"
+                                    class="form-control"
+                                    // defaultValue={item.FreeText}
+                                    onChange={(e) => {
+                                      valuechangefunction(e);
+                                      setButtonNameLA("Update");
+                                    }}
+                                  />
+                                </div>
+                              </TD>
+                              <TD>
+                                {" "}
+                                <div>
+                                  <Select
+                                    menuPortalTarget={document.body}
+                                    placeholder="Select.."
+                                    options={[
+                                      {
+                                        value: "ab_CashValueBeforeCustoms",
+                                        label: "Cash Value Before Customs",
+                                      },
+                                      {
+                                        value: "ab_CashValueAfterCustoms",
+                                        label: "Cash Value After Customs",
+                                      },
+                                      {
+                                        value: "ab_Quantity",
+                                        label: "Quantity",
+                                      },
+                                      { value: "ab_Weight", label: "Weight" },
+                                      { value: "ab_Volume", label: "Volume" },
+                                    ]} // Options to display in the dropdown
+                                    onChange={(e) => {
+                                      getVendordropdownvalue(e, "AllocationBy");
+                                      setButtonNameLA("Update");
+                                    }}
+                                    displayValue="name" // Property name to display in the dropdown options
+                                  />
+                                </div>
+                              </TD>
+                              <TD>
+                                {" "}
+                                <div>
+                                  <Select
+                                    menuPortalTarget={document.body}
+                                    placeholder="Select.."
+                                    options={ItemsDropDown} // Options to display in the dropdown
+                                    onChange={(e) => {
+                                      getVendordropdownvalue(
+                                        e,
+                                        "LandedCostsAllocationAccount"
+                                      );
+                                      setButtonNameLA("Update");
+                                    }}
+                                    displayValue="name" // Property name to display in the dropdown options
+                                  />
+                                </div>
+                              </TD>
+                            </tr>
+                          </tbody>
+                        </Table>
+                      )}
+                    </Modal.Body>
+                    <Modal.Footer>
+                      <Button
+                        variant="secondary"
+                        onClick={() => {
+                          Submit_PatchLLCSFunc();
+                          LandedCostCode();
+                          // afterSubmission(e)
+                          // handleCloseLa()
                         }}
-                      />
-                      {/* )} */}
-                    </div>
-
-                    <br />
-                    <br />
-                  </Container>
-                </DIV3>
-                <DIV4></DIV4>
-                <DIV3>
-                  <Container>
-                    <div style={{ marginLeft: "3rem" }}>
-                      <label>No.</label>
-                      <CardGroup>
-                        <br />
-                        <div style={{ width: "11.5rem", height: "auto" }}>
-                          <Select
-                            isDisabled={changer}
-                            // placeholder={HeaderData && HeaderData.RequesterName}
-                            options={getserviceseries} // Options to display in the dropdown
-                            onChange={(e) => {
-                              getseriesvaluefunction(e);
-                              Whse(e.item.Name);
-                            }} // Function will trigger on select event
-                            // onRemove={RequesterCodeDropdownfunc} // Function will trigger on remove event
-                            displayValue="name" // Property name to display in the dropdown options
-                          />
-                        </div>
-                        <div style={{ width: "11.5rem", height: "auto" }}>
-                          <input
-                            type="number"
-                            name="DocNum"
-                            readOnly
-                            value={
-                              getnextnumber ||
-                              (HeaderData && HeaderData.LandedCostNumber)
-                            }
-                            placeholder=""
-                            class="form-control"
-                          />{" "}
-                          <br />
-                        </div>
-                      </CardGroup>
-                    </div>
-                    <div
-                      className="invoice"
-                      style={{
-                        width: "23.5rem",
-                        height: "auto",
-                        marginLeft: "3rem",
-                        border: "1px solid",
-                        borderColor: "lightgray",
-                        borderRadius: "4px",
-                      }}
-                    >
-                      <a
-                        onClick={(e) => {
-                          SearchAll_Filter_Data();
-                        }}
-                        style={{ cursor: "pointer" }}
                       >
-                        {" "}
-                        <svg class="svg-icon19" viewBox="0 0 20 20">
-                          <path d="M18.125,15.804l-4.038-4.037c0.675-1.079,1.012-2.308,1.01-3.534C15.089,4.62,12.199,1.75,8.584,1.75C4.815,1.75,1.982,4.726,2,8.286c0.021,3.577,2.908,6.549,6.578,6.549c1.241,0,2.417-0.347,3.44-0.985l4.032,4.026c0.167,0.166,0.43,0.166,0.596,0l1.479-1.478C18.292,16.234,18.292,15.968,18.125,15.804 M8.578,13.99c-3.198,0-5.716-2.593-5.733-5.71c-0.017-3.084,2.438-5.686,5.74-5.686c3.197,0,5.625,2.493,5.64,5.624C14.242,11.548,11.621,13.99,8.578,13.99 M16.349,16.981l-3.637-3.635c0.131-0.11,0.721-0.695,0.876-0.884l3.642,3.639L16.349,16.981z"></path>
-                        </svg>
-                      </a>
-                      <input
-                        name={"SearchPRNumber"}
-                        type="Number"
-                        placeholder="Number"
-                        class="form-control19"
-                        onChange={(e) => {
-                          setSearchNumber(e.target.value);
+                        {ButtonNameLA}
+                      </Button>
+                      <Button variant="primary" onClick={handleDelete}>
+                        Cancel
+                      </Button>
+                    </Modal.Footer>
+                  </Modal>
+                  <Modal
+                    show={modalTwo === "modal-two"}
+                    className="Modal-big"
+                    size="lg"
+                  >
+                    <Modal.Title id="example-modal-sizes-title-lg">
+                      List of GRPO
+                    </Modal.Title>
+                    <Modal.Body>
+                      {PQDocumentLines && (
+                        <Table responsive striped bordered hover>
+                          <TableHead>
+                            <tr>
+                              <th>#</th>
+                              <th>Bar Code</th>
+                              <th>Item No.</th>
+                              <th>Item Description</th>
+                              <th>UoM Name</th>
+                              <th>Free Text</th>
+                              <th>Quantity</th>
+                              <th>Delivery Date</th>
+                              <th>Open Qty</th>
+                              <th>Whse</th>
+                              <th>Unit Price</th>
+                              <th>Discount</th>
+                              <th>Price after Discount</th>
+                              <th>Tax Code : Rate</th>
+                              <th>Tax Amount(LC)</th>
+                              <th>Gross Price After Disc.</th>
+                              <th>Freight 1</th>
+                              <th>Freight 1 (LC)</th>
+                              <th>Line Total</th>
+                              <th>Gross Total(LC)</th>
+                              <th>Project</th>
+                              <th>Buyer</th>
+                              <th>Cost Centre</th>
+                            </tr>
+                          </TableHead>
+                          <tbody>
+                            {[...Array(PQDocumentLines)].map((item, index) => (
+                              <tr key={`${index}`}>
+                                <TD>{index + 1}</TD>
+                                <TD></TD>
+                                <TD>{item.ItemCode}</TD>
+                                <TD>{item.ItemDescription}</TD>
+                                <TD>{item.MeasureUnit}</TD>
+                                <TD>
+                                  <div
+                                    style={{
+                                      width: "14rem",
+                                      height: "auto",
+                                    }}
+                                  >
+                                    <input
+                                      type="text"
+                                      name="FreeText"
+                                      class="form-control"
+                                      aria-describedby="Requesterid"
+                                      defaultValue={item.FreeText}
+                                    />
+                                  </div>
+                                </TD>
+                                <TD>
+                                  <div
+                                    style={{
+                                      width: "14rem",
+                                      height: "auto",
+                                    }}
+                                  >
+                                    <input
+                                      type="number"
+                                      name="QuotedQty"
+                                      readOnly="readOnly"
+                                      class="form-control"
+                                      aria-describedby="Requesterid"
+                                      defaultValue={item.RemainingOpenQuantity}
+                                    />
+                                  </div>
+                                </TD>
+                                <TD>
+                                  <div
+                                    style={{
+                                      width: "14rem",
+                                      height: "auto",
+                                    }}
+                                  >
+                                    <input
+                                      type="date"
+                                      name="ShipDate"
+                                      readOnly="readOnly"
+                                      class="form-control"
+                                      defaultValue={item.ShipDate}
+                                    />
+                                  </div>
+                                </TD>
+                                <TD>
+                                  {item.RemainingOpenQuantity ? OpenQty : 0}{" "}
+                                </TD>
+                                <TD>
+                                  <div style={{ width: "15em" }}>
+                                    {PrWhse && (
+                                      <Select
+                                        menuPortalTarget={document.body}
+                                        value={PrWhse.filter(
+                                          (option) =>
+                                            option.value === item.WarehouseCode
+                                        )}
+                                        placeholder="Select.."
+                                        options={PrWhse} // Options to display in the dropdown
+                                        onChange={(e) => {
+                                          DocLinesDropDownOnChange(
+                                            e,
+                                            index,
+                                            "WarehouseCode"
+                                          );
+                                        }}
+                                        displayValue="name" // Property name to display in the dropdown options
+                                      />
+                                    )}
+                                  </div>
+                                </TD>
+                                <TD>{item.UnitPrice}</TD>
+                                <TD>{item.DiscountPercent}</TD>
+                                <TD>{item.Price}</TD>
+                                <TD>
+                                  <div style={{ width: "14rem" }}>
+                                    <Select
+                                      menuPortalTarget={document.body}
+                                      placeholder={
+                                        item.VatGroup +
+                                        "  : " +
+                                        item.TaxPercentagePerRow +
+                                        "%"
+                                      }
+                                      displayValue="name" // Property name to display in the dropdown options
+                                    />
+                                  </div>
+                                </TD>
+                                <TD>{item.TaxTotal}</TD>
+                                <TD>{item.GrossTotalSC}</TD>
+                                <TD>
+                                  <div style={{ width: "14rem" }}>
+                                    <Select
+                                      menuPortalTarget={document.body}
+                                      options={Frieght} // Options to display in the dropdown
+                                      displayValue="name" // Property name to display in the dropdown options
+                                    />
+                                  </div>
+                                </TD>
+                                <TD>
+                                  {/* {item.DocumentLineAdditionalExpenses[0].LineTotal || "null"} */}
+                                </TD>
+                                <TD>{item.LineTotal}</TD>
+                                <TD>{item.GrossTotal}</TD>
+                                <TD>
+                                  <div style={{ width: "14rem" }}>
+                                    <Select
+                                      menuPortalTarget={document.body}
+                                      placeholder={item.ProjectCode}
+                                      displayValue="name" // Property name to display in the dropdown options
+                                    />
+                                  </div>
+                                </TD>
+                                <TD>
+                                  <div style={{ width: "14rem" }}>
+                                    <Select
+                                      menuPortalTarget={document.body}
+                                      placeholder={item.SalesPersonCode}
+                                      displayValue="name" // Property name to display in the dropdown options
+                                    />
+                                  </div>
+                                </TD>
+                                <TD>
+                                  <div style={{ width: "14rem" }}>
+                                    <Select
+                                      menuPortalTarget={document.body}
+                                      placeholder={item.CostingCode}
+                                      displayValue="name" // Property name to display in the dropdown options
+                                    />
+                                  </div>
+                                </TD>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </Table>
+                      )}
+                    </Modal.Body>
+                    <Modal.Footer>
+                      <Button
+                        variant="secondary"
+                        onClick={() => {
+                          getvaluesformula();
+                          handleCloseee();
                         }}
-                      />
+                      >
+                        Choose
+                      </Button>
+                    </Modal.Footer>
+                  </Modal>
+                  <Modal show={show1} onHide={handleClose2}>
+                    <Modal.Header closeButton>
+                      <Modal.Title>Landed Cost List</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                      {ModalHeaderData && (
+                        <Table responsive>
+                          <TableHead>
+                            <tr>
+                              <th>#</th>
+                              <th>DocNum</th>
+                              <th>DocEntry</th>
+                              <th>Vendor</th>
+                              <th>Posting Date</th>
+                            </tr>
+                          </TableHead>
+                          <tbody>
+                            {ModalHeaderData.map((item, index) => (
+                              <tr
+                                key={`${index}`}
+                                onClick={(e) => {
+                                  selectPR(item);
+                                  handleClose2();
+                                }}
+                              >
+                                <TD>{index + 1}</TD>
+
+                                <TD>{item.LandedCostNumber}</TD>
+                                <TD>{item.DocEntry}</TD>
+                                <TD>
+                                  {item.VendorCode + " : " + item.VendorName}
+                                </TD>
+                                <TD>{item.PostingDate}</TD>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </Table>
+                      )}
+                    </Modal.Body>
+                    <Modal.Footer>
+                      <Button variant="secondary" onClick={handleClose2}>
+                        Close
+                      </Button>
+                    </Modal.Footer>
+                  </Modal>
+                  <div className="header_items_container">
+                    <label>Currency</label>
+
+                    <Select
+                      placeholder={"PKR"}
+                      options={[{ label: "PKR", value: "PKR" }]}
+                      displayValue="name" // Property name to display in the dropdown options
+                      onChange={(e) => {
+                        getdropdownvalue(e, "Broker");
+                        getBrokervaluefunction(e);
+                      }}
+                    />
+                    {/* )} */}
+                  </div>
+                </div>
+                <div className="right">
+                  <div className="header_items_container">
+                    <label>No.</label>
+                    <div className="innerpart">
+                      <select
+                        isDisabled={changer}
+                        className="select_inner"
+                        name=""
+                        id=""
+                        onChange={(e) => {
+                          getseriesvaluefunction(e);
+                          Whse(e.item.Name);
+                        }}
+                        displayValue="name"
+                      >
+                        {getserviceseries
+                          ? getserviceseries.map((e) => (
+                              <option value={e.value}>{e.label}</option>
+                            ))
+                          : ""}
+                      </select>
+                      <div className="number_inner">
+                        <input
+                          name="DocNum"
+                          readOnly
+                          value={
+                            getnextnumber ||
+                            (HeaderData && HeaderData.LandedCostNumber)
+                          }
+                          placeholder=""
+                        />
+                      </div>
                     </div>
-                    <br />
-                    {/* <br />
+                  </div>
+                  <div className="header_items_container">
+                    <a
+                      onClick={(e) => {
+                        SearchAll_Filter_Data();
+                      }}
+                      style={{ cursor: "pointer" }}
+                    >
+                      {" "}
+                      <svg class="svg-icon19" viewBox="0 0 20 20">
+                        <path d="M18.125,15.804l-4.038-4.037c0.675-1.079,1.012-2.308,1.01-3.534C15.089,4.62,12.199,1.75,8.584,1.75C4.815,1.75,1.982,4.726,2,8.286c0.021,3.577,2.908,6.549,6.578,6.549c1.241,0,2.417-0.347,3.44-0.985l4.032,4.026c0.167,0.166,0.43,0.166,0.596,0l1.479-1.478C18.292,16.234,18.292,15.968,18.125,15.804 M8.578,13.99c-3.198,0-5.716-2.593-5.733-5.71c-0.017-3.084,2.438-5.686,5.74-5.686c3.197,0,5.625,2.493,5.64,5.624C14.242,11.548,11.621,13.99,8.578,13.99 M16.349,16.981l-3.637-3.635c0.131-0.11,0.721-0.695,0.876-0.884l3.642,3.639L16.349,16.981z"></path>
+                      </svg>
+                    </a>
+                    <input
+                      name={"SearchPRNumber"}
+                      type="Number"
+                      placeholder="Number"
+                      class="input"
+                      onChange={(e) => {
+                        setSearchNumber(e.target.value);
+                      }}
+                    />
+                  </div>
+                  {/* <br />
               <div style={{ width: '23.5rem', height: 'auto' ,marginLeft:'3rem' }}>
               <label>No</label>
               <input
@@ -3182,95 +3158,71 @@ export default function Invoice() {
               /></div>
               <br /> */}
 
-                    <div
-                      style={{
-                        width: "23.5rem",
-                        height: "auto",
-                        marginLeft: "3rem",
+                  <div className="header_items_container">
+                    <label>Posting Date</label>
+                    <input
+                      type="date"
+                      name="DocDate"
+                      disabled={changer}
+                      class="input"
+                      defaultValue={
+                        HeaderData && HeaderData.PostingDate
+                          ? HeaderData && HeaderData.PostingDate
+                          : currentDate
+                      }
+                      onChange={(e) => {
+                        setcurrentDate(e.target.value);
                       }}
-                    >
-                      <label>Posting Date</label>
-                      <input
-                        type="date"
-                        name="DocDate"
-                        disabled={changer}
-                        class="form-control"
-                        defaultValue={
-                          HeaderData && HeaderData.PostingDate
-                            ? HeaderData && HeaderData.PostingDate
-                            : currentDate
-                        }
-                        onChange={(e) => {
-                          setcurrentDate(e.target.value);
-                        }}
-                      />
-                    </div>
-                    <div
-                      style={{
-                        width: "23.5rem",
-                        height: "auto",
-                        marginLeft: "3rem",
+                    />
+                  </div>
+                  <div className="header_items_container">
+                    <label> Due Date</label>
+                    <input
+                      type="date"
+                      name="DocDueDate"
+                      disabled={changer}
+                      defaultValue={
+                        HeaderData && HeaderData.PostingDate
+                          ? HeaderData && HeaderData.PostingDate
+                          : currentDate
+                      }
+                      class="input"
+                      onChange={(e) => {
+                        valuechangefunction(e);
                       }}
-                    >
-                      <label> Due Date</label>
-                      <input
-                        type="date"
-                        name="DocDueDate"
-                        disabled={changer}
-                        defaultValue={
-                          HeaderData && HeaderData.PostingDate
-                            ? HeaderData && HeaderData.PostingDate
-                            : currentDate
-                        }
-                        class="form-control"
-                        onChange={(e) => {
-                          valuechangefunction(e);
-                        }}
-                      />
-                    </div>
-                    <div
-                      style={{
-                        width: "23.5rem",
-                        height: "auto",
-                        marginLeft: "3rem",
+                    />
+                  </div>
+                  <div className="header_items_container">
+                    <label>Reference</label>
+                    <input
+                      defaultValue={HeaderData && HeaderData.Reference}
+                      type="text"
+                      onChange={(e) => {
+                        valuechangefunction(e);
                       }}
-                    >
-                      <label>Reference</label>
-                      <input
-                        defaultValue={HeaderData && HeaderData.Reference}
-                        type="text"
-                        onChange={(e) => {
-                          valuechangefunction(e);
-                        }}
-                        name="Reference"
-                        class="form-control"
-                        id="exampleInputEmail1"
-                        aria-describedby="emailHelp"
-                        disabled={changer}
-                      ></input>
-                    </div>
-                    <div
-                      style={{
-                        width: "23.5rem",
-                        height: "auto",
-                        marginLeft: "3rem",
+                      name="Reference"
+                      class="input"
+                      id="exampleInputEmail1"
+                      aria-describedby="emailHelp"
+                      disabled={changer}
+                    ></input>
+                  </div>
+                  <div className="header_items_container">
+                    <label>File No.</label>
+                    <input
+                      defaultValue={HeaderData && HeaderData.FileNumber}
+                      onChange={(e) => {
+                        valuechangefunction(e);
                       }}
-                    >
-                      <label>File No.</label>
-                      <input
-                        defaultValue={HeaderData && HeaderData.FileNumber}
-                        onChange={(e) => {
-                          valuechangefunction(e);
-                        }}
-                        name="File_No"
-                        type="text"
-                        class="form-control"
-                        id="exampleInputEmail1"
-                        aria-describedby="emailHelp"
-                        disabled={changer}
-                      ></input>
-                    </div>
-                    {/* <div style={{ width: '23.5rem', height: 'auto' ,marginLeft:'3rem' }}>
+                      name="File_No"
+                      type="text"
+                      class="input"
+                      id="exampleInputEmail1"
+                      aria-describedby="emailHelp"
+                      disabled={changer}
+                    ></input>
+                  </div>
+                  {/* <div style={{ width: '23.5rem', height: 'auto' ,marginLeft:'3rem' }}>
               <label> Document Date</label>
               <input
                 type='date'
@@ -3285,10 +3237,8 @@ export default function Invoice() {
                   dateChange(e)
                 }}
               /></div> */}
-                    <br />
-                  </Container>
-                </DIV3>
-              </CardGroup>
+                </div>
+              </div>
               {/* Table+++++++++ */}
               <Tabs
                 defaultActiveKey="Items"
@@ -3827,132 +3777,119 @@ export default function Invoice() {
                       </tbody>
                     </Table>
                   )}
-                  <CardGroup>
-                    <DIV3>
-                      <Container fluid>
-                        <div style={{ width: "23.5em", height: "auto" }}>
-                          <label>Projected Customs</label>
-                          <input
-                            readOnly
-                            value={
-                              CustomValue ||
-                              (HeaderData && HeaderData.ProjectedCustoms)
-                            }
-                            type="text"
-                            class="form-control"
-                            placeholder=""
-                            // onChange={e => {
-                            //   valuechangefunction(e)
-                            // }}
-                            name="Projected_Customs"
-                          />
-                          {/* <Select
+                  <div className="main_container">
+                    <div className="left">
+                      <div className="header_items_container">
+                        <label>Projected Customs</label>
+                        <input
+                          readOnly
+                          value={
+                            CustomValue ||
+                            (HeaderData && HeaderData.ProjectedCustoms)
+                          }
+                          type="text"
+                          class="input"
+                          placeholder=""
+                          // onChange={e => {
+                          //   valuechangefunction(e)
+                          // }}
+                          name="Projected_Customs"
+                        />
+                        {/* <Select
                 placeholder='Select..'
                 options={PrBuyer} // Options to display in the dropdown
                 displayValue='name' // Property name to display in the dropdown options
               /> */}
-                        </div>
-                        <div style={{ width: "23.5rem", height: "auto" }}>
-                          <label>Actual Customs</label>
-                          <input
-                            defaultValue={
-                              CustomValue ||
-                              (HeaderData && HeaderData.ActualCustoms)
-                            }
-                            type="text"
-                            class="form-control"
-                            name={"Actual_Customs" || "Customs_Value"}
-                            placeholder=""
-                            disabled={changer}
-                          />
-                        </div>
-                        <div style={{ width: "23.5rem", height: "auto" }}>
-                          <label>Customs Date</label>
-                          <input
-                            type="date"
-                            class="form-control"
-                            disabled={changer}
-                            defaultValue={
-                              (HeaderData && HeaderData.ActualCustoms) ||
-                              currentDate
-                            }
-                            onChange={(e) => {
-                              valuechangefunction(e);
-                            }}
-                            name="Customs_Date"
-                          />
-                        </div>
-                        <br />
-                        <div>
-                          <input
-                            type="checkbox"
-                            onChange={(e) => {
-                              valuechangefunction(e);
-                            }}
-                            name="Customs_Affects_Inventory"
-                            value="True"
-                            disabled={changer}
-                          />
-                          <label style={{ paddingLeft: "8px" }}>
-                            Customs Affects Inventory
-                          </label>
-                        </div>
+                      </div>
+                      <div className="header_items_container">
+                        <label>Actual Customs</label>
+                        <input
+                          defaultValue={
+                            CustomValue ||
+                            (HeaderData && HeaderData.ActualCustoms)
+                          }
+                          type="text"
+                          class="input"
+                          name={"Actual_Customs" || "Customs_Value"}
+                          placeholder=""
+                          disabled={changer}
+                        />
+                      </div>
+                      <div className="header_items_container">
+                        <label>Customs Date</label>
+                        <input
+                          type="date"
+                          class="input"
+                          disabled={changer}
+                          defaultValue={
+                            (HeaderData && HeaderData.ActualCustoms) ||
+                            currentDate
+                          }
+                          onChange={(e) => {
+                            valuechangefunction(e);
+                          }}
+                          name="Customs_Date"
+                        />
+                      </div>
+                      <div className="header_items_container">
+                        <label style={{ paddingLeft: "8px" }}>
+                          Customs Affects Inventory
+                        </label>
+                        <input
+                          type="checkbox"
+                          onChange={(e) => {
+                            valuechangefunction(e);
+                          }}
+                          name="Customs_Affects_Inventory"
+                          value="True"
+                          disabled={changer}
+                        />
+                      </div>
 
-                        <div class="form-group">
-                          <div style={{ width: "23.5rem", height: "auto" }}>
-                            <label for="exampleFormControlTextarea1">
-                              Remarks
-                            </label>
-                            <div style={{ width: "23.5rem" }}>
-                              <textarea
-                                defaultValue={
-                                  (ARSelectedPRDocEntry &&
-                                    "Based on A/P Invoice  " +
-                                      ARSelectedPRDocEntry.DocNum) ||
-                                  (LCSelectedPRDocEntry &&
-                                    "Based on Landed Costs " +
-                                      LCSelectedPRDocEntry.BaseEntry) ||
-                                  (HeaderData && HeaderData.Remarks)
-                                }
-                                type="text"
-                                class="form-control rounded-0"
-                                id="exampleFormControlTextarea1"
-                                name="Comments"
-                                rows="3"
-                                onChange={(e) => {
-                                  valuechangefunction(e);
-                                }}
-                              />{" "}
-                            </div>
-                          </div>
-                        </div>
-                      </Container>
-                    </DIV3>
-                    <DIV4></DIV4>
-                    <DIV3>
-                      <div>
-                        <div style={{ width: "23.5rem", marginLeft: "4rem" }}>
-                          <label style={{ marginTop: "10%" }}>
-                            Total Freight Charges{" "}
-                          </label>
-                          {/* {PDNDocumentLines && ( */}
-                          <input
-                            readOnly
-                            type="number"
-                            defaultValue={
-                              AllocCostTotalValue ||
-                              (HeaderData && HeaderData.TotalFreightCharges)
-                            }
-                            onChange={(e) => {
-                              valuechangefunction(e);
-                            }}
-                            name="Total_Freight_Charges"
-                            // placeholder={PQFindDocumentLines && PQFindDocumentLines.DocumentsOwner}
-                            class="form-control"
-                          />
-                          {/* )} */}
-                        </div>
-                        {/* <div style={{ width: '23.5rem', marginLeft: '4rem' }}>
+                      <div className="header_items_container">
+                        <label for="exampleFormControlTextarea1">Remarks</label>
+                        <textarea
+                          defaultValue={
+                            (ARSelectedPRDocEntry &&
+                              "Based on A/P Invoice  " +
+                                ARSelectedPRDocEntry.DocNum) ||
+                            (LCSelectedPRDocEntry &&
+                              "Based on Landed Costs " +
+                                LCSelectedPRDocEntry.BaseEntry) ||
+                            (HeaderData && HeaderData.Remarks)
+                          }
+                          type="text"
+                          class="textArea"
+                          id="exampleFormControlTextarea1"
+                          name="Comments"
+                          rows="3"
+                          onChange={(e) => {
+                            valuechangefunction(e);
+                          }}
+                        />{" "}
+                      </div>
+                    </div>
+                    <div className="right">
+                      <div className="header_items_container">
+                        <label>Total Freight Charges </label>
+                        {/* {PDNDocumentLines && ( */}
+                        <input
+                          readOnly
+                          type="number"
+                          defaultValue={
+                            AllocCostTotalValue ||
+                            (HeaderData && HeaderData.TotalFreightCharges)
+                          }
+                          onChange={(e) => {
+                            valuechangefunction(e);
+                          }}
+                          name="Total_Freight_Charges"
+                          // placeholder={PQFindDocumentLines && PQFindDocumentLines.DocumentsOwner}
+                          class="input"
+                        />
+                        {/* )} */}
+                      </div>
+                      {/* <div style={{ width: '23.5rem', marginLeft: '4rem' }}>
                       <label>
                         Amount to Balance</label>
                       <input
@@ -3967,57 +3904,54 @@ export default function Invoice() {
                         // placeholder={PQFindDocumentLines && PQFindDocumentLines.DocumentsOwner}
                         class='form-control' />
                     </div> */}
-                        <div style={{ width: "23.5rem", marginLeft: "4rem" }}>
-                          <label>Before Tax </label>
-                          <input
-                            readOnly
-                            value={
-                              gettotalbeforetax ||
-                              (HeaderData && HeaderData.BeforeTax)
-                            }
-                            type="number"
-                            onChange={(e) => {
-                              valuechangefunction(e);
-                            }}
-                            name="Before_Tax"
-                            // placeholder={PQFindDocumentLines && PQFindDocumentLines.DocumentsOwner}
-                            class="form-control"
-                          />
-                        </div>
-                        <div style={{ marginLeft: "4rem" }}>
-                          <label>Tax 1</label>
-                          <label style={{ marginLeft: "10rem" }}>Tax 2</label>
-                          <CardGroup>
-                            <div style={{ width: "11.75rem" }}>
-                              <input
-                                type="number"
-                                value={HeaderData && HeaderData.Tax1}
-                                // value={discountpercent || SelectedPRDocEntry && SelectedPRDocEntry.DiscountPercent || HeaderData && HeaderData.DiscountPercent }
-                                onChange={(e) => {
-                                  setgettax1(e.target.value);
-                                }}
-                                name="Tax_1"
-                                class="form-control"
-                                placeholder="PKR 0.00"
-                              />
-                            </div>
+                      <div className="header_items_container">
+                        <label>Before Tax </label>
+                        <input
+                          readOnly
+                          value={
+                            gettotalbeforetax ||
+                            (HeaderData && HeaderData.BeforeTax)
+                          }
+                          type="number"
+                          onChange={(e) => {
+                            valuechangefunction(e);
+                          }}
+                          name="Before_Tax"
+                          // placeholder={PQFindDocumentLines && PQFindDocumentLines.DocumentsOwner}
+                          class="input"
+                        />
+                      </div>
+                      <div className="header_items_container">
+                        <label>Tax 1</label>
 
-                            <div style={{ width: "11.75rem" }}>
-                              <input
-                                type="number"
-                                value={HeaderData && HeaderData.Tax2}
-                                onChange={(e) => {
-                                  setgettax2(e.target.value);
-                                }}
-                                name="Tax_2"
-                                class="form-control"
-                                placeholder="PKR 0.00"
+                        <input
+                          type="number"
+                          value={HeaderData && HeaderData.Tax1}
+                          // value={discountpercent || SelectedPRDocEntry && SelectedPRDocEntry.DiscountPercent || HeaderData && HeaderData.DiscountPercent }
+                          onChange={(e) => {
+                            setgettax1(e.target.value);
+                          }}
+                          name="Tax_1"
+                          class="input"
+                          placeholder="PKR 0.00"
+                        />
+                      </div>
 
-                                // value={DiscountTotal||SelectedPRDocEntry && SelectedPRDocEntry.TotalDiscountSC || HeaderData && HeaderData.TotalDiscountSC }
-                              />
-                            </div>
-                          </CardGroup>
-                        </div>
+                      <div className="header_items_container">
+                        <label>Tax 2</label>
+
+                        <input
+                          type="number"
+                          value={HeaderData && HeaderData.Tax2}
+                          onChange={(e) => {
+                            setgettax2(e.target.value);
+                          }}
+                          name="Tax_2"
+                          class="input"
+                          placeholder="PKR 0.00"
+
+                          // value={DiscountTotal||SelectedPRDocEntry && SelectedPRDocEntry.TotalDiscountSC || HeaderData && HeaderData.TotalDiscountSC }
+                        />
                       </div>
 
                       {/* <div style={{width:'23.5rem'}}>
@@ -4028,7 +3962,7 @@ export default function Invoice() {
           />
            </div>
           <br /> */}
-                      <div style={{ width: "23.5rem", marginLeft: "4rem" }}>
+                      <div className="header_items_container">
                         <label>Total</label>
                         {/* {PDNDocumentLines && ( */}
                         <input
@@ -4040,14 +3974,14 @@ export default function Invoice() {
                           }
                           readOnly
                           type="number"
-                          class="form-control"
+                          class="input"
                           name="Total"
                           placeholder="PKR 0.00"
                         />
                         {/* )} */}
                       </div>
-                    </DIV3>
-                  </CardGroup>
+                    </div>
+                  </div>
                 </Tab>
 
                 <Tab eventKey="Costs" title="Costs">
@@ -4418,54 +4352,85 @@ export default function Invoice() {
               </Tabs>
 
               {/* Bottom Side+++++++++ */}
-              <Container>
-                <br />
-                <br />
-                <br />
-                <br />
-                {localStorage.getItem("documentcontroller") === "R" ? (
-                  <div>
-                    <Button
-                      style={{ marginLeft: "5%" }}
+              {localStorage.getItem("documentcontroller") === "R" ? (
+                <div className="button_main_container">
+                  <div className="button_container">
+                    <button
                       onClick={() => {
                         window.location.href = "/Home";
                       }}
+                      className="form_button"
+                      style={{ backgroundColor: `${redux_response.color}` }}
                     >
                       OK
-                    </Button>
-                    <Button
+                    </button>
+                    <button
                       variant="secondary"
-                      style={{ marginLeft: "5%" }}
                       onClick={() => {
                         window.location.href = "/Home";
                       }}
+                      className="form_button"
+                      style={{ backgroundColor: `${redux_response.color}` }}
                     >
                       Cancel
-                    </Button>
+                    </button>
                   </div>
-                ) : (
-                  <div>
-                    <Button
-                      style={{ marginLeft: "2rem" }}
+                  <div className="button_container">
+                    <button
+                      style={{ backgroundColor: `${redux_response.color}` }}
+                      className="form_button"
+                      onClick={handleShow}
+                    >
+                      Copy From
+                    </button>{" "}
+                    <button
+                      style={{ backgroundColor: `${redux_response.color}` }}
+                      className="form_button"
+                    >
+                      Copy To
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="button_main_container">
+                  <div className="button_container">
+                    <button
                       onClick={() => {
                         Submit_PatchFunc();
                       }}
+                      className="form_button"
+                      style={{ backgroundColor: `${redux_response.color}` }}
                     >
                       {ButtonName}
-                    </Button>
-
-                    <Button
-                      style={{ marginLeft: "5%" }}
+                    </button>
+                    <button
                       variant="secondary"
                       onClick={() => {
                         window.location.href = "/Home";
                       }}
+                      className="form_button"
+                      style={{ backgroundColor: `${redux_response.color}` }}
                     >
                       Cancel
-                    </Button>
+                    </button>
                   </div>
-                )}
-              </Container>
+                  <div className="button_container">
+                    <button
+                      style={{ backgroundColor: `${redux_response.color}` }}
+                      className="form_button"
+                      onClick={handleShow}
+                    >
+                      Copy From
+                    </button>
+                    <button
+                      style={{ backgroundColor: `${redux_response.color}` }}
+                      className="form_button"
+                    >
+                      Copy To
+                    </button>
+                  </div>
+                </div>
+              )}
             </ContextMenuTrigger>
             {cancelbutton ? (
               <>

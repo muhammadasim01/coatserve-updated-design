@@ -25,6 +25,7 @@ import { Navbar } from "../../../Component/Global";
 import { useAlert } from "react-alert";
 import { input, DIV3, DIV4, InputD, TableHead, TD } from "./Style";
 import "./index.css";
+import { useSelector } from "react-redux";
 
 const axios = require("axios");
 const useStyles = makeStyles((theme) => ({
@@ -35,6 +36,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function PurchaseOrder() {
+  const redux_response = useSelector((state) => state.colorReducer);
+
   const [getautounitprice, setgetautounitprice] = React.useState();
   const [bothbodies, setbothbodies] = React.useState(false);
   const [getseriesnumbring, setgetseriesnumbring] = React.useState();
@@ -1330,6 +1333,20 @@ export default function PurchaseOrder() {
   };
   return (
     <>
+      <style>{`
+            .nav-tabs .nav-link{
+              color: white !important;
+              background-color: ${
+                redux_response.color ? redux_response.color : "rgb(69 70 73)"
+              } !important;  
+              width: 12rem  !important;
+              height: 24px !important;
+              padding: 0 !important;
+              text-align: center !important;
+            }
+           
+               
+          `}</style>
       <Navbar
         setgetserviceseries={setgetserviceseries}
         getdocumenttype={getdocumenttype}
@@ -1343,566 +1360,539 @@ export default function PurchaseOrder() {
         <>
           <h1 style={{ textAlign: "center" }}>Sales Order</h1>
           <Form onSubmit={handleSubmitted}>
-            <CardGroup>
-              <DIV3>
-                <Container fluid>
+            <div className="main_container">
+              <div className="left">
+                <div className="header_items_container">
                   <label>Doc Type</label>
-                  <div
-                    style={{ width: "23.5rem", height: "auto" }}
-                    variant="primary"
-                  >
-                    <Select
-                      placeholder={
-                        HeaderData && HeaderData.DocType
-                          ? HeaderData && HeaderData.DocType
-                          : "Direct"
-                      }
-                      options={[
-                        { label: "Direct", value: "Direct" },
-                        { label: "Copy From", value: "CopyFrom" },
-                      ]} // Options to display in the dropdown
-                      onChange={(e) => {
-                        DocTypeChange(e);
-                      }}
-                      displayValue="name" // Property name to display in the dropdown options
-                    />
-                  </div>
+
+                  <Select
+                    placeholder={
+                      HeaderData && HeaderData.DocType
+                        ? HeaderData && HeaderData.DocType
+                        : "Direct"
+                    }
+                    options={[
+                      { label: "Direct", value: "Direct" },
+                      { label: "Copy From", value: "CopyFrom" },
+                    ]} // Options to display in the dropdown
+                    onChange={(e) => {
+                      DocTypeChange(e);
+                    }}
+                    displayValue="name" // Property name to display in the dropdown options
+                  />
+                </div>
+                <div className="header_items_container">
                   <label>Customer</label>
-                  <div
-                    style={{ width: "23.5rem", height: "auto" }}
-                    variant="primary"
-                  >
-                    <Select
-                      placeholder={
-                        HeaderData &&
-                        HeaderData.CardCode + " : " + HeaderData &&
-                        HeaderData.CardName
-                      }
-                      options={VendorCodeDropdown} // Options to display in the dropdown
-                      onChange={(e) => {
-                        getUnitPricesfromCardcode(e.value);
-                        Currencies(e);
-                        VendorChange(e);
-                      }} // Function will trigger on select event
-                      // onRemove={BusinessPartners} Function will trigger on remove event
-                      displayValue="name" // Property name to display in the dropdown options
-                    />
-                  </div>
+
+                  <Select
+                    placeholder={
+                      HeaderData &&
+                      HeaderData.CardCode + " : " + HeaderData &&
+                      HeaderData.CardName
+                    }
+                    options={VendorCodeDropdown} // Options to display in the dropdown
+                    onChange={(e) => {
+                      getUnitPricesfromCardcode(e.value);
+                      Currencies(e);
+                      VendorChange(e);
+                    }} // Function will trigger on select event
+                    // onRemove={BusinessPartners} Function will trigger on remove event
+                    displayValue="name" // Property name to display in the dropdown options
+                  />
+                </div>
+                <div className="header_items_container">
                   <label>Contact Person</label>
-                  <div
-                    style={{ width: "23.5rem", height: "auto" }}
-                    variant="primary"
-                  >
-                    <Select
-                      placeholder={HeaderData && HeaderData.ContactPersonCode}
-                      options={ContactPersonDropdown} // Options to display in the dropdown
-                      displayValue="name" // Property name to display in the dropdown options
-                      onChange={(e) => {
-                        CPChange(e.value);
-                      }}
-                    />
-                  </div>
-                  <br />
-                  {getcopyfromdoctype ? (
-                    <Button variant="primary" onClick={handleShow}>
-                      Copy From
-                    </Button>
-                  ) : null}
-                  <Modal
-                    show={show}
-                    onHide={handleClose}
-                    className="Modal-big"
-                    size="lg"
-                  >
-                    <Modal.Header closeButton>
-                      <Modal.Title id="example-modal-sizes-title-lg">
-                        Open Quotations List
-                      </Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                      {PrRe && (
-                        <Table responsive>
-                          <TableHead>
-                            <tr>
-                              <th>#</th>
-                              <th>Document No.</th>
-                              <th>Customer Code</th>
-                              <th>Customer Name</th>
-                              <th>Posting Date</th>
-                            </tr>
-                          </TableHead>
-                          <tbody>
-                            {PrRe.map((item, index) => (
-                              <tr key={`${index}`}>
-                                <TD>
-                                  {index + 1}
-                                  <input
-                                    type="checkbox"
-                                    onChange={() => {
-                                      checkboxSelect(item, index);
-                                    }}
-                                    checked={item.isSelected}
-                                  />
-                                </TD>
-                                <TD>{item.DocNum}</TD>
-                                <TD>{item.CardCode}</TD>
-                                <TD>{item.CardName}</TD>
-                                <TD>{item.DocDate}</TD>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </Table>
-                      )}
-                    </Modal.Body>
-                    <Modal.Footer>
-                      <Button
-                        variant="secondary"
-                        onClick={() => {
-                          handleShowModalTwo();
-                          handleClose();
-                        }}
-                      >
-                        Choose
-                      </Button>
-                      <Button variant="primary" onClick={handleClose}>
-                        Cancel
-                      </Button>
-                    </Modal.Footer>
-                  </Modal>
-                  <Modal
-                    show={modalTwo === "modal-two"}
-                    onHide={handleClose}
-                    className="Modal-big"
-                    size="lg"
-                  >
-                    <Modal.Header closeButton>
-                      <Modal.Title id="example-modal-sizes-title-lg">
-                        Open Quotations List
-                      </Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                      <Table responsive striped bordered hover>
+
+                  <Select
+                    placeholder={HeaderData && HeaderData.ContactPersonCode}
+                    options={ContactPersonDropdown} // Options to display in the dropdown
+                    displayValue="name" // Property name to display in the dropdown options
+                    onChange={(e) => {
+                      CPChange(e.value);
+                    }}
+                  />
+                </div>
+                {getcopyfromdoctype ? (
+                  <Button variant="primary" onClick={handleShow}>
+                    Copy From
+                  </Button>
+                ) : null}
+                <Modal
+                  show={show}
+                  onHide={handleClose}
+                  className="Modal-big"
+                  size="lg"
+                >
+                  <Modal.Header closeButton>
+                    <Modal.Title id="example-modal-sizes-title-lg">
+                      Open Quotations List
+                    </Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                    {PrRe && (
+                      <Table responsive>
                         <TableHead>
                           <tr>
                             <th>#</th>
-                            <th>Bar Code</th>
-                            <th>Item No.</th>
-                            <th>Item Description</th>
-                            <th>UoM Name</th>
-                            <th>Free Text</th>
-                            <th>Quantity</th>
-                            <th>Delivery Date</th>
-                            <th>Whse</th>
-                            <th>Unit Price</th>
-                            <th>Project</th>
-                            {/* <th>Buyer</th> */}
-                            <th>Cost Centre</th>
+                            <th>Document No.</th>
+                            <th>Customer Code</th>
+                            <th>Customer Name</th>
+                            <th>Posting Date</th>
                           </tr>
                         </TableHead>
                         <tbody>
-                          {PQDocumentLines &&
-                            PQDocumentLines.map(
-                              (PrReItem, PrReIndex) =>
-                                PrReItem.isSelected &&
-                                PrReItem.DocumentLines.map(
-                                  (item, index) =>
-                                    item.LineStatus === "bost_Open" && (
-                                      <tr key={`${index}`}>
-                                        <TD>
-                                          {index + 1}
-                                          <input
-                                            type="checkbox"
-                                            onChange={() => {
-                                              docLineSelectedSwitch(
-                                                PrReIndex,
-                                                item,
-                                                index
-                                              );
-                                            }}
-                                            checked={item.isSelected}
-                                          />
-                                        </TD>
-                                        <TD></TD>
-                                        <TD>{item.ItemCode}</TD>
-                                        <TD>{item.ItemDescription}</TD>
-                                        <TD>{item.MeasureUnit}</TD>
-                                        <TD>
-                                          <div
-                                            style={{
-                                              width: "14rem",
-                                              height: "auto",
-                                            }}
-                                          >
-                                            <input
-                                              type="text"
-                                              name="FreeText"
-                                              class="form-control"
-                                              aria-describedby="Requesterid"
-                                              defaultValue={item.FreeText}
-                                            />
-                                          </div>
-                                        </TD>
-                                        <TD>
-                                          <div
-                                            style={{
-                                              width: "14rem",
-                                              height: "auto",
-                                            }}
-                                          >
-                                            <input
-                                              type="number"
-                                              name="QuotedQty"
-                                              readOnly="readOnly"
-                                              class="form-control"
-                                              aria-describedby="Requesterid"
-                                              defaultValue={
-                                                item.RemainingOpenQuantity
-                                              }
-                                            />
-                                          </div>
-                                        </TD>
-                                        <TD>
-                                          <div
-                                            style={{
-                                              width: "14rem",
-                                              height: "auto",
-                                            }}
-                                          >
-                                            <input
-                                              type="date"
-                                              name="ShipDate"
-                                              readOnly="readOnly"
-                                              class="form-control"
-                                              value={item.ShipDate}
-                                            />
-                                          </div>
-                                        </TD>
-                                        <TD>
-                                          <div style={{ width: "15em" }}>
-                                            {PrWhse && (
-                                              <Select
-                                                value={PrWhse.filter(
-                                                  (option) =>
-                                                    option.value ===
-                                                    item.WarehouseCode
-                                                )}
-                                                menuPortalTarget={document.body}
-                                                placeholder="Select.."
-                                                options={PrWhse}
-                                                displayValue="name" // Property name to display in the dropdown options
-                                              />
-                                            )}
-                                          </div>
-                                        </TD>
-                                        <TD>{item.UnitPrice}</TD>
-                                        <TD>
-                                          <div style={{ width: "14rem" }}>
-                                            <Select
-                                              menuPortalTarget={document.body}
-                                              placeholder={item.ProjectCode}
-                                              displayValue="name"
-                                            />
-                                          </div>
-                                        </TD>
-                                        <TD>
-                                          <div style={{ width: "14rem" }}>
-                                            <Select
-                                              menuPortalTarget={document.body}
-                                              placeholder={item.CostingCode}
-                                              displayValue="name" // Property name to display in the dropdown options
-                                            />
-                                          </div>
-                                        </TD>
-                                      </tr>
-                                    )
-                                )
-                            )}
+                          {PrRe.map((item, index) => (
+                            <tr key={`${index}`}>
+                              <TD>
+                                {index + 1}
+                                <input
+                                  type="checkbox"
+                                  onChange={() => {
+                                    checkboxSelect(item, index);
+                                  }}
+                                  checked={item.isSelected}
+                                />
+                              </TD>
+                              <TD>{item.DocNum}</TD>
+                              <TD>{item.CardCode}</TD>
+                              <TD>{item.CardName}</TD>
+                              <TD>{item.DocDate}</TD>
+                            </tr>
+                          ))}
                         </tbody>
                       </Table>
-                    </Modal.Body>
-                    <Modal.Footer>
-                      <Button
-                        variant="secondary"
-                        onClick={() => {
-                          getvaluesformula();
-                          handleCloseee();
-                        }}
-                      >
-                        Choose
-                      </Button>
-                    </Modal.Footer>
-                  </Modal>
-                  <Modal
-                    show={show1}
-                    className="Modal-big"
-                    size="lg"
-                    onHide={handleClose2}
-                  >
-                    <Modal.Header closeButton>
-                      <Modal.Title>Orders List</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                      {ModalHeaderData && (
-                        <Table responsive>
-                          <TableHead>
-                            <tr>
-                              <th>#</th>
-                              <th>Document Status</th>
-                              <th>DocNum</th>
-                              <th>DocEntry</th>
-                              <th>Code</th>
-                              <th>Name</th>
-                              <th>Posting Date</th>
-                            </tr>
-                          </TableHead>
-                          <tbody>
-                            {ModalHeaderData.map((item, index) => (
-                              <tr
-                                key={`${index}`}
-                                onClick={(e) => {
-                                  selectPR(item);
-                                  handleClose2();
-                                }}
-                              >
-                                <TD>{index + 1}</TD>
-                                <TD>
-                                  {item.DocumentStatus === "bost_Open" ? (
-                                    <p
-                                      style={{
-                                        background: "gray",
-                                        color: "white",
-                                      }}
-                                    >
-                                      Open
-                                    </p>
-                                  ) : item.DocumentStatus === "bost_Close" ? (
-                                    <p
-                                      style={{
-                                        background: "red",
-                                        color: "white",
-                                      }}
-                                    >
-                                      Closed
-                                    </p>
-                                  ) : null}
-                                </TD>
-
-                                <TD>{item.DocNum}</TD>
-                                <TD>{item.DocEntry}</TD>
-                                <TD>{item.CardCode}</TD>
-                                <TD>{item.CardName}</TD>
-                                <TD>{item.DocDate}</TD>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </Table>
-                      )}
-                    </Modal.Body>
-                    <Modal.Footer>
-                      <Button variant="secondary" onClick={handleClose2}>
-                        Close
-                      </Button>
-                      <Button variant="primary" onClick={handleClose2}>
-                        Cancel
-                      </Button>
-                    </Modal.Footer>
-                  </Modal>
-                  <br />
-                  <div style={{ width: "23.5rem", height: "auto" }}>
-                    <label>Customer PO No.</label>
-                    <input
-                      defaultValue={HeaderData && HeaderData.NumAtCard}
-                      type="text"
-                      class="form-control"
-                      onChange={(e) => {
-                        setgetnumatcard(e.target.value);
+                    )}
+                  </Modal.Body>
+                  <Modal.Footer>
+                    <Button
+                      variant="secondary"
+                      onClick={() => {
+                        handleShowModalTwo();
+                        handleClose();
                       }}
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder={HeaderData && HeaderData.NumAtCard}
-                    ></input>
-                  </div>
-                  <label>Currency</label>
-                  <div
-                    style={{ width: "23.5rem", height: "auto" }}
-                    variant="primary"
-                  >
-                    <Select
-                      isDisabled={CurrencyRateData ? false : true}
-                      placeholder={HeaderData && HeaderData.DocCurrency}
-                      options={CurrencyDropdown} // Options to display in the dropdown
-                      displayValue="name" // Property name to display in the dropdown options
-                      onChange={(e) => {
-                        currencychanger(e);
-                      }}
-                    />
-                  </div>
-                  <label>Exchange Rate</label>
-                  <div
-                    style={{ width: "23.5rem", height: "auto" }}
-                    variant="primary"
-                  >
-                    <input
-                      defaultValue={
-                        getcurrencycode === "PKR"
-                          ? 1
-                          : getcurrencyrate ||
-                            (HeaderData && HeaderData.DocRate)
-                      }
-                      type="number"
-                      class="form-control"
-                      id="exampleInputEmail1"
-                      onChange={(e) => {
-                        setgetcurrencyrate(e.target.value);
-                      }}
-                      aria-describedby="emailHelp"
-                      placeholder=""
-                    />
-                  </div>
-                  <br />
-                </Container>
-              </DIV3>
-              <DIV4></DIV4>
-              <DIV3>
-                <Container>
-                  <div style={{ marginLeft: "3rem" }}>
-                    <label>No.</label>
-                    <CardGroup>
-                      <br />
-                      <div style={{ width: "11.5rem", height: "auto" }}>
-                        <Select
-                          options={getserviceseries} // Options to display in the dropdown
-                          onChange={(e) => {
-                            getseriesvaluefunction(e);
-                            Whse(e.item.Name);
-                          }} // Function will trigger on select event
-                          displayValue="name" // Property name to display in the dropdown options
-                        />
-                      </div>
-                      <div style={{ width: "11.5rem", height: "auto" }}>
-                        <input
-                          type="number"
-                          name="DocNum"
-                          readOnly
-                          value={
-                            getnextnumber
-                              ? getnextnumber
-                              : HeaderData && HeaderData.DocNum
-                          }
-                          placeholder=""
-                          class="form-control"
-                        />{" "}
-                        <br />
-                      </div>
-                    </CardGroup>
-                  </div>
-                  <div style={{ width: "23.5rem", marginLeft: "3rem" }}>
-                    <label> Status</label>
-                    <Select
-                      placeholder={DocStatus}
-                      isDisabled={DocStatus ? true : false}
-                      options={[
-                        { label: "Open", value: "bost_Open" },
-                        { label: "Close", value: "bost_Close" },
-                        { label: "All", value: null },
-                      ]}
-                      onChange={(e) => {
-                        setgetdocumentstatus(e.value);
-                      }}
-                      displayValue="name" // Property name to display in the dropdown options
-                    />
-                  </div>
-                  <br />
-                  <div
-                    className="sales"
-                    style={{
-                      width: "23.5rem",
-                      height: "auto",
-                      marginLeft: "3rem",
-                      border: "1px solid",
-                      borderColor: "lightgray",
-                      borderRadius: "4px",
-                    }}
-                  >
-                    <a
-                      onClick={(e) => {
-                        SearchAll_Filter_Data();
-                      }}
-                      style={{ cursor: "pointer" }}
                     >
-                      {" "}
-                      <svg class="svg-icon5" viewBox="0 0 20 20">
-                        <path d="M18.125,15.804l-4.038-4.037c0.675-1.079,1.012-2.308,1.01-3.534C15.089,4.62,12.199,1.75,8.584,1.75C4.815,1.75,1.982,4.726,2,8.286c0.021,3.577,2.908,6.549,6.578,6.549c1.241,0,2.417-0.347,3.44-0.985l4.032,4.026c0.167,0.166,0.43,0.166,0.596,0l1.479-1.478C18.292,16.234,18.292,15.968,18.125,15.804 M8.578,13.99c-3.198,0-5.716-2.593-5.733-5.71c-0.017-3.084,2.438-5.686,5.74-5.686c3.197,0,5.625,2.493,5.64,5.624C14.242,11.548,11.621,13.99,8.578,13.99 M16.349,16.981l-3.637-3.635c0.131-0.11,0.721-0.695,0.876-0.884l3.642,3.639L16.349,16.981z"></path>
-                      </svg>
-                    </a>
-                    <input
-                      name={"SearchPRNumber"}
-                      type="Number"
-                      placeholder="Number"
-                      class="form-control13"
-                      onKeyDown={keyHandler}
-                      style={{
-                        backgroundColor: isfocused ? "#fce8a7" : "",
+                      Choose
+                    </Button>
+                    <Button variant="primary" onClick={handleClose}>
+                      Cancel
+                    </Button>
+                  </Modal.Footer>
+                </Modal>
+                <Modal
+                  show={modalTwo === "modal-two"}
+                  onHide={handleClose}
+                  className="Modal-big"
+                  size="lg"
+                >
+                  <Modal.Header closeButton>
+                    <Modal.Title id="example-modal-sizes-title-lg">
+                      Open Quotations List
+                    </Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                    <Table responsive striped bordered hover>
+                      <TableHead>
+                        <tr>
+                          <th>#</th>
+                          <th>Bar Code</th>
+                          <th>Item No.</th>
+                          <th>Item Description</th>
+                          <th>UoM Name</th>
+                          <th>Free Text</th>
+                          <th>Quantity</th>
+                          <th>Delivery Date</th>
+                          <th>Whse</th>
+                          <th>Unit Price</th>
+                          <th>Project</th>
+                          {/* <th>Buyer</th> */}
+                          <th>Cost Centre</th>
+                        </tr>
+                      </TableHead>
+                      <tbody>
+                        {PQDocumentLines &&
+                          PQDocumentLines.map(
+                            (PrReItem, PrReIndex) =>
+                              PrReItem.isSelected &&
+                              PrReItem.DocumentLines.map(
+                                (item, index) =>
+                                  item.LineStatus === "bost_Open" && (
+                                    <tr key={`${index}`}>
+                                      <TD>
+                                        {index + 1}
+                                        <input
+                                          type="checkbox"
+                                          onChange={() => {
+                                            docLineSelectedSwitch(
+                                              PrReIndex,
+                                              item,
+                                              index
+                                            );
+                                          }}
+                                          checked={item.isSelected}
+                                        />
+                                      </TD>
+                                      <TD></TD>
+                                      <TD>{item.ItemCode}</TD>
+                                      <TD>{item.ItemDescription}</TD>
+                                      <TD>{item.MeasureUnit}</TD>
+                                      <TD>
+                                        <div
+                                          style={{
+                                            width: "14rem",
+                                            height: "auto",
+                                          }}
+                                        >
+                                          <input
+                                            type="text"
+                                            name="FreeText"
+                                            class="form-control"
+                                            aria-describedby="Requesterid"
+                                            defaultValue={item.FreeText}
+                                          />
+                                        </div>
+                                      </TD>
+                                      <TD>
+                                        <div
+                                          style={{
+                                            width: "14rem",
+                                            height: "auto",
+                                          }}
+                                        >
+                                          <input
+                                            type="number"
+                                            name="QuotedQty"
+                                            readOnly="readOnly"
+                                            class="form-control"
+                                            aria-describedby="Requesterid"
+                                            defaultValue={
+                                              item.RemainingOpenQuantity
+                                            }
+                                          />
+                                        </div>
+                                      </TD>
+                                      <TD>
+                                        <div
+                                          style={{
+                                            width: "14rem",
+                                            height: "auto",
+                                          }}
+                                        >
+                                          <input
+                                            type="date"
+                                            name="ShipDate"
+                                            readOnly="readOnly"
+                                            class="form-control"
+                                            value={item.ShipDate}
+                                          />
+                                        </div>
+                                      </TD>
+                                      <TD>
+                                        <div style={{ width: "15em" }}>
+                                          {PrWhse && (
+                                            <Select
+                                              value={PrWhse.filter(
+                                                (option) =>
+                                                  option.value ===
+                                                  item.WarehouseCode
+                                              )}
+                                              menuPortalTarget={document.body}
+                                              placeholder="Select.."
+                                              options={PrWhse}
+                                              displayValue="name" // Property name to display in the dropdown options
+                                            />
+                                          )}
+                                        </div>
+                                      </TD>
+                                      <TD>{item.UnitPrice}</TD>
+                                      <TD>
+                                        <div style={{ width: "14rem" }}>
+                                          <Select
+                                            menuPortalTarget={document.body}
+                                            placeholder={item.ProjectCode}
+                                            displayValue="name"
+                                          />
+                                        </div>
+                                      </TD>
+                                      <TD>
+                                        <div style={{ width: "14rem" }}>
+                                          <Select
+                                            menuPortalTarget={document.body}
+                                            placeholder={item.CostingCode}
+                                            displayValue="name" // Property name to display in the dropdown options
+                                          />
+                                        </div>
+                                      </TD>
+                                    </tr>
+                                  )
+                              )
+                          )}
+                      </tbody>
+                    </Table>
+                  </Modal.Body>
+                  <Modal.Footer>
+                    <Button
+                      variant="secondary"
+                      onClick={() => {
+                        getvaluesformula();
+                        handleCloseee();
                       }}
-                      ref={searchRef}
+                    >
+                      Choose
+                    </Button>
+                  </Modal.Footer>
+                </Modal>
+                <Modal
+                  show={show1}
+                  className="Modal-big"
+                  size="lg"
+                  onHide={handleClose2}
+                >
+                  <Modal.Header closeButton>
+                    <Modal.Title>Orders List</Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                    {ModalHeaderData && (
+                      <Table responsive>
+                        <TableHead>
+                          <tr>
+                            <th>#</th>
+                            <th>Document Status</th>
+                            <th>DocNum</th>
+                            <th>DocEntry</th>
+                            <th>Code</th>
+                            <th>Name</th>
+                            <th>Posting Date</th>
+                          </tr>
+                        </TableHead>
+                        <tbody>
+                          {ModalHeaderData.map((item, index) => (
+                            <tr
+                              key={`${index}`}
+                              onClick={(e) => {
+                                selectPR(item);
+                                handleClose2();
+                              }}
+                            >
+                              <TD>{index + 1}</TD>
+                              <TD>
+                                {item.DocumentStatus === "bost_Open" ? (
+                                  <p
+                                    style={{
+                                      background: "gray",
+                                      color: "white",
+                                    }}
+                                  >
+                                    Open
+                                  </p>
+                                ) : item.DocumentStatus === "bost_Close" ? (
+                                  <p
+                                    style={{
+                                      background: "red",
+                                      color: "white",
+                                    }}
+                                  >
+                                    Closed
+                                  </p>
+                                ) : null}
+                              </TD>
+
+                              <TD>{item.DocNum}</TD>
+                              <TD>{item.DocEntry}</TD>
+                              <TD>{item.CardCode}</TD>
+                              <TD>{item.CardName}</TD>
+                              <TD>{item.DocDate}</TD>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </Table>
+                    )}
+                  </Modal.Body>
+                  <Modal.Footer>
+                    <Button variant="secondary" onClick={handleClose2}>
+                      Close
+                    </Button>
+                    <Button variant="primary" onClick={handleClose2}>
+                      Cancel
+                    </Button>
+                  </Modal.Footer>
+                </Modal>
+                <div className="header_items_container">
+                  <label>Customer PO No.</label>
+                  <input
+                    defaultValue={HeaderData && HeaderData.NumAtCard}
+                    type="text"
+                    class="input"
+                    onChange={(e) => {
+                      setgetnumatcard(e.target.value);
+                    }}
+                    id="exampleInputEmail1"
+                    aria-describedby="emailHelp"
+                    placeholder={HeaderData && HeaderData.NumAtCard}
+                  ></input>
+                </div>
+                <div className="header_items_container">
+                  <label>Currency</label>
+
+                  <Select
+                    isDisabled={CurrencyRateData ? false : true}
+                    placeholder={HeaderData && HeaderData.DocCurrency}
+                    options={CurrencyDropdown} // Options to display in the dropdown
+                    displayValue="name" // Property name to display in the dropdown options
+                    onChange={(e) => {
+                      currencychanger(e);
+                    }}
+                  />
+                </div>
+                <div className="header_items_container">
+                  <label>Exchange Rate</label>
+
+                  <input
+                    defaultValue={
+                      getcurrencycode === "PKR"
+                        ? 1
+                        : getcurrencyrate || (HeaderData && HeaderData.DocRate)
+                    }
+                    type="number"
+                    class="input"
+                    id="exampleInputEmail1"
+                    onChange={(e) => {
+                      setgetcurrencyrate(e.target.value);
+                    }}
+                    aria-describedby="emailHelp"
+                    placeholder=""
+                  />
+                </div>
+              </div>
+              <div className="right">
+                <div className="header_items_container">
+                  <label>No.</label>
+                  <div className="innerpart">
+                    <select
+                      className="select_inner"
+                      name=""
+                      id=""
                       onChange={(e) => {
-                        setSearchNumber(e.target.value);
+                        getseriesvaluefunction(e);
+                        Whse(e.item.Name);
                       }}
-                    />
+                      displayValue="name"
+                    >
+                      {getserviceseries
+                        ? getserviceseries.map((e) => (
+                            <option value={e.value}>{e.label}</option>
+                          ))
+                        : ""}
+                    </select>
+                    <div className="number_inner">
+                      <input
+                        type="number"
+                        name="Discount"
+                        readOnly
+                        value={
+                          getnextnumber
+                            ? getnextnumber
+                            : HeaderData && HeaderData.DocNum
+                        }
+                        placeholder=""
+                        class=""
+                      />
+                    </div>
                   </div>
-                  <br />
-                  <div style={{ width: "23.5rem", marginLeft: "3rem" }}>
-                    <label> Posting Date</label>
-                    <input
-                      type="date"
-                      name="DocDate"
-                      class="form-control"
-                      onChange={(e) => {
-                        setgetDocDate(e.target.value);
-                      }}
-                      defaultValue={
-                        HeaderData && HeaderData.DocDate
-                          ? HeaderData && HeaderData.DocDate
-                          : getDocDate
-                      }
-                    />
-                  </div>
-                  <div style={{ width: "23.5rem", marginLeft: "3rem" }}>
-                    <label>Delivery Date</label>
-                    <input
-                      class="form-control"
-                      aria-describedby="emailHelp"
-                      type="date"
-                      name="TaxDate"
-                      defaultValue={
-                        HeaderData && HeaderData.DocDueDate
-                          ? HeaderData && HeaderData.DocDueDate
-                          : DueDate
-                      }
-                      onChange={(e) => {
-                        setDueDate(e.target.value);
-                      }}
-                    />
-                  </div>
-                  <div style={{ width: "23.5rem", marginLeft: "3rem" }}>
-                    <label>Document Date</label>
-                    <input
-                      type="date"
-                      name="TaxDate"
-                      class="form-control"
-                      defaultValue={
-                        HeaderData && HeaderData.TaxDate
-                          ? HeaderData && HeaderData.TaxDate
-                          : getTaxDate
-                      }
-                      onChange={(e) => {
-                        setgetTaxDate(e.target.value);
-                      }}
-                    />
-                  </div>
-                </Container>
-              </DIV3>
-            </CardGroup>
+                </div>
+                <div className="header_items_container">
+                  <label> Status</label>
+                  <Select
+                    placeholder={DocStatus}
+                    isDisabled={DocStatus ? true : false}
+                    options={[
+                      { label: "Open", value: "bost_Open" },
+                      { label: "Close", value: "bost_Close" },
+                      { label: "All", value: null },
+                    ]}
+                    onChange={(e) => {
+                      setgetdocumentstatus(e.value);
+                    }}
+                    displayValue="name" // Property name to display in the dropdown options
+                  />
+                </div>
+                <div className="header_items_container">
+                  <a
+                    onClick={(e) => {
+                      SearchAll_Filter_Data();
+                    }}
+                    style={{ cursor: "pointer" }}
+                  >
+                    {" "}
+                    <svg class="svg-icon5" viewBox="0 0 20 20">
+                      <path d="M18.125,15.804l-4.038-4.037c0.675-1.079,1.012-2.308,1.01-3.534C15.089,4.62,12.199,1.75,8.584,1.75C4.815,1.75,1.982,4.726,2,8.286c0.021,3.577,2.908,6.549,6.578,6.549c1.241,0,2.417-0.347,3.44-0.985l4.032,4.026c0.167,0.166,0.43,0.166,0.596,0l1.479-1.478C18.292,16.234,18.292,15.968,18.125,15.804 M8.578,13.99c-3.198,0-5.716-2.593-5.733-5.71c-0.017-3.084,2.438-5.686,5.74-5.686c3.197,0,5.625,2.493,5.64,5.624C14.242,11.548,11.621,13.99,8.578,13.99 M16.349,16.981l-3.637-3.635c0.131-0.11,0.721-0.695,0.876-0.884l3.642,3.639L16.349,16.981z"></path>
+                    </svg>
+                  </a>
+                  <input
+                    name={"SearchPRNumber"}
+                    type="Number"
+                    placeholder="Number"
+                    class="input"
+                    onKeyDown={keyHandler}
+                    style={{
+                      backgroundColor: isfocused ? "#fce8a7" : "",
+                    }}
+                    ref={searchRef}
+                    onChange={(e) => {
+                      setSearchNumber(e.target.value);
+                    }}
+                  />
+                </div>
+                <div className="header_items_container">
+                  <label> Posting Date</label>
+                  <input
+                    type="date"
+                    name="DocDate"
+                    class="input"
+                    onChange={(e) => {
+                      setgetDocDate(e.target.value);
+                    }}
+                    defaultValue={
+                      HeaderData && HeaderData.DocDate
+                        ? HeaderData && HeaderData.DocDate
+                        : getDocDate
+                    }
+                  />
+                </div>
+                <div className="header_items_container">
+                  <label>Delivery Date</label>
+                  <input
+                    class="input"
+                    aria-describedby="emailHelp"
+                    type="date"
+                    name="TaxDate"
+                    defaultValue={
+                      HeaderData && HeaderData.DocDueDate
+                        ? HeaderData && HeaderData.DocDueDate
+                        : DueDate
+                    }
+                    onChange={(e) => {
+                      setDueDate(e.target.value);
+                    }}
+                  />
+                </div>
+                <div className="header_items_container">
+                  <label>Document Date</label>
+                  <input
+                    type="date"
+                    name="TaxDate"
+                    class="input"
+                    defaultValue={
+                      HeaderData && HeaderData.TaxDate
+                        ? HeaderData && HeaderData.TaxDate
+                        : getTaxDate
+                    }
+                    onChange={(e) => {
+                      setgetTaxDate(e.target.value);
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
             {/* Table+++++++++ */}
             <Tabs
               defaultActiveKey="Contents"
@@ -1916,28 +1906,68 @@ export default function PurchaseOrder() {
                     selectedItems.length > 0 ? (
                       <TableHead>
                         <tr>
-                          <th>#</th>
-                          <th>Bar Code</th>
-                          <th>Item No.</th>
-                          <th>Item Description</th>
-                          <th>UoM Name</th>
-                          <th>Free Text</th>
-                          <th>Requried Qty</th>
-                          {/* <th>Requried Date</th>
-                          <th>Quoted Qty</th> */}
-                          <th>Open Qty</th>
-                          <th>Unit Price</th>
-                          <th>Discount</th>
-                          <th>Price after Discount</th>
-                          <th>Tax Code</th>
-                          <th>Tax Amount(LC)</th>
-                          <th>Gross Price Disc.</th>
-                          <th>Total(LC)</th>
-                          <th>Gross Total(LC)</th>
-                          <th>Whse</th>
-                          <th>Project</th>
-                          <th>Buyer</th>
-                          <th>Cost Centre</th>
+                          <th>
+                            <div className="first_column">#</div>
+                          </th>
+                          <th>
+                            <div>Bar Code</div>
+                          </th>
+                          <th>
+                            <div>Item No.</div>
+                          </th>
+                          <th>
+                            <div>Item Description</div>
+                          </th>
+                          <th>
+                            <div>UoM Name</div>
+                          </th>
+                          <th>
+                            <div>Free Text</div>
+                          </th>
+                          <th>
+                            <div>Requried Qty</div>
+                          </th>
+                          {/* <th><div>Requried Date</div></th>
+                          <th><div>Quoted Qty</div></th> */}
+                          <th>
+                            <div>Open Qty</div>
+                          </th>
+                          <th>
+                            <div>Unit Price</div>
+                          </th>
+                          <th>
+                            <div>Discount</div>
+                          </th>
+                          <th>
+                            <div>Price after Discount</div>
+                          </th>
+                          <th>
+                            <div>Tax Code</div>
+                          </th>
+                          <th>
+                            <div>Tax Amount(LC)</div>
+                          </th>
+                          <th>
+                            <div>Gross Price Disc.</div>
+                          </th>
+                          <th>
+                            <div>Total(LC)</div>
+                          </th>
+                          <th>
+                            <div>Gross Total(LC)</div>
+                          </th>
+                          <th>
+                            <div>Whse</div>
+                          </th>
+                          <th>
+                            <div>Project</div>
+                          </th>
+                          <th>
+                            <div>Buyer</div>
+                          </th>
+                          <th>
+                            <div>Cost Centre</div>
+                          </th>
                         </tr>
                       </TableHead>
                     ) : null}
@@ -1945,95 +1975,121 @@ export default function PurchaseOrder() {
                       {selectedItems &&
                         selectedItems.map((item, index) => (
                           <tr key={`${index}`}>
-                            <TD>
-                              {index + 1}
-                              <a
-                                style={{ color: "black" }}
-                                class=""
-                                data-bs-toggle="tooltip"
-                                data-bs-placement="top"
-                                title="Delete"
-                                rel=""
-                                onClick={(e) => {
-                                  deleteobject(e, item, index);
-                                }}
-                              >
-                                {" "}
-                                <MdDelete />{" "}
-                              </a>
-                            </TD>
-                            <TD>{item.BarCode}</TD>
-                            <TD>
-                              {" "}
-                              <div style={{ width: "14rem", height: "auto" }}>
-                                {ItemsDropDown && (
-                                  <Select
-                                    value={ItemsDropDown.filter(
-                                      (option) => option.value === item.ItemCode
-                                    )}
-                                    placeholder="Select.."
-                                    menuPortalTarget={document.body}
-                                    options={ItemsDropDown}
-                                    onChange={(e) => {
-                                      ItemsDropDownfunc(e, index, "ItemCode");
-                                      setSelectedItems([...selectedItems, []]);
-                                    }}
-                                    displayValue="name" // Property name to display in the dropdown options
-                                  />
-                                )}
-                              </div>
-                            </TD>
-                            <TD>{item.ItemName}</TD>
-                            <TD>{item.SalesUnit}</TD>
-                            <TD>
-                              <div style={{ width: "14rem", height: "auto" }}>
-                                <input
-                                  type="text"
-                                  name="FreeText"
-                                  class="form-control"
-                                  value={item.ItemCode ? item.FreeText : ""}
-                                  onChange={(e) => {
-                                    itemsChange(e, index);
+                            <td>
+                              <div className="inside_td">
+                                {index + 1}
+                                <a
+                                  style={{ color: "black" }}
+                                  class=""
+                                  data-bs-toggle="tooltip"
+                                  data-bs-placement="top"
+                                  title="Delete"
+                                  rel=""
+                                  onClick={(e) => {
+                                    deleteobject(e, item, index);
                                   }}
-                                />
+                                >
+                                  {" "}
+                                  <MdDelete />{" "}
+                                </a>
                               </div>
-                            </TD>
-                            <TD>
-                              {" "}
-                              {getautounitprice &&
-                              getautounitprice[item.ItemCode] ? (
+                            </td>
+                            <td>
+                              <div className="inside_td">{item.BarCode}</div>
+                            </td>
+                            <td>
+                              <div className="inside_td">
+                                {" "}
                                 <div style={{ width: "14rem", height: "auto" }}>
-                                  <input
-                                    type="number"
-                                    name="RequiredQuantity"
-                                    class="form-control"
-                                    aria-describedby="Requesterid"
-                                    value={
-                                      item.ItemCode ? item.RequiredQuantity : ""
-                                    }
-                                    onChange={(e) => {
-                                      testing(e, index);
-                                    }}
-                                  />
+                                  {ItemsDropDown && (
+                                    <Select
+                                      value={ItemsDropDown.filter(
+                                        (option) =>
+                                          option.value === item.ItemCode
+                                      )}
+                                      placeholder="Select.."
+                                      menuPortalTarget={document.body}
+                                      options={ItemsDropDown}
+                                      onChange={(e) => {
+                                        ItemsDropDownfunc(e, index, "ItemCode");
+                                        setSelectedItems([
+                                          ...selectedItems,
+                                          [],
+                                        ]);
+                                      }}
+                                      displayValue="name" // Property name to display in the dropdown options
+                                    />
+                                  )}
                                 </div>
-                              ) : (
+                              </div>
+                            </td>
+                            <td>
+                              <div className="inside_td">{item.ItemName}</div>
+                            </td>
+                            <td>
+                              <div className="inside_td">{item.SalesUnit}</div>
+                            </td>
+                            <td>
+                              <div className="inside_td">
                                 <div style={{ width: "14rem", height: "auto" }}>
                                   <input
-                                    type="number"
-                                    name="RequiredQuantity"
+                                    type="text"
+                                    name="FreeText"
                                     class="form-control"
-                                    aria-describedby="Requesterid"
-                                    value={
-                                      item.ItemCode ? item.RequiredQuantity : ""
-                                    }
+                                    value={item.ItemCode ? item.FreeText : ""}
                                     onChange={(e) => {
                                       itemsChange(e, index);
                                     }}
                                   />
                                 </div>
-                              )}
-                            </TD>
-                            {/* <TD>
+                              </div>
+                            </td>
+                            <td>
+                              <div className="inside_td">
+                                {" "}
+                                {getautounitprice &&
+                                getautounitprice[item.ItemCode] ? (
+                                  <div
+                                    style={{ width: "14rem", height: "auto" }}
+                                  >
+                                    <input
+                                      type="number"
+                                      name="RequiredQuantity"
+                                      class="form-control"
+                                      aria-describedby="Requesterid"
+                                      value={
+                                        item.ItemCode
+                                          ? item.RequiredQuantity
+                                          : ""
+                                      }
+                                      onChange={(e) => {
+                                        testing(e, index);
+                                      }}
+                                    />
+                                  </div>
+                                ) : (
+                                  <div
+                                    style={{ width: "14rem", height: "auto" }}
+                                  >
+                                    <input
+                                      type="number"
+                                      name="RequiredQuantity"
+                                      class="form-control"
+                                      aria-describedby="Requesterid"
+                                      value={
+                                        item.ItemCode
+                                          ? item.RequiredQuantity
+                                          : ""
+                                      }
+                                      onChange={(e) => {
+                                        itemsChange(e, index);
+                                      }}
+                                    />
+                                  </div>
+                                )}
+                              </div>
+                            </td>
+                            {/* <td><div className="inside_td">
                               <div style={{ width: "14rem", height: "auto" }}>
                                 <input
                                   type="date"
@@ -2050,8 +2106,8 @@ export default function PurchaseOrder() {
                                   }}
                                 />
                               </div>
-                            </TD>
-                            <TD>
+                            </div></td>
+                            <td><div className="inside_td">
                               <div style={{ width: "14rem", height: "auto" }}>
                                 <input
                                   type="number"
@@ -2063,113 +2119,157 @@ export default function PurchaseOrder() {
                                   value={item.QuotedQuantity}
                                 />
                               </div>
-                            </TD> */}
-                            <TD>{item.RequiredQuantity}</TD>
-                            <TD>
-                              {getautounitprice &&
-                              getautounitprice[item.ItemCode] ? (
-                                <div style={{ width: "14rem", height: "auto" }}>
-                                  <input
-                                    name="UnitPrice"
-                                    type="number"
-                                    class="form-control"
-                                    readOnly
-                                    value={
-                                      item.ItemCode
-                                        ? getautounitprice &&
-                                          getautounitprice[item.ItemCode].Price
-                                        : ""
-                                    }
-                                  />
-                                </div>
-                              ) : (
-                                <div style={{ width: "14rem", height: "auto" }}>
-                                  <input
-                                    name="UnitPrice"
-                                    type="number"
-                                    class="form-control"
-                                    value={item.ItemCode ? item.UnitPrice : ""}
-                                    onChange={(e) => {
-                                      itemsChange(e, index);
-                                    }}
-                                    // value={getautounitprice && getautounitprice[item.ItemCode] ? getautounitprice && getautounitprice[item.ItemCode].Price : 0 }
-                                  />
-                                </div>
-                              )}
-                            </TD>
-                            <TD>
-                              {" "}
-                              {getautounitprice &&
-                              getautounitprice[item.ItemCode] ? (
-                                <div style={{ width: "14rem", height: "auto" }}>
-                                  <input
-                                    type="number"
-                                    name="DiscountPercent"
-                                    class="form-control"
-                                    aria-describedby="Requesterid"
-                                    readOnly
-                                    // value={
-                                    //   item.ItemCode
-                                    //     ? getautounitprice &&
-                                    //       getautounitprice[item.ItemCode]
-                                    //         .DiscountPercent
-                                    //     : ""
-                                    // }
-                                  />
-                                </div>
-                              ) : (
-                                <div style={{ width: "14rem", height: "auto" }}>
-                                  <input
-                                    type="number"
-                                    name="DiscountPercent"
-                                    class="form-control"
-                                    aria-describedby="Requesterid"
-                                    onChange={(e) => itemsChange(e, index)}
-                                    defaultValue={item.ItemCode ? 0 : ""}
-                                  />
-                                </div>
-                              )}
-                            </TD>
-                            <TD>
-                              {" "}
-                              {getautounitprice &&
-                              getautounitprice[item.ItemCode] ? (
-                                <div style={{ width: "14rem", height: "auto" }}>
-                                  <input
-                                    name="PriceAfterVAT"
-                                    class="form-control"
-                                    readOnly
-                                    aria-describedby="Requesterid"
-                                    value={
-                                      item.ItemCode
-                                        ? getautounitprice &&
-                                          getautounitprice[item.ItemCode].Price
-                                        : ""
-                                    }
-                                  />
-                                </div>
-                              ) : (
-                                <div style={{ width: "14rem", height: "auto" }}>
-                                  <input
-                                    name="PriceAfterVAT"
-                                    class="form-control"
-                                    readOnly
-                                    aria-describedby="Requesterid"
-                                    value={
-                                      item.ItemCode ? item.PriceAfterVAT : ""
-                                    }
-                                  />
-                                </div>
-                              )}
-                            </TD>
-                            <TD>
-                              {getseriesnumbring == "2" ? (
-                                <div style={{ width: "14rem" }}>
-                                  {TaxCode && (
+                            </div></td> */}
+                            <td>
+                              <div className="inside_td">
+                                {item.RequiredQuantity}
+                              </div>
+                            </td>
+                            <td>
+                              <div className="inside_td">
+                                {getautounitprice &&
+                                getautounitprice[item.ItemCode] ? (
+                                  <div
+                                    style={{ width: "14rem", height: "auto" }}
+                                  >
+                                    <input
+                                      name="UnitPrice"
+                                      type="number"
+                                      class="form-control"
+                                      readOnly
+                                      value={
+                                        item.ItemCode
+                                          ? getautounitprice &&
+                                            getautounitprice[item.ItemCode]
+                                              .Price
+                                          : ""
+                                      }
+                                    />
+                                  </div>
+                                ) : (
+                                  <div
+                                    style={{ width: "14rem", height: "auto" }}
+                                  >
+                                    <input
+                                      name="UnitPrice"
+                                      type="number"
+                                      class="form-control"
+                                      value={
+                                        item.ItemCode ? item.UnitPrice : ""
+                                      }
+                                      onChange={(e) => {
+                                        itemsChange(e, index);
+                                      }}
+                                      // value={getautounitprice && getautounitprice[item.ItemCode] ? getautounitprice && getautounitprice[item.ItemCode].Price : 0 }
+                                    />
+                                  </div>
+                                )}
+                              </div>
+                            </td>
+                            <td>
+                              <div className="inside_td">
+                                {" "}
+                                {getautounitprice &&
+                                getautounitprice[item.ItemCode] ? (
+                                  <div
+                                    style={{ width: "14rem", height: "auto" }}
+                                  >
+                                    <input
+                                      type="number"
+                                      name="DiscountPercent"
+                                      class="form-control"
+                                      aria-describedby="Requesterid"
+                                      readOnly
+                                      // value={
+                                      //   item.ItemCode
+                                      //     ? getautounitprice &&
+                                      //       getautounitprice[item.ItemCode]
+                                      //         .DiscountPercent
+                                      //     : ""
+                                      // }
+                                    />
+                                  </div>
+                                ) : (
+                                  <div
+                                    style={{ width: "14rem", height: "auto" }}
+                                  >
+                                    <input
+                                      type="number"
+                                      name="DiscountPercent"
+                                      class="form-control"
+                                      aria-describedby="Requesterid"
+                                      onChange={(e) => itemsChange(e, index)}
+                                      defaultValue={item.ItemCode ? 0 : ""}
+                                    />
+                                  </div>
+                                )}
+                              </div>
+                            </td>
+                            <td>
+                              <div className="inside_td">
+                                {" "}
+                                {getautounitprice &&
+                                getautounitprice[item.ItemCode] ? (
+                                  <div
+                                    style={{ width: "14rem", height: "auto" }}
+                                  >
+                                    <input
+                                      name="PriceAfterVAT"
+                                      class="form-control"
+                                      readOnly
+                                      aria-describedby="Requesterid"
+                                      value={
+                                        item.ItemCode
+                                          ? getautounitprice &&
+                                            getautounitprice[item.ItemCode]
+                                              .Price
+                                          : ""
+                                      }
+                                    />
+                                  </div>
+                                ) : (
+                                  <div
+                                    style={{ width: "14rem", height: "auto" }}
+                                  >
+                                    <input
+                                      name="PriceAfterVAT"
+                                      class="form-control"
+                                      readOnly
+                                      aria-describedby="Requesterid"
+                                      value={
+                                        item.ItemCode ? item.PriceAfterVAT : ""
+                                      }
+                                    />
+                                  </div>
+                                )}
+                              </div>
+                            </td>
+                            <td>
+                              <div className="inside_td">
+                                {getseriesnumbring == "2" ? (
+                                  <div style={{ width: "14rem" }}>
+                                    {TaxCode && (
+                                      <Select
+                                        value={TaxCode.filter(
+                                          (option) => option.value === "S2"
+                                        )}
+                                        menuPortalTarget={document.body}
+                                        options={TaxCode} // Options to display in the dropdown
+                                        onChange={(e) => {
+                                          DocLinesDropDownOnChange22(
+                                            e,
+                                            index,
+                                            "VatGroup"
+                                          );
+                                        }}
+                                        displayValue="name" // Property name to display in the dropdown options
+                                      />
+                                    )}
+                                  </div>
+                                ) : (
+                                  <div style={{ width: "14rem" }}>
                                     <Select
-                                      value={TaxCode.filter(
-                                        (option) => option.value === "S2"
-                                      )}
+                                      placeholder="Select"
                                       menuPortalTarget={document.body}
                                       options={TaxCode} // Options to display in the dropdown
                                       onChange={(e) => {
@@ -2181,217 +2281,227 @@ export default function PurchaseOrder() {
                                       }}
                                       displayValue="name" // Property name to display in the dropdown options
                                     />
+                                  </div>
+                                )}
+                              </div>
+                            </td>
+                            <td>
+                              <div className="inside_td">
+                                <div style={{ width: "14rem", height: "auto" }}>
+                                  <input
+                                    type="number"
+                                    class="form-control"
+                                    id="Requesterid"
+                                    readOnly
+                                    aria-describedby="Requesterid"
+                                    value={item.TaxAmount_LC}
+                                    // {((item.TaxRate + item.PriceAfterVAT) * item.RequiredQuantity)}
+                                    name="TaxAmount_LC"
+                                  />
+                                </div>
+                              </div>
+                            </td>
+                            <td>
+                              <div className="inside_td">
+                                {" "}
+                                {getautounitprice &&
+                                getautounitprice[item.ItemCode]
+                                  ? Number(item.TaxRate) +
+                                    Number(
+                                      getautounitprice &&
+                                        getautounitprice[item.ItemCode].Price
+                                    )
+                                  : Number(item.TaxRate) +
+                                    Number(item.PriceAfterVAT)}
+                              </div>
+                            </td>
+                            <td>
+                              <div className="inside_td">
+                                {" "}
+                                {getautounitprice &&
+                                getautounitprice[item.ItemCode] ? (
+                                  <div
+                                    style={{ width: "14rem", height: "auto" }}
+                                  >
+                                    <input
+                                      type="number"
+                                      class="form-control"
+                                      id="Requesterid"
+                                      readOnly
+                                      aria-describedby="Requesterid"
+                                      value={
+                                        item.ItemCode
+                                          ? getautounitprice &&
+                                            getautounitprice[item.ItemCode]
+                                              .Price * item.RequiredQuantity
+                                          : ""
+                                      }
+                                      name="Total_LC"
+                                    />
+                                  </div>
+                                ) : (
+                                  <div
+                                    style={{ width: "14rem", height: "auto" }}
+                                  >
+                                    <input
+                                      type="number"
+                                      class="form-control"
+                                      id="Requesterid"
+                                      readOnly
+                                      aria-describedby="Requesterid"
+                                      value={
+                                        item.ItemCode ? item.LineTotal : ""
+                                      }
+                                      name="Total_LC"
+                                    />
+                                  </div>
+                                )}
+                              </div>
+                            </td>
+                            <td>
+                              <div className="inside_td">
+                                {getautounitprice &&
+                                getautounitprice[item.ItemCode] ? (
+                                  <div
+                                    style={{ width: "14rem", height: "auto" }}
+                                  >
+                                    <input
+                                      type="number"
+                                      class="form-control"
+                                      id="Requesterid"
+                                      aria-describedby="Requesterid"
+                                      value={
+                                        item.ItemCode
+                                          ? getautounitprice &&
+                                            getautounitprice[item.ItemCode]
+                                              .Price *
+                                              item.RequiredQuantity +
+                                              Number(item.TaxAmount_LC)
+                                          : ""
+                                      }
+                                    />
+                                  </div>
+                                ) : (
+                                  <div
+                                    style={{ width: "14rem", height: "auto" }}
+                                  >
+                                    <input
+                                      type="number"
+                                      class="form-control"
+                                      id="Requesterid"
+                                      aria-describedby="Requesterid"
+                                      value={
+                                        item.ItemCode
+                                          ? item.PriceAfterVAT *
+                                              item.RequiredQuantity +
+                                            item.TaxAmount_LC
+                                          : ""
+                                      }
+                                    />
+                                  </div>
+                                )}
+                              </div>
+                            </td>
+                            <td>
+                              <div className="inside_td">
+                                <div style={{ width: "15em" }}>
+                                  {PrWhse && (
+                                    <Select
+                                      value={PrWhse.filter(
+                                        (option) =>
+                                          option.value === item.WarehouseCode
+                                      )}
+                                      menuPortalTarget={document.body}
+                                      placeholder="Select.."
+                                      options={PrWhse} // Options to display in the dropdown
+                                      onChange={(e) => {
+                                        DocLinesDropDownOnChange(
+                                          e,
+                                          index,
+                                          "WarehouseCode"
+                                        );
+                                      }}
+                                      displayValue="name" // Property name to display in the dropdown options
+                                    />
                                   )}
                                 </div>
-                              ) : (
+                              </div>
+                            </td>
+                            <td>
+                              <div className="inside_td">
+                                <div style={{ width: "15em" }}>
+                                  {PrProject && (
+                                    <Select
+                                      value={PrProject.filter(
+                                        (option) =>
+                                          option.value === item.ProjectCode
+                                      )}
+                                      placeholder="Select.."
+                                      menuPortalTarget={document.body}
+                                      options={PrProject} // Options to display in the dropdown
+                                      onChange={(e) => {
+                                        DocLinesDropDownOnChange(
+                                          e,
+                                          index,
+                                          "ProjectCode"
+                                        );
+                                      }}
+                                      displayValue="name" // Property name to display in the dropdown options
+                                    />
+                                  )}
+                                </div>
+                              </div>
+                            </td>
+                            <td>
+                              <div className="inside_td">
+                                <div style={{ width: "15em" }}>
+                                  {PrBuyer && (
+                                    <Select
+                                      value={PrBuyer.filter(
+                                        (option) =>
+                                          option.value === item.SalesPersonCode
+                                      )}
+                                      placeholder="Select.."
+                                      menuPortalTarget={document.body}
+                                      options={PrBuyer} // Options to display in the dropdown
+                                      onChange={(e) => {
+                                        DocLinesDropDownOnChange(
+                                          e,
+                                          index,
+                                          "SalesPersonCode"
+                                        );
+                                      }}
+                                      displayValue="name" // Property name to display in the dropdown options
+                                    />
+                                  )}
+                                </div>
+                              </div>
+                            </td>
+                            <td>
+                              <div className="inside_td">
                                 <div style={{ width: "14rem" }}>
-                                  <Select
-                                    placeholder="Select"
-                                    menuPortalTarget={document.body}
-                                    options={TaxCode} // Options to display in the dropdown
-                                    onChange={(e) => {
-                                      DocLinesDropDownOnChange22(
-                                        e,
-                                        index,
-                                        "VatGroup"
-                                      );
-                                    }}
-                                    displayValue="name" // Property name to display in the dropdown options
-                                  />
+                                  {PrCost && (
+                                    <Select
+                                      value={PrCost.filter(
+                                        (option) =>
+                                          option.value === item.CostingCode
+                                      )}
+                                      placeholder="Select.."
+                                      menuPortalTarget={document.body}
+                                      options={PrCost} // Options to display in the dropdown
+                                      onChange={(e) => {
+                                        DocLinesDropDownOnChange(
+                                          e,
+                                          index,
+                                          "CostingCode"
+                                        );
+                                      }}
+                                      displayValue="name" // Property name to display in the dropdown options
+                                    />
+                                  )}
                                 </div>
-                              )}
-                            </TD>
-                            <TD>
-                              <div style={{ width: "14rem", height: "auto" }}>
-                                <input
-                                  type="number"
-                                  class="form-control"
-                                  id="Requesterid"
-                                  readOnly
-                                  aria-describedby="Requesterid"
-                                  value={item.TaxAmount_LC}
-                                  // {((item.TaxRate + item.PriceAfterVAT) * item.RequiredQuantity)}
-                                  name="TaxAmount_LC"
-                                />
                               </div>
-                            </TD>
-                            <TD>
-                              {" "}
-                              {getautounitprice &&
-                              getautounitprice[item.ItemCode]
-                                ? Number(item.TaxRate) +
-                                  Number(
-                                    getautounitprice &&
-                                      getautounitprice[item.ItemCode].Price
-                                  )
-                                : Number(item.TaxRate) +
-                                  Number(item.PriceAfterVAT)}
-                            </TD>
-                            <TD>
-                              {" "}
-                              {getautounitprice &&
-                              getautounitprice[item.ItemCode] ? (
-                                <div style={{ width: "14rem", height: "auto" }}>
-                                  <input
-                                    type="number"
-                                    class="form-control"
-                                    id="Requesterid"
-                                    readOnly
-                                    aria-describedby="Requesterid"
-                                    value={
-                                      item.ItemCode
-                                        ? getautounitprice &&
-                                          getautounitprice[item.ItemCode]
-                                            .Price * item.RequiredQuantity
-                                        : ""
-                                    }
-                                    name="Total_LC"
-                                  />
-                                </div>
-                              ) : (
-                                <div style={{ width: "14rem", height: "auto" }}>
-                                  <input
-                                    type="number"
-                                    class="form-control"
-                                    id="Requesterid"
-                                    readOnly
-                                    aria-describedby="Requesterid"
-                                    value={item.ItemCode ? item.LineTotal : ""}
-                                    name="Total_LC"
-                                  />
-                                </div>
-                              )}
-                            </TD>
-                            <TD>
-                              {getautounitprice &&
-                              getautounitprice[item.ItemCode] ? (
-                                <div style={{ width: "14rem", height: "auto" }}>
-                                  <input
-                                    type="number"
-                                    class="form-control"
-                                    id="Requesterid"
-                                    aria-describedby="Requesterid"
-                                    value={
-                                      item.ItemCode
-                                        ? getautounitprice &&
-                                          getautounitprice[item.ItemCode]
-                                            .Price *
-                                            item.RequiredQuantity +
-                                            Number(item.TaxAmount_LC)
-                                        : ""
-                                    }
-                                  />
-                                </div>
-                              ) : (
-                                <div style={{ width: "14rem", height: "auto" }}>
-                                  <input
-                                    type="number"
-                                    class="form-control"
-                                    id="Requesterid"
-                                    aria-describedby="Requesterid"
-                                    value={
-                                      item.ItemCode
-                                        ? item.PriceAfterVAT *
-                                            item.RequiredQuantity +
-                                          item.TaxAmount_LC
-                                        : ""
-                                    }
-                                  />
-                                </div>
-                              )}
-                            </TD>
-                            <TD>
-                              <div style={{ width: "15em" }}>
-                                {PrWhse && (
-                                  <Select
-                                    value={PrWhse.filter(
-                                      (option) =>
-                                        option.value === item.WarehouseCode
-                                    )}
-                                    menuPortalTarget={document.body}
-                                    placeholder="Select.."
-                                    options={PrWhse} // Options to display in the dropdown
-                                    onChange={(e) => {
-                                      DocLinesDropDownOnChange(
-                                        e,
-                                        index,
-                                        "WarehouseCode"
-                                      );
-                                    }}
-                                    displayValue="name" // Property name to display in the dropdown options
-                                  />
-                                )}
-                              </div>
-                            </TD>
-                            <TD>
-                              <div style={{ width: "15em" }}>
-                                {PrProject && (
-                                  <Select
-                                    value={PrProject.filter(
-                                      (option) =>
-                                        option.value === item.ProjectCode
-                                    )}
-                                    placeholder="Select.."
-                                    menuPortalTarget={document.body}
-                                    options={PrProject} // Options to display in the dropdown
-                                    onChange={(e) => {
-                                      DocLinesDropDownOnChange(
-                                        e,
-                                        index,
-                                        "ProjectCode"
-                                      );
-                                    }}
-                                    displayValue="name" // Property name to display in the dropdown options
-                                  />
-                                )}
-                              </div>
-                            </TD>
-                            <TD>
-                              <div style={{ width: "15em" }}>
-                                {PrBuyer && (
-                                  <Select
-                                    value={PrBuyer.filter(
-                                      (option) =>
-                                        option.value === item.SalesPersonCode
-                                    )}
-                                    placeholder="Select.."
-                                    menuPortalTarget={document.body}
-                                    options={PrBuyer} // Options to display in the dropdown
-                                    onChange={(e) => {
-                                      DocLinesDropDownOnChange(
-                                        e,
-                                        index,
-                                        "SalesPersonCode"
-                                      );
-                                    }}
-                                    displayValue="name" // Property name to display in the dropdown options
-                                  />
-                                )}
-                              </div>
-                            </TD>
-                            <TD>
-                              <div style={{ width: "14rem" }}>
-                                {PrCost && (
-                                  <Select
-                                    value={PrCost.filter(
-                                      (option) =>
-                                        option.value === item.CostingCode
-                                    )}
-                                    placeholder="Select.."
-                                    menuPortalTarget={document.body}
-                                    options={PrCost} // Options to display in the dropdown
-                                    onChange={(e) => {
-                                      DocLinesDropDownOnChange(
-                                        e,
-                                        index,
-                                        "CostingCode"
-                                      );
-                                    }}
-                                    displayValue="name" // Property name to display in the dropdown options
-                                  />
-                                )}
-                              </div>
-                            </TD>
+                            </td>
                           </tr>
                         ))}
                     </tbody>
@@ -2866,125 +2976,74 @@ export default function PurchaseOrder() {
               </Tab>
             </Tabs>
             {/* Bottom Side+++++++++ */}
-            <CardGroup>
-              <DIV3>
-                <Container fluid>
-                  <div style={{ width: "23.5em", height: "auto" }}>
-                    <label>Sales Employee</label>
-                    <Select
-                      placeholder={HeaderData && HeaderData.SalesPersonCode}
-                      options={PrBuyer} // Options to display in the dropdown
-                      onChange={(e) => setSaleEmployee(e.value)}
-                      displayValue="name" // Property name to display in the dropdown options
-                    />
-                  </div>
-                  <div style={{ width: "23.5rem", height: "auto" }}>
-                    <label>Owner</label>
-                    <Select
-                      options={PrOwner}
-                      placeholder={HeaderData && HeaderData.DocumentsOwner}
-                      onChange={(e) => setSelectedOwner(e.value)} // Options to display in the dropdown
-                      displayValue="name" // Property name to display in the dropdown options
-                    />
-                  </div>
-                  <br />
-                  <div
-                    class="form-group"
-                    style={{ width: "23.5em", height: "auto" }}
-                  >
-                    <label for="exampleFormControlTextarea1">Remarks</label>
-                    <textarea
-                      onChange={(e) => {
-                        setCommentsValue(e.target.value);
-                      }}
-                      defaultValue={
-                        HeaderData &&
-                        "Document Entry : " +
-                          HeaderData.DocEntry +
-                          ". " +
-                          HeaderData.Comments
-                      }
-                      type="text"
-                      class="form-control rounded-0"
-                      id="exampleFormControlTextarea1"
-                      name="Comments"
-                      rows="3"
-                    />
-                  </div>
-                  <br />
-                  <br />
-                  {localStorage.getItem("documentcontroller") === "R" ? (
-                    <div>
-                      <Button
-                        style={{ marginLeft: "5%" }}
-                        onClick={() => {
-                          window.location.href = "/Home";
-                        }}
-                      >
-                        OK
-                      </Button>
-                      <Button
-                        variant="secondary"
-                        style={{ marginLeft: "5%" }}
-                        onClick={() => {
-                          window.location.href = "/Home";
-                        }}
-                      >
-                        Cancel
-                      </Button>
-                    </div>
-                  ) : (
-                    <div>
-                      <Button
-                        style={{ marginLeft: "5%" }}
-                        type="reset"
-                        onClick={() => {
-                          Submit_PatchFunc();
-                        }}
-                      >
-                        {ButtonName}
-                      </Button>
-                      <Button
-                        style={{ marginLeft: "5%" }}
-                        onClick={() => {
-                          window.location.href = "/Home";
-                        }}
-                      >
-                        Cancel
-                      </Button>
-                    </div>
-                  )}
-                </Container>
-              </DIV3>
-              <DIV4></DIV4>
-              <DIV3>
-                <div>
-                  <div style={{ width: "23.5rem", marginLeft: "3rem" }}>
-                    <label style={{ marginTop: "10%" }}>Net Total </label>
-                    <input
-                      readOnly="readOnly"
-                      type="text"
-                      value={
-                        totalbforeDiscount
-                          ? totalbforeDiscount
-                          : HeaderData &&
-                            (HeaderData.DocTotalFc != 0
-                              ? HeaderData.DocTotalFc +
-                                HeaderData.TotalDiscountFC -
-                                HeaderData.VatSumFc
-                              : HeaderData.DocTotal +
-                                HeaderData.TotalDiscount -
-                                HeaderData.VatSum)
-                      }
-                      class="form-control"
-                    />
-                  </div>
-                  <label style={{ marginLeft: "3rem" }}>Discount</label>
-                  <CardGroup style={{ marginLeft: "3rem" }}>
-                    <div style={{ width: "11.75rem" }}>
+            <div className="main_container">
+              <div className="left">
+                <div className="header_items_container">
+                  <label>Sales Employee</label>
+                  <Select
+                    placeholder={HeaderData && HeaderData.SalesPersonCode}
+                    options={PrBuyer} // Options to display in the dropdown
+                    onChange={(e) => setSaleEmployee(e.value)}
+                    displayValue="name" // Property name to display in the dropdown options
+                  />
+                </div>
+                <div className="header_items_container">
+                  <label>Owner</label>
+                  <Select
+                    options={PrOwner}
+                    placeholder={HeaderData && HeaderData.DocumentsOwner}
+                    onChange={(e) => setSelectedOwner(e.value)} // Options to display in the dropdown
+                    displayValue="name" // Property name to display in the dropdown options
+                  />
+                </div>
+                <div className="header_items_container">
+                  <label for="exampleFormControlTextarea1">Remarks</label>
+                  <textarea
+                    onChange={(e) => {
+                      setCommentsValue(e.target.value);
+                    }}
+                    defaultValue={
+                      HeaderData &&
+                      "Document Entry : " +
+                        HeaderData.DocEntry +
+                        ". " +
+                        HeaderData.Comments
+                    }
+                    type="text"
+                    class="textArea"
+                    id="exampleFormControlTextarea1"
+                    name="Comments"
+                    rows="3"
+                  />
+                </div>
+              </div>
+              <div className="right">
+                <div className="header_items_container">
+                  <label>Net Total </label>
+                  <input
+                    readOnly="readOnly"
+                    type="text"
+                    value={
+                      totalbforeDiscount
+                        ? totalbforeDiscount
+                        : HeaderData &&
+                          (HeaderData.DocTotalFc != 0
+                            ? HeaderData.DocTotalFc +
+                              HeaderData.TotalDiscountFC -
+                              HeaderData.VatSumFc
+                            : HeaderData.DocTotal +
+                              HeaderData.TotalDiscount -
+                              HeaderData.VatSum)
+                    }
+                    class="input"
+                  />
+                </div>
+                <div className="header_items_container">
+                  <label>Discount</label>
+                  <div className="innerpart">
+                    <div className="discountfirst">
                       <input
                         type="number"
-                        class="form-control"
                         defaultValue={0}
                         name="TaxAmount(LC)"
                         onChange={(e) => {
@@ -2998,16 +3057,15 @@ export default function PurchaseOrder() {
                         }
                       />
                     </div>
-
-                    <div style={{ width: "11.75rem" }}>
+                    <div className="discountsecond">
                       <input
                         type="number"
                         onChange={(e) => {
                           setDiscountTotal(e.target.value);
                           setdisc((e.target.value / totalbforeDiscount) * 100);
                         }}
-                        class="form-control"
                         defaultValue={0}
+                        style={{ width: "7rem" }}
                         name="DiscountTotal"
                         value={
                           DiscountTotal ||
@@ -3018,13 +3076,13 @@ export default function PurchaseOrder() {
                         }
                       />
                     </div>
-                  </CardGroup>
+                  </div>
                 </div>
-                <div style={{ width: "23.5rem", marginLeft: "3rem" }}>
+                <div className="header_items_container">
                   <label>Tax</label>
                   <input
                     type="number"
-                    class="form-control"
+                    class="input"
                     name="TaxAmount(LC)"
                     readOnly="readOnly"
                     defaultValue={
@@ -3036,7 +3094,7 @@ export default function PurchaseOrder() {
                     }
                   />
                 </div>
-                <div style={{ width: "23.5rem", marginLeft: "3rem" }}>
+                <div className="header_items_container">
                   <label>Total Payment Due:</label>
                   <input
                     type="text"
@@ -3049,11 +3107,88 @@ export default function PurchaseOrder() {
                     }
                     placeholder=""
                     readOnly="readOnly"
-                    class="form-control"
+                    class="input"
                   />
                 </div>
-              </DIV3>
-            </CardGroup>
+              </div>
+            </div>
+            {localStorage.getItem("documentcontroller") === "R" ? (
+              <div className="button_main_container">
+                <div className="button_container">
+                  <button
+                    onClick={() => {
+                      window.location.href = "/Home";
+                    }}
+                    className="form_button"
+                    style={{ backgroundColor: `${redux_response.color}` }}
+                  >
+                    OK
+                  </button>
+                  <button
+                    variant="secondary"
+                    onClick={() => {
+                      window.location.href = "/Home";
+                    }}
+                    className="form_button"
+                    style={{ backgroundColor: `${redux_response.color}` }}
+                  >
+                    Cancel
+                  </button>
+                </div>
+                <div className="button_container">
+                  <button
+                    style={{ backgroundColor: `${redux_response.color}` }}
+                    className="form_button"
+                  >
+                    Copy From
+                  </button>{" "}
+                  <button
+                    style={{ backgroundColor: `${redux_response.color}` }}
+                    className="form_button"
+                  >
+                    Copy To
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="button_main_container">
+                <div className="button_container">
+                  <button
+                    onClick={() => {
+                      Submit_PatchFunc();
+                    }}
+                    className="form_button"
+                    style={{ backgroundColor: `${redux_response.color}` }}
+                  >
+                    {ButtonName}
+                  </button>
+                  <button
+                    variant="secondary"
+                    onClick={() => {
+                      window.location.href = "/Home";
+                    }}
+                    className="form_button"
+                    style={{ backgroundColor: `${redux_response.color}` }}
+                  >
+                    Cancel
+                  </button>
+                </div>
+                <div className="button_container">
+                  <button
+                    style={{ backgroundColor: `${redux_response.color}` }}
+                    className="form_button"
+                  >
+                    Copy From
+                  </button>
+                  <button
+                    style={{ backgroundColor: `${redux_response.color}` }}
+                    className="form_button"
+                  >
+                    Copy To
+                  </button>
+                </div>
+              </div>
+            )}
           </Form>
         </>
       )}

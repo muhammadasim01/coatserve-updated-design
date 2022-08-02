@@ -30,6 +30,8 @@ import { useAlert } from "react-alert";
 import { input, DIV3, DIV4, DIV7, DIV6, InputD, TableHead, TD } from "./Style";
 import "./index.css";
 import Switch from "react-switch";
+import { useSelector } from "react-redux";
+
 const axios = require("axios");
 const useStyles = makeStyles((theme) => ({
   backdrop: {
@@ -40,6 +42,8 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Invoice() {
   const alert = useAlert();
+  const redux_response = useSelector((state) => state.colorReducer);
+
   const [SelectShow, setSelectShow] = React.useState();
   const [loading, setLoading] = React.useState(false);
   const [attachmentresponse, setattachmentresponse] = React.useState();
@@ -1394,6 +1398,20 @@ export default function Invoice() {
   };
   return (
     <>
+      <style>{`
+            .nav-tabs .nav-link{
+              color: white !important;
+              background-color: ${
+                redux_response.color ? redux_response.color : "rgb(69 70 73)"
+              } !important;  
+              width: 12rem  !important;
+              height: 24px !important;
+              padding: 0 !important;
+              text-align: center !important;
+            }
+           
+               
+          `}</style>
       <Navbar
         setgetserviceseries={setgetserviceseries}
         getdocumentname={getdocumentname}
@@ -1408,1048 +1426,998 @@ export default function Invoice() {
           {/* Upper Side++++++++ */}
           <Form onSubmit={handleSubmitted}>
             <ContextMenuTrigger id="contextmenu">
-              <CardGroup>
-                <DIV3>
-                  <Container fluid>
+              <div className="main_container">
+                <div className="left">
+                  <div className="header_items_container">
                     <label>Copy From</label>
-                    <div
-                      style={{ width: "23.5rem", height: "auto" }}
-                      variant="primary"
-                    >
-                      <Select
-                        placeholder="Select"
-                        options={[
-                          { label: "Goods Receipt PO", value: "GRPO" },
-                          { label: "Purchase Order", value: "PO" },
-                        ]} // Options to display in the dropdown
-                        // onInputChange={e=>console.log(e)}
-                        onChange={(e) => {
-                          setgetcopyfromvalue(e.value);
-                        }} // Function will trigger on select event
-                        // onRemove={BusinessPartners} Function will trigger on remove event
-                        displayValue="name" // Property name to display in the dropdown options
-                      />
-                    </div>
+
+                    <Select
+                      placeholder="Select"
+                      options={[
+                        { label: "Goods Receipt PO", value: "GRPO" },
+                        { label: "Purchase Order", value: "PO" },
+                      ]} // Options to display in the dropdown
+                      // onInputChange={e=>console.log(e)}
+                      onChange={(e) => {
+                        setgetcopyfromvalue(e.value);
+                      }} // Function will trigger on select event
+                      // onRemove={BusinessPartners} Function will trigger on remove event
+                      displayValue="name" // Property name to display in the dropdown options
+                    />
+                  </div>
+                  <div className="header_items_container">
                     <label>Doc Type</label>
-                    <div
-                      style={{ width: "23.5rem", height: "auto" }}
-                      variant="primary"
-                    >
-                      <Select
-                        placeholder="Select"
-                        options={[
-                          { label: "Item", value: "Item" },
-                          { label: "Service", value: "Service" },
-                        ]} // Options to display in the dropdown
-                        onChange={(e) => {
-                          DocTypeChange(e);
-                        }} // Function will trigger on select event
-                        // onRemove={BusinessPartners} Function will trigger on remove event
-                        displayValue="name" // Property name to display in the dropdown options
-                      />
-                    </div>
+
+                    <Select
+                      placeholder="Select"
+                      options={[
+                        { label: "Item", value: "Item" },
+                        { label: "Service", value: "Service" },
+                      ]} // Options to display in the dropdown
+                      onChange={(e) => {
+                        DocTypeChange(e);
+                      }} // Function will trigger on select event
+                      // onRemove={BusinessPartners} Function will trigger on remove event
+                      displayValue="name" // Property name to display in the dropdown options
+                    />
+                  </div>
+                  <div className="header_items_container">
                     <label>Vendor</label>
-                    <div
-                      style={{ width: "23.5rem", height: "auto" }}
-                      variant="primary"
-                    >
-                      <Select
-                        placeholder={HeaderData && HeaderData.CardCode}
-                        options={VendorCodeDropdown} // Options to display in the dropdown
-                        onChange={(e) => {
-                          VendorChange(e);
-                        }}
-                        displayValue="name" // Property name to display in the dropdown options
-                      />
-                    </div>
+
+                    <Select
+                      placeholder={HeaderData && HeaderData.CardCode}
+                      options={VendorCodeDropdown} // Options to display in the dropdown
+                      onChange={(e) => {
+                        VendorChange(e);
+                      }}
+                      displayValue="name" // Property name to display in the dropdown options
+                    />
+                  </div>
+                  <div className="header_items_container">
                     <label>Contact Person</label>
-                    <div
-                      style={{ width: "23.5rem", height: "auto" }}
-                      variant="primary"
-                      onClick={ContactPerson}
-                    >
-                      <Select
-                        placeholder={HeaderData && HeaderData.ContactPersonCode}
-                        options={ContactPersonDropdown} // Options to display in the dropdown
-                        displayValue="name" // Property name to display in the dropdown options
-                        onChange={(e) => {
-                          CPChange(e);
-                        }}
-                      />
-                      {/* )} */}
-                    </div>
-                    <br />
-                    {/* --------------------Start Journal Entry Modal------------------ */}
-                    <Modal
-                      show={JEshow}
-                      onHide={handleClosee}
-                      className="Modal-big"
-                      size="lg"
-                    >
-                      <Modal.Header closeButton>
-                        <Modal.Title id="example-modal-sizes-title-lg">
-                          Journal Entry
-                        </Modal.Title>
-                      </Modal.Header>
-                      <Modal.Body>
-                        <Form>
-                          <CardGroup>
-                            <DIV7>
-                              <Container fluid>
-                                <CardGroup>
-                                  <div
-                                    style={{ width: "10em", height: "auto" }}
-                                  >
-                                    <label>Series</label>
-                                    <Select
-                                      style={{ height: "2px" }}
-                                      options={[
-                                        { label: "Primary", value: "Primary" },
-                                      ]}
-                                    />
-                                  </div>
-                                  <div
-                                    style={{
-                                      width: "10rem",
-                                      height: "auto",
-                                      marginLeft: "2rem",
-                                    }}
-                                  >
-                                    <label>Number</label>
-                                    <input
-                                      type="text"
-                                      readOnly
-                                      class="form-control"
-                                      defaultValue={
-                                        JEHeaderData && JEHeaderData.Number
-                                      }
-                                    ></input>
-                                  </div>
-                                  <div
-                                    style={{
-                                      width: "10rem",
-                                      height: "auto",
-                                      marginLeft: "2rem",
-                                    }}
-                                  >
-                                    <label>Posting Date</label>
-                                    <input
-                                      type="date"
-                                      name="PostingDate"
-                                      class="form-control"
-                                      defaultValue={
-                                        JEHeaderData && JEHeaderData.TaxDate
-                                      }
-                                    ></input>
-                                  </div>
-                                  <div
-                                    style={{
-                                      width: "10rem",
-                                      height: "auto",
-                                      marginLeft: "2rem",
-                                    }}
-                                  >
-                                    <label>Due Date</label>
-                                    <input
-                                      type="date"
-                                      name="DueDate"
-                                      class="form-control"
-                                      defaultValue={
-                                        JEHeaderData && JEHeaderData.TaxDate
-                                      }
-                                    ></input>
-                                  </div>
-                                  <div
-                                    style={{
-                                      width: "10rem",
-                                      height: "auto",
-                                      marginLeft: "2rem",
-                                    }}
-                                  >
-                                    <label>Doc Date</label>
-                                    <input
-                                      type="date"
-                                      name="DocDate"
-                                      class="form-control"
-                                      defaultValue={
-                                        JEHeaderData && JEHeaderData.TaxDate
-                                      }
-                                    ></input>
-                                  </div>
-                                  <div
-                                    style={{
-                                      width: "20rem",
-                                      height: "auto",
-                                      marginLeft: "2rem",
-                                    }}
-                                  >
-                                    <label>Remarks</label>
-                                    <input
-                                      type="text"
-                                      name="Remarks"
-                                      class="form-control"
-                                      defaultValue={
-                                        JEHeaderData && JEHeaderData.Memo
-                                      }
-                                    ></input>
-                                  </div>
-                                </CardGroup>
-                                <CardGroup>
-                                  <div
-                                    style={{ width: "10rem", height: "auto" }}
-                                  >
-                                    <label>Origin No.</label>
-                                    <input
-                                      type="text"
-                                      name="OriginNo"
-                                      class="form-control"
-                                      defaultValue={
-                                        JEHeaderData && JEHeaderData.Reference
-                                      }
-                                    ></input>
-                                  </div>
-                                  <div
-                                    style={{
-                                      width: "10rem",
-                                      height: "auto",
-                                      marginLeft: "2rem",
-                                    }}
-                                  >
-                                    <label>Trans. No</label>
-                                    <input
-                                      type="text"
-                                      name="TransNo"
-                                      class="form-control"
-                                      readOnly
-                                      defaultValue={
-                                        JEHeaderData && JEHeaderData.JdtNum
-                                      }
-                                    ></input>
-                                  </div>
-                                  <div
-                                    style={{
-                                      width: "10rem",
-                                      height: "auto",
-                                      marginLeft: "2rem",
-                                    }}
-                                  >
-                                    <label>Project</label>
-                                    <Select
-                                      placeholder={
-                                        JEHeaderData && JEHeaderData.ProjectCode
-                                      }
-                                    />
-                                  </div>
-                                </CardGroup>
-                                <CardGroup>
-                                  <div
-                                    style={{ width: "10rem", height: "auto" }}
-                                  >
-                                    <label>Ref.1</label>
-                                    <input
-                                      type="text"
-                                      name="Ref_1"
-                                      class="form-control"
-                                      defaultValue={
-                                        JEHeaderData && JEHeaderData.Reference
-                                      }
-                                    ></input>
-                                  </div>
-                                  <div
-                                    style={{
-                                      width: "10rem",
-                                      height: "auto",
-                                      marginLeft: "2rem",
-                                    }}
-                                  >
-                                    <label>Ref.2</label>
-                                    <input
-                                      type="text"
-                                      name="Ref_2"
-                                      class="form-control"
-                                      defaultValue={
-                                        JEHeaderData && JEHeaderData.Reference2
-                                      }
-                                    ></input>
-                                  </div>
-                                  <div
-                                    style={{
-                                      width: "10rem",
-                                      height: "auto",
-                                      marginLeft: "2rem",
-                                    }}
-                                  >
-                                    <label>Ref.3</label>
-                                    <input
-                                      type="text"
-                                      name="Ref_3"
-                                      class="form-control"
-                                      defaultValue={
-                                        JEHeaderData && JEHeaderData.Reference3
-                                      }
-                                    ></input>
-                                  </div>
-                                  <br />
-                                  <br />
-                                </CardGroup>
-                                <div style={{ width: "22rem", height: "auto" }}>
-                                  <label>Charts Of Accounts</label>
+
+                    <Select
+                      placeholder={HeaderData && HeaderData.ContactPersonCode}
+                      options={ContactPersonDropdown} // Options to display in the dropdown
+                      displayValue="name" // Property name to display in the dropdown options
+                      onChange={(e) => {
+                        CPChange(e);
+                      }}
+                    />
+                    {/* )} */}
+                  </div>
+                  {/* --------------------Start Journal Entry Modal------------------ */}
+                  <Modal
+                    show={JEshow}
+                    onHide={handleClosee}
+                    className="Modal-big"
+                    size="lg"
+                  >
+                    <Modal.Header closeButton>
+                      <Modal.Title id="example-modal-sizes-title-lg">
+                        Journal Entry
+                      </Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                      <Form>
+                        <CardGroup>
+                          <DIV7>
+                            <Container fluid>
+                              <CardGroup>
+                                <div style={{ width: "10em", height: "auto" }}>
+                                  <label>Series</label>
                                   <Select
-                                    isMulti
-                                    placeholder="Select"
-                                    options={ItemsDropDown}
-                                    // onChange={ItemsDropDownfunc}
-                                    displayValue="name"
+                                    style={{ height: "2px" }}
+                                    options={[
+                                      { label: "Primary", value: "Primary" },
+                                    ]}
                                   />
                                 </div>
-                              </Container>
-                              <br />
-                              <br />
-                              <br />
-                              <br />
-                              <br />
-                            </DIV7>
-                            <DIV6>
-                              <Container></Container>
-                            </DIV6>
-                          </CardGroup>
-                          <Tabs
-                            defaultActiveKey="Contents"
-                            transition={false}
-                            id="noanim-tab-example"
-                          >
-                            <Tab eventKey="Contents" title="Contents">
-                              <div>
-                                {JournalEntryLines && (
-                                  <Table responsive striped bordered hover>
-                                    {Array.isArray(JournalEntryLines) &&
-                                    JournalEntryLines.length > 0 ? (
-                                      <TableHead>
-                                        <tr>
-                                          <th> #</th>
-                                          <th>G/L Acct/BP Code</th>
-                                          <th>G/L Acct/BP Name</th>
-                                          <th>Debit</th>
-                                          <th>Credit</th>
-                                          <th>Empolee id</th>
-                                          <th>Remarks</th>
-                                          <th>Ref. 1</th>
-                                          <th>Ref.3</th>
-                                          <th>Project</th>
-                                          <th>Cost Center</th>
-                                        </tr>
-                                      </TableHead>
-                                    ) : null}
-                                    <tbody>
-                                      {JournalEntryLines.map((item, index) => (
-                                        <tr key={`${index}`}>
-                                          <TD>{index + 1}</TD>
-                                          <TD>{item.AccountCode}</TD>
-                                          <TD>
-                                            {
-                                              ItemsDetails[item.AccountCode]
-                                                .Name
-                                            }
-                                          </TD>
-                                          <TD>{item.Debit}</TD>
-                                          <TD>{item.Credit}</TD>
-                                          <TD>{item.U_EmployeeID}</TD>
-                                          <TD>{item.LineMemo}</TD>
-                                          <TD>{item.Reference1}</TD>
-                                          <TD>{item.Reference2}</TD>
-                                          <TD>{item.ProjectCode}</TD>
-                                          <TD>{item.CostingCode}</TD>
-                                        </tr>
-                                      ))}
-                                      <tr>
-                                        <TD></TD>
-                                        <TD></TD>
-                                        <TD></TD>
-                                        <TD>{gettotaldebit}</TD>
-                                        <TD>{gettotalcredit}</TD>
-                                        <TD></TD>
-                                        <TD></TD>
-                                        <TD></TD>
-                                        <TD></TD>
-                                        <TD></TD>
-                                        <TD></TD>
-                                      </tr>
-                                    </tbody>
-                                  </Table>
-                                )}
+                                <div
+                                  style={{
+                                    width: "10rem",
+                                    height: "auto",
+                                    marginLeft: "2rem",
+                                  }}
+                                >
+                                  <label>Number</label>
+                                  <input
+                                    type="text"
+                                    readOnly
+                                    class="form-control"
+                                    defaultValue={
+                                      JEHeaderData && JEHeaderData.Number
+                                    }
+                                  ></input>
+                                </div>
+                                <div
+                                  style={{
+                                    width: "10rem",
+                                    height: "auto",
+                                    marginLeft: "2rem",
+                                  }}
+                                >
+                                  <label>Posting Date</label>
+                                  <input
+                                    type="date"
+                                    name="PostingDate"
+                                    class="form-control"
+                                    defaultValue={
+                                      JEHeaderData && JEHeaderData.TaxDate
+                                    }
+                                  ></input>
+                                </div>
+                                <div
+                                  style={{
+                                    width: "10rem",
+                                    height: "auto",
+                                    marginLeft: "2rem",
+                                  }}
+                                >
+                                  <label>Due Date</label>
+                                  <input
+                                    type="date"
+                                    name="DueDate"
+                                    class="form-control"
+                                    defaultValue={
+                                      JEHeaderData && JEHeaderData.TaxDate
+                                    }
+                                  ></input>
+                                </div>
+                                <div
+                                  style={{
+                                    width: "10rem",
+                                    height: "auto",
+                                    marginLeft: "2rem",
+                                  }}
+                                >
+                                  <label>Doc Date</label>
+                                  <input
+                                    type="date"
+                                    name="DocDate"
+                                    class="form-control"
+                                    defaultValue={
+                                      JEHeaderData && JEHeaderData.TaxDate
+                                    }
+                                  ></input>
+                                </div>
+                                <div
+                                  style={{
+                                    width: "20rem",
+                                    height: "auto",
+                                    marginLeft: "2rem",
+                                  }}
+                                >
+                                  <label>Remarks</label>
+                                  <input
+                                    type="text"
+                                    name="Remarks"
+                                    class="form-control"
+                                    defaultValue={
+                                      JEHeaderData && JEHeaderData.Memo
+                                    }
+                                  ></input>
+                                </div>
+                              </CardGroup>
+                              <CardGroup>
+                                <div style={{ width: "10rem", height: "auto" }}>
+                                  <label>Origin No.</label>
+                                  <input
+                                    type="text"
+                                    name="OriginNo"
+                                    class="form-control"
+                                    defaultValue={
+                                      JEHeaderData && JEHeaderData.Reference
+                                    }
+                                  ></input>
+                                </div>
+                                <div
+                                  style={{
+                                    width: "10rem",
+                                    height: "auto",
+                                    marginLeft: "2rem",
+                                  }}
+                                >
+                                  <label>Trans. No</label>
+                                  <input
+                                    type="text"
+                                    name="TransNo"
+                                    class="form-control"
+                                    readOnly
+                                    defaultValue={
+                                      JEHeaderData && JEHeaderData.JdtNum
+                                    }
+                                  ></input>
+                                </div>
+                                <div
+                                  style={{
+                                    width: "10rem",
+                                    height: "auto",
+                                    marginLeft: "2rem",
+                                  }}
+                                >
+                                  <label>Project</label>
+                                  <Select
+                                    placeholder={
+                                      JEHeaderData && JEHeaderData.ProjectCode
+                                    }
+                                  />
+                                </div>
+                              </CardGroup>
+                              <CardGroup>
+                                <div style={{ width: "10rem", height: "auto" }}>
+                                  <label>Ref.1</label>
+                                  <input
+                                    type="text"
+                                    name="Ref_1"
+                                    class="form-control"
+                                    defaultValue={
+                                      JEHeaderData && JEHeaderData.Reference
+                                    }
+                                  ></input>
+                                </div>
+                                <div
+                                  style={{
+                                    width: "10rem",
+                                    height: "auto",
+                                    marginLeft: "2rem",
+                                  }}
+                                >
+                                  <label>Ref.2</label>
+                                  <input
+                                    type="text"
+                                    name="Ref_2"
+                                    class="form-control"
+                                    defaultValue={
+                                      JEHeaderData && JEHeaderData.Reference2
+                                    }
+                                  ></input>
+                                </div>
+                                <div
+                                  style={{
+                                    width: "10rem",
+                                    height: "auto",
+                                    marginLeft: "2rem",
+                                  }}
+                                >
+                                  <label>Ref.3</label>
+                                  <input
+                                    type="text"
+                                    name="Ref_3"
+                                    class="form-control"
+                                    defaultValue={
+                                      JEHeaderData && JEHeaderData.Reference3
+                                    }
+                                  ></input>
+                                </div>
+                                <br />
+                                <br />
+                              </CardGroup>
+                              <div style={{ width: "22rem", height: "auto" }}>
+                                <label>Charts Of Accounts</label>
+                                <Select
+                                  isMulti
+                                  placeholder="Select"
+                                  options={ItemsDropDown}
+                                  // onChange={ItemsDropDownfunc}
+                                  displayValue="name"
+                                />
                               </div>
-                            </Tab>
-                            <Tab eventKey="Attachment" title="Attachment">
-                              <Attachment
-                                setattachmentresponse={setattachmentresponse}
-                              />
-                            </Tab>
-                          </Tabs>
-                          <DIV3>
-                            <Container fluid></Container>
-                          </DIV3>
-                          <br />
-                          <br />
-                          <div style={{ marginLeft: "2rem" }}>
-                            <Button
-                              style={{ marginLeft: "5%" }}
-                              type="reset"
-                              onClick={() => {
-                                handleClosee();
-                              }}
-                            >
-                              OK
-                            </Button>
-                            <Button
-                              style={{ marginLeft: "5%" }}
-                              onClick={() => {
-                                handleClosee();
-                              }}
-                              type="reset"
-                            >
-                              Cancel
-                            </Button>
-                          </div>
-                        </Form>
-                      </Modal.Body>
-                      <Modal.Footer></Modal.Footer>
-                    </Modal>
-                    {/* --------------------End Journal Entry Modal------------------ */}
-                    {getcopyfromdoctype && getseriesvalue ? (
-                      <Button variant="primary" onClick={handleShow}>
-                        Copy From
-                      </Button>
-                    ) : null}
-                    <Modal
-                      show={show}
-                      onHide={handleClose}
-                      className="Modal-big"
-                      size="lg"
-                    >
-                      <Modal.Header closeButton>
-                        <Modal.Title id="example-modal-sizes-title-lg">
-                          Document Numbers List
-                        </Modal.Title>
-                      </Modal.Header>
-                      <Modal.Body>
-                        {PrRe && (
-                          <Table responsive>
-                            <TableHead>
-                              <tr>
-                                <th>#</th>
-                                <th>Document No.</th>
-                                <th>Vendor Code</th>
-                                <th>Vendor Name</th>
-                                <th>Posting Date</th>
-                              </tr>
-                            </TableHead>
-                            <tbody>
-                              {PrRe.map((item, index) => (
-                                <tr key={`${index}`}>
-                                  <TD>
-                                    {index + 1}
-                                    <input
-                                      type="checkbox"
-                                      onChange={() => {
-                                        checkboxSelect(item, index);
-                                      }}
-                                      checked={item.isSelected}
-                                    />
-                                  </TD>
-                                  <TD>{item.DocNum}</TD>
-                                  <TD>{item.CardCode}</TD>
-                                  <TD>{item.CardName}</TD>
-                                  <TD>{item.DocDate}</TD>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </Table>
-                        )}
-                      </Modal.Body>
-                      <Modal.Footer>
-                        <Button
-                          variant="secondary"
-                          onClick={() => {
-                            handleShowModalTwo();
-                            handleClose();
-                          }}
+                            </Container>
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                          </DIV7>
+                          <DIV6>
+                            <Container></Container>
+                          </DIV6>
+                        </CardGroup>
+                        <Tabs
+                          defaultActiveKey="Contents"
+                          transition={false}
+                          id="noanim-tab-example"
                         >
-                          Choose
-                        </Button>
-                        <Button variant="primary" onClick={handleClose}>
-                          Cancel
-                        </Button>
-                      </Modal.Footer>
-                    </Modal>
-                    <Modal show={show3} onHide={handleClose3}>
-                      <Modal.Header closeButton>
-                        <Modal.Title>Batch</Modal.Title>
-                      </Modal.Header>
-                      <Modal.Body>
-                        {batchnumberlines && (
-                          <Table responsive striped bordered hover>
-                            <TableHead>
-                              <tr>
-                                <th>#</th>
-                                <th>Batch Number</th>
-                                <th>Expiry Date</th>
-                                <th>Manufacturing Date</th>
-                                <th>Location</th>
-                                <th>Quantity</th>
-                                <th>BaseLine Number</th>
-                              </tr>
-                            </TableHead>
-                            <tbody>
-                              {batchnumberlines.map((item, index) => (
-                                <tr key={`${index}`}>
-                                  <TD>{index + 1}</TD>
-                                  <TD>
-                                    <div style={{ width: "11rem" }}>
-                                      <input
-                                        type="text"
-                                        name="BatchNumber"
-                                        class="form-control"
-                                        id="exampleInputEmail1"
-                                        aria-describedby="emailHelp"
-                                        onChange={(e) => {
-                                          getvaluefrombatchtable(e, index);
-                                        }}
-                                      />
-                                    </div>
-                                  </TD>
-                                  <TD>
-                                    <div style={{ width: "11rem" }}>
-                                      <input
-                                        type="date"
-                                        name="ExpiryDate"
-                                        class="form-control"
-                                        id="exampleInputEmail1"
-                                        aria-describedby="emailHelp"
-                                        onChange={(e) => {
-                                          getvaluefrombatchtable(e, index);
-                                        }}
-                                      />
-                                    </div>
-                                  </TD>
-                                  <TD>
-                                    <div style={{ width: "11rem" }}>
-                                      <input
-                                        type="date"
-                                        name="ManufacturingDate"
-                                        class="form-control"
-                                        id="exampleInputEmail1"
-                                        aria-describedby="emailHelp"
-                                        onChange={(e) => {
-                                          getvaluefrombatchtable(e, index);
-                                        }}
-                                      />
-                                    </div>
-                                  </TD>
-                                  <TD>
-                                    <div style={{ width: "11rem" }}>
-                                      <input
-                                        type="text"
-                                        name="ItemCode"
-                                        class="form-control"
-                                        id="exampleInputEmail1"
-                                        aria-describedby="emailHelp"
-                                        defaultValue={item.ItemCode}
-                                        onChange={(e) => {
-                                          getvaluefrombatchtable(e, index);
-                                        }}
-                                      />
-                                    </div>
-                                  </TD>
-                                  <TD>
-                                    {" "}
-                                    <div style={{ width: "11rem" }}>
-                                      <input
-                                        type="number"
-                                        name="BatchQuantity"
-                                        class="form-control"
-                                        id="exampleInputEmail1"
-                                        aria-describedby="emailHelp"
-                                        defaultValue={item.BatchQuantity}
-                                        onChange={(e) => {
-                                          BatchQtychanger(e, index);
-                                        }}
-                                        onKeyPress={(e) => {
-                                          if (
-                                            e.key === "Enter" ||
-                                            e.key === "NumpadEnter"
-                                          ) {
-                                            BatchQtychanger2(e, index);
-                                          }
-                                        }}
-                                      />
-                                    </div>
-                                  </TD>
-                                  <TD>
-                                    {" "}
-                                    <div style={{ width: "11rem" }}>
-                                      <input
-                                        type="number"
-                                        name="BaseLineNumber"
-                                        class="form-control"
-                                        id="exampleInputEmail1"
-                                        readOnly
-                                        aria-describedby="emailHelp"
-                                        defaultValue={item.LineNum}
-                                      />
-                                    </div>
-                                  </TD>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </Table>
-                        )}
-                      </Modal.Body>
-                      <Modal.Footer>
-                        <Button variant="secondary" onClick={BatchQtychanger2}>
-                          Add
-                        </Button>
-                      </Modal.Footer>
-                    </Modal>
-                    <Modal
-                      show={modalTwo === "modal-two"}
-                      className="Modal-big"
-                      size="lg"
-                    >
+                          <Tab eventKey="Contents" title="Contents">
+                            <div>
+                              {JournalEntryLines && (
+                                <Table responsive striped bordered hover>
+                                  {Array.isArray(JournalEntryLines) &&
+                                  JournalEntryLines.length > 0 ? (
+                                    <TableHead>
+                                      <tr>
+                                        <th> #</th>
+                                        <th>G/L Acct/BP Code</th>
+                                        <th>G/L Acct/BP Name</th>
+                                        <th>Debit</th>
+                                        <th>Credit</th>
+                                        <th>Empolee id</th>
+                                        <th>Remarks</th>
+                                        <th>Ref. 1</th>
+                                        <th>Ref.3</th>
+                                        <th>Project</th>
+                                        <th>Cost Center</th>
+                                      </tr>
+                                    </TableHead>
+                                  ) : null}
+                                  <tbody>
+                                    {JournalEntryLines.map((item, index) => (
+                                      <tr key={`${index}`}>
+                                        <TD>{index + 1}</TD>
+                                        <TD>{item.AccountCode}</TD>
+                                        <TD>
+                                          {ItemsDetails[item.AccountCode].Name}
+                                        </TD>
+                                        <TD>{item.Debit}</TD>
+                                        <TD>{item.Credit}</TD>
+                                        <TD>{item.U_EmployeeID}</TD>
+                                        <TD>{item.LineMemo}</TD>
+                                        <TD>{item.Reference1}</TD>
+                                        <TD>{item.Reference2}</TD>
+                                        <TD>{item.ProjectCode}</TD>
+                                        <TD>{item.CostingCode}</TD>
+                                      </tr>
+                                    ))}
+                                    <tr>
+                                      <TD></TD>
+                                      <TD></TD>
+                                      <TD></TD>
+                                      <TD>{gettotaldebit}</TD>
+                                      <TD>{gettotalcredit}</TD>
+                                      <TD></TD>
+                                      <TD></TD>
+                                      <TD></TD>
+                                      <TD></TD>
+                                      <TD></TD>
+                                      <TD></TD>
+                                    </tr>
+                                  </tbody>
+                                </Table>
+                              )}
+                            </div>
+                          </Tab>
+                          <Tab eventKey="Attachment" title="Attachment">
+                            <Attachment
+                              setattachmentresponse={setattachmentresponse}
+                            />
+                          </Tab>
+                        </Tabs>
+                        <DIV3>
+                          <Container fluid></Container>
+                        </DIV3>
+                        <br />
+                        <br />
+                        <div style={{ marginLeft: "2rem" }}>
+                          <Button
+                            style={{ marginLeft: "5%" }}
+                            type="reset"
+                            onClick={() => {
+                              handleClosee();
+                            }}
+                          >
+                            OK
+                          </Button>
+                          <Button
+                            style={{ marginLeft: "5%" }}
+                            onClick={() => {
+                              handleClosee();
+                            }}
+                            type="reset"
+                          >
+                            Cancel
+                          </Button>
+                        </div>
+                      </Form>
+                    </Modal.Body>
+                    <Modal.Footer></Modal.Footer>
+                  </Modal>
+                  {/* --------------------End Journal Entry Modal------------------ */}
+                  {getcopyfromdoctype && getseriesvalue ? (
+                    <Button variant="primary" onClick={handleShow}>
+                      Copy From
+                    </Button>
+                  ) : null}
+                  <Modal
+                    show={show}
+                    onHide={handleClose}
+                    className="Modal-big"
+                    size="lg"
+                  >
+                    <Modal.Header closeButton>
                       <Modal.Title id="example-modal-sizes-title-lg">
-                        List of Open Items
+                        Document Numbers List
                       </Modal.Title>
-                      <Modal.Body>
+                    </Modal.Header>
+                    <Modal.Body>
+                      {PrRe && (
+                        <Table responsive>
+                          <TableHead>
+                            <tr>
+                              <th>#</th>
+                              <th>Document No.</th>
+                              <th>Vendor Code</th>
+                              <th>Vendor Name</th>
+                              <th>Posting Date</th>
+                            </tr>
+                          </TableHead>
+                          <tbody>
+                            {PrRe.map((item, index) => (
+                              <tr key={`${index}`}>
+                                <TD>
+                                  {index + 1}
+                                  <input
+                                    type="checkbox"
+                                    onChange={() => {
+                                      checkboxSelect(item, index);
+                                    }}
+                                    checked={item.isSelected}
+                                  />
+                                </TD>
+                                <TD>{item.DocNum}</TD>
+                                <TD>{item.CardCode}</TD>
+                                <TD>{item.CardName}</TD>
+                                <TD>{item.DocDate}</TD>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </Table>
+                      )}
+                    </Modal.Body>
+                    <Modal.Footer>
+                      <Button
+                        variant="secondary"
+                        onClick={() => {
+                          handleShowModalTwo();
+                          handleClose();
+                        }}
+                      >
+                        Choose
+                      </Button>
+                      <Button variant="primary" onClick={handleClose}>
+                        Cancel
+                      </Button>
+                    </Modal.Footer>
+                  </Modal>
+                  <Modal show={show3} onHide={handleClose3}>
+                    <Modal.Header closeButton>
+                      <Modal.Title>Batch</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                      {batchnumberlines && (
                         <Table responsive striped bordered hover>
                           <TableHead>
                             <tr>
                               <th>#</th>
-                              <th>Bar Code</th>
-                              <th>Item No.</th>
-                              <th>Item Description</th>
-                              <th>UoM Name</th>
-                              <th>Free Text</th>
+                              <th>Batch Number</th>
+                              <th>Expiry Date</th>
+                              <th>Manufacturing Date</th>
+                              <th>Location</th>
                               <th>Quantity</th>
-                              <th>Delivery Date</th>
-                              <th>Open Qty</th>
-                              <th>Whse</th>
-                              <th>Unit Price</th>
-                              <th>Discount</th>
-                              <th>Price after Discount</th>
-                              <th>Tax Code : Rate</th>
-                              <th>Tax Amount(LC)</th>
-                              <th>Gross Price After Disc.</th>
-                              <th>Freight 1</th>
-                              <th>Freight 1 (LC)</th>
-                              <th>Line Total</th>
-                              <th>Gross Total(LC)</th>
-                              <th>Project</th>
-                              <th>Buyer</th>
-                              <th>Cost Centre</th>
+                              <th>BaseLine Number</th>
                             </tr>
                           </TableHead>
                           <tbody>
-                            {PQDocumentLines &&
-                              PQDocumentLines.map(
-                                (PrReItem, PrReIndex) =>
-                                  PrReItem.isSelected &&
-                                  PrReItem.DocumentLines.map(
-                                    (item, index) =>
-                                      item.LineStatus === "bost_Open" && (
-                                        <tr key={`${index}`}>
-                                          <TD>
-                                            {index + 1}
-                                            <input
-                                              type="checkbox"
-                                              onChange={() => {
-                                                docLineSelectedSwitch(
-                                                  PrReIndex,
-                                                  item,
-                                                  index
-                                                );
-                                              }}
-                                              checked={item.isSelected}
-                                            />
-                                          </TD>
-                                          <TD></TD>
-                                          <TD>{item.ItemCode}</TD>
-                                          <TD>{item.ItemDescription}</TD>
-                                          <TD>{item.MeasureUnit}</TD>
-                                          <TD>
-                                            <div
-                                              style={{
-                                                width: "14rem",
-                                                height: "auto",
-                                              }}
-                                            >
-                                              <input
-                                                type="text"
-                                                name="FreeText"
-                                                readOnly="readOnly"
-                                                class="form-control"
-                                                aria-describedby="Requesterid"
-                                                defaultValue={item.FreeText}
-                                              />
-                                            </div>
-                                          </TD>
-                                          <TD>
-                                            <div
-                                              style={{
-                                                width: "14rem",
-                                                height: "auto",
-                                              }}
-                                            >
-                                              <input
-                                                type="number"
-                                                name="QuotedQty"
-                                                readOnly="readOnly"
-                                                class="form-control"
-                                                aria-describedby="Requesterid"
-                                                defaultValue={
-                                                  item.RemainingOpenQuantity
-                                                }
-                                              />
-                                            </div>
-                                          </TD>
-                                          <TD>
-                                            <div
-                                              style={{
-                                                width: "14rem",
-                                                height: "auto",
-                                              }}
-                                            >
-                                              <input
-                                                type="date"
-                                                name="ShipDate"
-                                                readOnly="readOnly"
-                                                class="form-control"
-                                                defaultValue={item.ShipDate}
-                                              />
-                                            </div>
-                                          </TD>
-                                          <TD>
-                                            {item.RemainingOpenQuantity
-                                              ? OpenQty
-                                              : 0}{" "}
-                                          </TD>
-                                          <TD>
-                                            <div style={{ width: "15em" }}>
-                                              {PrWhse && (
-                                                <Select
-                                                  menuPortalTarget={
-                                                    document.body
-                                                  }
-                                                  value={PrWhse.filter(
-                                                    (option) =>
-                                                      option.value ===
-                                                      item.WarehouseCode
-                                                  )}
-                                                  placeholder="Select.."
-                                                  isDisabled
-                                                  options={PrWhse} // Options to display in the dropdown
-                                                  onChange={(e) => {
-                                                    DocLinesDropDownOnChange(
-                                                      e,
-                                                      index,
-                                                      "WarehouseCode"
-                                                    );
-                                                  }}
-                                                  displayValue="name" // Property name to display in the dropdown options
-                                                />
-                                              )}
-                                            </div>
-                                          </TD>
-                                          <TD>{item.UnitPrice}</TD>
-                                          <TD>{item.DiscountPercent}</TD>
-                                          <TD>{item.Price}</TD>
-                                          <TD>
-                                            <div style={{ width: "14rem" }}>
-                                              <Select
-                                                menuPortalTarget={document.body}
-                                                isDisabled
-                                                placeholder={
-                                                  item.VatGroup +
-                                                  "  : " +
-                                                  item.TaxPercentagePerRow +
-                                                  "%"
-                                                }
-                                                displayValue="name" // Property name to display in the dropdown options
-                                              />
-                                            </div>
-                                          </TD>
-                                          <TD>{item.TaxTotal}</TD>
-                                          <TD>{item.GrossTotalSC}</TD>
-                                          <TD>
-                                            <div style={{ width: "14rem" }}>
-                                              <Select
-                                                menuPortalTarget={document.body}
-                                                isDisabled
-                                                options={Frieght} // Options to display in the dropdown
-                                                displayValue="name" // Property name to display in the dropdown options
-                                              />
-                                            </div>
-                                          </TD>
-                                          <TD>
-                                            {/* {item.DocumentLineAdditionalExpenses[0].LineTotal || "null"} */}
-                                          </TD>
-                                          <TD>{item.LineTotal}</TD>
-                                          <TD>{item.GrossTotal}</TD>
-                                          <TD>
-                                            <div style={{ width: "14rem" }}>
-                                              <Select
-                                                menuPortalTarget={document.body}
-                                                isDisabled
-                                                placeholder={item.ProjectCode}
-                                                displayValue="name" // Property name to display in the dropdown options
-                                              />
-                                            </div>
-                                          </TD>
-                                          <TD>
-                                            <div style={{ width: "14rem" }}>
-                                              <Select
-                                                menuPortalTarget={document.body}
-                                                isDisabled
-                                                placeholder={
-                                                  item.SalesPersonCode
-                                                }
-                                                displayValue="name" // Property name to display in the dropdown options
-                                              />
-                                            </div>
-                                          </TD>
-                                          <TD>
-                                            <div style={{ width: "14rem" }}>
-                                              <Select
-                                                menuPortalTarget={document.body}
-                                                isDisabled
-                                                placeholder={item.CostingCode}
-                                                displayValue="name" // Property name to display in the dropdown options
-                                              />
-                                            </div>
-                                          </TD>
-                                        </tr>
-                                      )
-                                  )
-                              )}
+                            {batchnumberlines.map((item, index) => (
+                              <tr key={`${index}`}>
+                                <TD>{index + 1}</TD>
+                                <TD>
+                                  <div style={{ width: "11rem" }}>
+                                    <input
+                                      type="text"
+                                      name="BatchNumber"
+                                      class="form-control"
+                                      id="exampleInputEmail1"
+                                      aria-describedby="emailHelp"
+                                      onChange={(e) => {
+                                        getvaluefrombatchtable(e, index);
+                                      }}
+                                    />
+                                  </div>
+                                </TD>
+                                <TD>
+                                  <div style={{ width: "11rem" }}>
+                                    <input
+                                      type="date"
+                                      name="ExpiryDate"
+                                      class="form-control"
+                                      id="exampleInputEmail1"
+                                      aria-describedby="emailHelp"
+                                      onChange={(e) => {
+                                        getvaluefrombatchtable(e, index);
+                                      }}
+                                    />
+                                  </div>
+                                </TD>
+                                <TD>
+                                  <div style={{ width: "11rem" }}>
+                                    <input
+                                      type="date"
+                                      name="ManufacturingDate"
+                                      class="form-control"
+                                      id="exampleInputEmail1"
+                                      aria-describedby="emailHelp"
+                                      onChange={(e) => {
+                                        getvaluefrombatchtable(e, index);
+                                      }}
+                                    />
+                                  </div>
+                                </TD>
+                                <TD>
+                                  <div style={{ width: "11rem" }}>
+                                    <input
+                                      type="text"
+                                      name="ItemCode"
+                                      class="form-control"
+                                      id="exampleInputEmail1"
+                                      aria-describedby="emailHelp"
+                                      defaultValue={item.ItemCode}
+                                      onChange={(e) => {
+                                        getvaluefrombatchtable(e, index);
+                                      }}
+                                    />
+                                  </div>
+                                </TD>
+                                <TD>
+                                  {" "}
+                                  <div style={{ width: "11rem" }}>
+                                    <input
+                                      type="number"
+                                      name="BatchQuantity"
+                                      class="form-control"
+                                      id="exampleInputEmail1"
+                                      aria-describedby="emailHelp"
+                                      defaultValue={item.BatchQuantity}
+                                      onChange={(e) => {
+                                        BatchQtychanger(e, index);
+                                      }}
+                                      onKeyPress={(e) => {
+                                        if (
+                                          e.key === "Enter" ||
+                                          e.key === "NumpadEnter"
+                                        ) {
+                                          BatchQtychanger2(e, index);
+                                        }
+                                      }}
+                                    />
+                                  </div>
+                                </TD>
+                                <TD>
+                                  {" "}
+                                  <div style={{ width: "11rem" }}>
+                                    <input
+                                      type="number"
+                                      name="BaseLineNumber"
+                                      class="form-control"
+                                      id="exampleInputEmail1"
+                                      readOnly
+                                      aria-describedby="emailHelp"
+                                      defaultValue={item.LineNum}
+                                    />
+                                  </div>
+                                </TD>
+                              </tr>
+                            ))}
                           </tbody>
                         </Table>
-                      </Modal.Body>
-                      <Modal.Footer>
-                        <Button
-                          variant="secondary"
-                          onClick={() => {
-                            getvaluesformula();
-                            handleCloseee();
-                          }}
-                        >
-                          Choose
-                        </Button>
-                      </Modal.Footer>
-                    </Modal>
-                    <Modal show={show1} onHide={handleClose2}>
-                      <Modal.Header closeButton>
-                        <Modal.Title>Purchase Invoices List</Modal.Title>
-                      </Modal.Header>
-                      <Modal.Body>
-                        {ModalHeaderData && (
-                          <Table responsive>
-                            <TableHead>
-                              <tr>
-                                <th>#</th>
-                                <th>Document Status</th>
-                                <th>DocNum</th>
-                                <th>DocEntry</th>
-                                <th>Code</th>
-                                <th>Name</th>
-                                <th>Posting Date</th>
-                              </tr>
-                            </TableHead>
-                            <tbody>
-                              {ModalHeaderData.map((item, index) => (
-                                <tr
-                                  key={`${index}`}
-                                  onClick={(e) => {
-                                    selectPR(item);
-                                    handleClose2();
-                                  }}
-                                >
-                                  <TD>{index + 1}</TD>
-                                  <TD>
-                                    {item.DocumentStatus === "bost_Open" ? (
-                                      <p
-                                        style={{
-                                          background: "gray",
-                                          color: "white",
-                                        }}
-                                      >
-                                        Open
-                                      </p>
-                                    ) : item.DocumentStatus === "bost_Close" ? (
-                                      <p
-                                        style={{
-                                          background: "red",
-                                          color: "white",
-                                        }}
-                                      >
-                                        Closed
-                                      </p>
-                                    ) : null}
-                                  </TD>
-                                  <TD>{item.DocNum}</TD>
-                                  <TD>{item.DocEntry}</TD>
-                                  <TD>{item.CardCode}</TD>
-                                  <TD>{item.CardName}</TD>
-                                  <TD>{item.DocDate}</TD>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </Table>
-                        )}
-                      </Modal.Body>
-                      <Modal.Footer>
-                        <Button variant="secondary" onClick={handleClose2}>
-                          Close
-                        </Button>
-                      </Modal.Footer>
-                    </Modal>
-                    <br />
-                    <div style={{ width: "23.5rem", height: "auto" }}>
-                      <label>Vendor Ref.No</label>
-                      <input
-                        defaultValue={HeaderData && HeaderData.NumAtCard}
-                        type="text"
-                        class="form-control"
-                        id="exampleInputEmail1"
-                        aria-describedby="emailHelp"
-                        placeholder=""
-                      ></input>
-                    </div>
-                    <div
-                      style={{
-                        marginTop: "5%",
-                        marginLeft: "47%",
-                        width: "50%",
-                      }}
-                    >
-                      {RequesterCodeDropdown && (
-                        <Select
-                          placeholder=""
-                          options={RequesterCodeDropdown} // Options to display in the dropdown
-                          displayValue="name" // Property name to display in the dropdown options
-                        />
                       )}
-                    </div>
-                    {getdirectdoctype ? (
-                      <>
-                        <label>G/L Account</label>
-                        <div style={{ width: "23.5rem", height: "auto" }}>
-                          {/* {ItemsDropDown && ( */}
-                          <Select
-                            isMulti
-                            options={ItemsDropDown}
-                            onChange={ItemsDropDownfunc2}
-                            displayValue="name"
-                          />
-                          {/* )} */}
-                        </div>
-                        <br />
-                      </>
-                    ) : null}
-                  </Container>
-                </DIV3>
-                <DIV4></DIV4>
-                <DIV3>
-                  <Container>
-                    <div style={{ marginLeft: "3rem" }}>
-                      <label>No.</label>
-                      <CardGroup>
-                        <br />
-                        <div style={{ width: "11.5rem", height: "auto" }}>
-                          <Select
-                            // placeholder={HeaderData && HeaderData.RequesterName}
-                            options={getserviceseries} // Options to display in the dropdown
-                            onChange={(e) => {
-                              getseriesvaluefunction(e);
-                              // TableTaxCode(e.item.Name)
-                              Whse(e.item.Name);
-                            }} // Function will trigger on select event
-                            // onRemove={RequesterCodeDropdownfunc} // Function will trigger on remove event
-                            displayValue="name" // Property name to display in the dropdown options
-                          />
-                        </div>
-                        <div style={{ width: "11.5rem", height: "auto" }}>
-                          <input
-                            type="number"
-                            name="Discount"
-                            readOnly
-                            value={
-                              HeaderData && HeaderData.DocNum
-                                ? HeaderData && HeaderData.DocNum
-                                : getnextnumber
-                            }
-                            placeholder=""
-                            class="form-control"
-                          />{" "}
-                          <br />
-                        </div>
-                      </CardGroup>
-                    </div>
-                    <div style={{ width: "23.5rem", marginLeft: "3rem" }}>
-                      <label> Status</label>
+                    </Modal.Body>
+                    <Modal.Footer>
+                      <Button variant="secondary" onClick={BatchQtychanger2}>
+                        Add
+                      </Button>
+                    </Modal.Footer>
+                  </Modal>
+                  <Modal
+                    show={modalTwo === "modal-two"}
+                    className="Modal-big"
+                    size="lg"
+                  >
+                    <Modal.Title id="example-modal-sizes-title-lg">
+                      List of Open Items
+                    </Modal.Title>
+                    <Modal.Body>
+                      <Table responsive striped bordered hover>
+                        <TableHead>
+                          <tr>
+                            <th>#</th>
+                            <th>Bar Code</th>
+                            <th>Item No.</th>
+                            <th>Item Description</th>
+                            <th>UoM Name</th>
+                            <th>Free Text</th>
+                            <th>Quantity</th>
+                            <th>Delivery Date</th>
+                            <th>Open Qty</th>
+                            <th>Whse</th>
+                            <th>Unit Price</th>
+                            <th>Discount</th>
+                            <th>Price after Discount</th>
+                            <th>Tax Code : Rate</th>
+                            <th>Tax Amount(LC)</th>
+                            <th>Gross Price After Disc.</th>
+                            <th>Freight 1</th>
+                            <th>Freight 1 (LC)</th>
+                            <th>Line Total</th>
+                            <th>Gross Total(LC)</th>
+                            <th>Project</th>
+                            <th>Buyer</th>
+                            <th>Cost Centre</th>
+                          </tr>
+                        </TableHead>
+                        <tbody>
+                          {PQDocumentLines &&
+                            PQDocumentLines.map(
+                              (PrReItem, PrReIndex) =>
+                                PrReItem.isSelected &&
+                                PrReItem.DocumentLines.map(
+                                  (item, index) =>
+                                    item.LineStatus === "bost_Open" && (
+                                      <tr key={`${index}`}>
+                                        <TD>
+                                          {index + 1}
+                                          <input
+                                            type="checkbox"
+                                            onChange={() => {
+                                              docLineSelectedSwitch(
+                                                PrReIndex,
+                                                item,
+                                                index
+                                              );
+                                            }}
+                                            checked={item.isSelected}
+                                          />
+                                        </TD>
+                                        <TD></TD>
+                                        <TD>{item.ItemCode}</TD>
+                                        <TD>{item.ItemDescription}</TD>
+                                        <TD>{item.MeasureUnit}</TD>
+                                        <TD>
+                                          <div
+                                            style={{
+                                              width: "14rem",
+                                              height: "auto",
+                                            }}
+                                          >
+                                            <input
+                                              type="text"
+                                              name="FreeText"
+                                              readOnly="readOnly"
+                                              class="form-control"
+                                              aria-describedby="Requesterid"
+                                              defaultValue={item.FreeText}
+                                            />
+                                          </div>
+                                        </TD>
+                                        <TD>
+                                          <div
+                                            style={{
+                                              width: "14rem",
+                                              height: "auto",
+                                            }}
+                                          >
+                                            <input
+                                              type="number"
+                                              name="QuotedQty"
+                                              readOnly="readOnly"
+                                              class="form-control"
+                                              aria-describedby="Requesterid"
+                                              defaultValue={
+                                                item.RemainingOpenQuantity
+                                              }
+                                            />
+                                          </div>
+                                        </TD>
+                                        <TD>
+                                          <div
+                                            style={{
+                                              width: "14rem",
+                                              height: "auto",
+                                            }}
+                                          >
+                                            <input
+                                              type="date"
+                                              name="ShipDate"
+                                              readOnly="readOnly"
+                                              class="form-control"
+                                              defaultValue={item.ShipDate}
+                                            />
+                                          </div>
+                                        </TD>
+                                        <TD>
+                                          {item.RemainingOpenQuantity
+                                            ? OpenQty
+                                            : 0}{" "}
+                                        </TD>
+                                        <TD>
+                                          <div style={{ width: "15em" }}>
+                                            {PrWhse && (
+                                              <Select
+                                                menuPortalTarget={document.body}
+                                                value={PrWhse.filter(
+                                                  (option) =>
+                                                    option.value ===
+                                                    item.WarehouseCode
+                                                )}
+                                                placeholder="Select.."
+                                                isDisabled
+                                                options={PrWhse} // Options to display in the dropdown
+                                                onChange={(e) => {
+                                                  DocLinesDropDownOnChange(
+                                                    e,
+                                                    index,
+                                                    "WarehouseCode"
+                                                  );
+                                                }}
+                                                displayValue="name" // Property name to display in the dropdown options
+                                              />
+                                            )}
+                                          </div>
+                                        </TD>
+                                        <TD>{item.UnitPrice}</TD>
+                                        <TD>{item.DiscountPercent}</TD>
+                                        <TD>{item.Price}</TD>
+                                        <TD>
+                                          <div style={{ width: "14rem" }}>
+                                            <Select
+                                              menuPortalTarget={document.body}
+                                              isDisabled
+                                              placeholder={
+                                                item.VatGroup +
+                                                "  : " +
+                                                item.TaxPercentagePerRow +
+                                                "%"
+                                              }
+                                              displayValue="name" // Property name to display in the dropdown options
+                                            />
+                                          </div>
+                                        </TD>
+                                        <TD>{item.TaxTotal}</TD>
+                                        <TD>{item.GrossTotalSC}</TD>
+                                        <TD>
+                                          <div style={{ width: "14rem" }}>
+                                            <Select
+                                              menuPortalTarget={document.body}
+                                              isDisabled
+                                              options={Frieght} // Options to display in the dropdown
+                                              displayValue="name" // Property name to display in the dropdown options
+                                            />
+                                          </div>
+                                        </TD>
+                                        <TD>
+                                          {/* {item.DocumentLineAdditionalExpenses[0].LineTotal || "null"} */}
+                                        </TD>
+                                        <TD>{item.LineTotal}</TD>
+                                        <TD>{item.GrossTotal}</TD>
+                                        <TD>
+                                          <div style={{ width: "14rem" }}>
+                                            <Select
+                                              menuPortalTarget={document.body}
+                                              isDisabled
+                                              placeholder={item.ProjectCode}
+                                              displayValue="name" // Property name to display in the dropdown options
+                                            />
+                                          </div>
+                                        </TD>
+                                        <TD>
+                                          <div style={{ width: "14rem" }}>
+                                            <Select
+                                              menuPortalTarget={document.body}
+                                              isDisabled
+                                              placeholder={item.SalesPersonCode}
+                                              displayValue="name" // Property name to display in the dropdown options
+                                            />
+                                          </div>
+                                        </TD>
+                                        <TD>
+                                          <div style={{ width: "14rem" }}>
+                                            <Select
+                                              menuPortalTarget={document.body}
+                                              isDisabled
+                                              placeholder={item.CostingCode}
+                                              displayValue="name" // Property name to display in the dropdown options
+                                            />
+                                          </div>
+                                        </TD>
+                                      </tr>
+                                    )
+                                )
+                            )}
+                        </tbody>
+                      </Table>
+                    </Modal.Body>
+                    <Modal.Footer>
+                      <Button
+                        variant="secondary"
+                        onClick={() => {
+                          getvaluesformula();
+                          handleCloseee();
+                        }}
+                      >
+                        Choose
+                      </Button>
+                    </Modal.Footer>
+                  </Modal>
+                  <Modal show={show1} onHide={handleClose2}>
+                    <Modal.Header closeButton>
+                      <Modal.Title>Purchase Invoices List</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                      {ModalHeaderData && (
+                        <Table responsive>
+                          <TableHead>
+                            <tr>
+                              <th>#</th>
+                              <th>Document Status</th>
+                              <th>DocNum</th>
+                              <th>DocEntry</th>
+                              <th>Code</th>
+                              <th>Name</th>
+                              <th>Posting Date</th>
+                            </tr>
+                          </TableHead>
+                          <tbody>
+                            {ModalHeaderData.map((item, index) => (
+                              <tr
+                                key={`${index}`}
+                                onClick={(e) => {
+                                  selectPR(item);
+                                  handleClose2();
+                                }}
+                              >
+                                <TD>{index + 1}</TD>
+                                <TD>
+                                  {item.DocumentStatus === "bost_Open" ? (
+                                    <p
+                                      style={{
+                                        background: "gray",
+                                        color: "white",
+                                      }}
+                                    >
+                                      Open
+                                    </p>
+                                  ) : item.DocumentStatus === "bost_Close" ? (
+                                    <p
+                                      style={{
+                                        background: "red",
+                                        color: "white",
+                                      }}
+                                    >
+                                      Closed
+                                    </p>
+                                  ) : null}
+                                </TD>
+                                <TD>{item.DocNum}</TD>
+                                <TD>{item.DocEntry}</TD>
+                                <TD>{item.CardCode}</TD>
+                                <TD>{item.CardName}</TD>
+                                <TD>{item.DocDate}</TD>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </Table>
+                      )}
+                    </Modal.Body>
+                    <Modal.Footer>
+                      <Button variant="secondary" onClick={handleClose2}>
+                        Close
+                      </Button>
+                    </Modal.Footer>
+                  </Modal>
+                  <div className="header_items_container">
+                    <label>Vendor Ref.No</label>
+                    <input
+                      defaultValue={HeaderData && HeaderData.NumAtCard}
+                      type="text"
+                      class="input"
+                      id="exampleInputEmail1"
+                      aria-describedby="emailHelp"
+                      placeholder=""
+                    ></input>
+                  </div>
+                  <div className="header_items_container">
+                    {RequesterCodeDropdown && (
                       <Select
-                        placeholder={getStatus}
-                        isDisabled={getStatus ? true : false}
-                        options={[
-                          { label: "Open", value: "bost_Open" },
-                          { label: "Close", value: "bost_Close" },
-                          { label: "All", value: null },
-                          // { label: 'Draft', value: 'bost_Draft' }
-                        ]} // Options to display in the dropdown
-                        onChange={(e) => {
-                          setgetdocumentstatus(e.value);
-                        }} // Function will trigger on select event
-                        // onRemove={BusinessPartners} Function will trigger on remove event
+                        placeholder=""
+                        options={RequesterCodeDropdown} // Options to display in the dropdown
                         displayValue="name" // Property name to display in the dropdown options
                       />
-                    </div>
-                    <br />
-                    <div
-                      className="invoice"
-                      style={{
-                        width: "23.5rem",
-                        height: "auto",
-                        marginLeft: "3rem",
-                        border: "1px solid",
-                        borderColor: "lightgray",
-                        borderRadius: "4px",
-                      }}
-                    >
-                      <a
-                        onClick={(e) => {
-                          SearchAll_Filter_Data();
-                        }}
-                        style={{ cursor: "pointer" }}
-                      >
-                        {" "}
-                        <svg class="svg-icon19" viewBox="0 0 20 20">
-                          <path d="M18.125,15.804l-4.038-4.037c0.675-1.079,1.012-2.308,1.01-3.534C15.089,4.62,12.199,1.75,8.584,1.75C4.815,1.75,1.982,4.726,2,8.286c0.021,3.577,2.908,6.549,6.578,6.549c1.241,0,2.417-0.347,3.44-0.985l4.032,4.026c0.167,0.166,0.43,0.166,0.596,0l1.479-1.478C18.292,16.234,18.292,15.968,18.125,15.804 M8.578,13.99c-3.198,0-5.716-2.593-5.733-5.71c-0.017-3.084,2.438-5.686,5.74-5.686c3.197,0,5.625,2.493,5.64,5.624C14.242,11.548,11.621,13.99,8.578,13.99 M16.349,16.981l-3.637-3.635c0.131-0.11,0.721-0.695,0.876-0.884l3.642,3.639L16.349,16.981z"></path>
-                        </svg>
-                      </a>
-                      <input
-                        name={"SearchPRNumber"}
-                        type="Number"
-                        placeholder="Number"
-                        class="form-control13"
-                        onKeyDown={keyHandler}
-                        style={{
-                          backgroundColor: isfocused ? "#fce8a7" : "",
-                        }}
-                        ref={searchRef}
+                    )}
+                  </div>
+                  {getdirectdoctype ? (
+                    <>
+                      <div className="header_items_container">
+                        <label>G/L Account</label>
+                        {/* {ItemsDropDown && ( */}
+                        <Select
+                          isMulti
+                          options={ItemsDropDown}
+                          onChange={ItemsDropDownfunc2}
+                          displayValue="name"
+                        />
+                        {/* )} */}
+                      </div>
+                    </>
+                  ) : null}
+                </div>
+                <div className="right">
+                  <div className="header_items_container">
+                    <label>No.</label>
+                    <div className="innerpart">
+                      <select
+                        className="select_inner"
+                        name=""
+                        id=""
                         onChange={(e) => {
-                          setSearchNumber(e.target.value);
+                          getseriesvaluefunction(e);
+                          Whse(e.item.Name);
                         }}
-                      />
+                        displayValue="name"
+                      >
+                        {getserviceseries
+                          ? getserviceseries.map((e) => (
+                              <option value={e.value}>{e.label}</option>
+                            ))
+                          : ""}
+                      </select>
+                      <div className="number_inner">
+                        <input
+                          type="number"
+                          name="Discount"
+                          readOnly
+                          value={getnextnumber}
+                          placeholder=""
+                          class=""
+                        />
+                      </div>
                     </div>
-                    <br />
-                    {/* <br />
+                  </div>
+                  <div className="header_items_container">
+                    <label> Status</label>
+                    <Select
+                      placeholder={getStatus}
+                      isDisabled={getStatus ? true : false}
+                      options={[
+                        { label: "Open", value: "bost_Open" },
+                        { label: "Close", value: "bost_Close" },
+                        { label: "All", value: null },
+                        // { label: 'Draft', value: 'bost_Draft' }
+                      ]} // Options to display in the dropdown
+                      onChange={(e) => {
+                        setgetdocumentstatus(e.value);
+                      }} // Function will trigger on select event
+                      // onRemove={BusinessPartners} Function will trigger on remove event
+                      displayValue="name" // Property name to display in the dropdown options
+                    />
+                  </div>
+                  <div className="header_items_container">
+                    <a
+                      onClick={(e) => {
+                        SearchAll_Filter_Data();
+                      }}
+                      style={{ cursor: "pointer" }}
+                    >
+                      {" "}
+                      <svg class="svg-icon19" viewBox="0 0 20 20">
+                        <path d="M18.125,15.804l-4.038-4.037c0.675-1.079,1.012-2.308,1.01-3.534C15.089,4.62,12.199,1.75,8.584,1.75C4.815,1.75,1.982,4.726,2,8.286c0.021,3.577,2.908,6.549,6.578,6.549c1.241,0,2.417-0.347,3.44-0.985l4.032,4.026c0.167,0.166,0.43,0.166,0.596,0l1.479-1.478C18.292,16.234,18.292,15.968,18.125,15.804 M8.578,13.99c-3.198,0-5.716-2.593-5.733-5.71c-0.017-3.084,2.438-5.686,5.74-5.686c3.197,0,5.625,2.493,5.64,5.624C14.242,11.548,11.621,13.99,8.578,13.99 M16.349,16.981l-3.637-3.635c0.131-0.11,0.721-0.695,0.876-0.884l3.642,3.639L16.349,16.981z"></path>
+                      </svg>
+                    </a>
+                    <input
+                      name={"SearchPRNumber"}
+                      type="Number"
+                      placeholder="Number"
+                      class="input"
+                      onKeyDown={keyHandler}
+                      style={{
+                        backgroundColor: isfocused ? "#fce8a7" : "",
+                      }}
+                      ref={searchRef}
+                      onChange={(e) => {
+                        setSearchNumber(e.target.value);
+                      }}
+                    />
+                  </div>
+                  {/* <br />
               <div style={{ width: '23.5rem', height: 'auto' ,marginLeft:'3rem' }}>
               <label>No</label>
               <input
@@ -2463,56 +2431,44 @@ export default function Invoice() {
                 class='form-control'
               /></div>
               <br /> */}
-                    <div
-                      style={{
-                        width: "23.5rem",
-                        height: "auto",
-                        marginLeft: "3rem",
+                  <div className="header_items_container">
+                    <label>Posting Date</label>
+                    <input
+                      type="date"
+                      name="DocDate"
+                      onChange={(e) => {
+                        setgetpostingdate(e.target.value);
                       }}
-                    >
-                      <label>Posting Date</label>
-                      <input
-                        type="date"
-                        name="DocDate"
-                        onChange={(e) => {
-                          setgetpostingdate(e.target.value);
-                        }}
-                        class="form-control"
-                        defaultValue={
-                          HeaderData && HeaderData.DocDate
-                            ? HeaderData && HeaderData.DocDate
-                            : getpostingdate
-                        }
-                      />
-                    </div>
-                    <div
-                      style={{
-                        width: "23.5rem",
-                        height: "auto",
-                        marginLeft: "3rem",
+                      class="input"
+                      defaultValue={
+                        HeaderData && HeaderData.DocDate
+                          ? HeaderData && HeaderData.DocDate
+                          : getpostingdate
+                      }
+                    />
+                  </div>
+                  <div className="header_items_container">
+                    <label> Due Date</label>
+                    <input
+                      type="date"
+                      name="DocDueDate"
+                      class="input"
+                      onChange={(e) => {
+                        setgetdeliverydate(e.target.value);
                       }}
-                    >
-                      <label> Due Date</label>
-                      <input
-                        type="date"
-                        name="DocDueDate"
-                        class="form-control"
-                        onChange={(e) => {
-                          setgetdeliverydate(e.target.value);
-                        }}
-                        defaultValue={
-                          HeaderData && HeaderData.DocDueDate
-                            ? HeaderData && HeaderData.DocDueDate
-                            : getdeliverydate
-                        }
-                      />
-                    </div>
-                    {/* <br/>
+                      defaultValue={
+                        HeaderData && HeaderData.DocDueDate
+                          ? HeaderData && HeaderData.DocDueDate
+                          : getdeliverydate
+                      }
+                    />
+                  </div>
+                  {/* <br/>
                    <div class="form-check form-check-inline" style={{marginLeft:'3rem'}}>
           <input class="form-check-input" checked={bothbodies} name='Sync' onChange={e =>setbothbodies(!bothbodies)} type="checkbox" id="inlineCheckbox1" value="option1" />
           <label class="form-check-label" for="inlineCheckbox1">Sync A</label>
         </div> */}
-                    {/* <div style={{ width: '23.5rem', height: 'auto' ,marginLeft:'3rem' }}>
+                  {/* <div style={{ width: '23.5rem', height: 'auto' ,marginLeft:'3rem' }}>
               <label> Document Date</label>
               <input
                 type='date'
@@ -2527,10 +2483,8 @@ export default function Invoice() {
                   dateChange(e)
                 }}
               /></div> */}
-                    <br />
-                  </Container>
-                </DIV3>
-              </CardGroup>
+                </div>
+              </div>
               {/* Table+++++++++ */}
               <Tabs
                 defaultActiveKey="Contents"
@@ -3248,185 +3202,122 @@ export default function Invoice() {
                 </Tab>
               </Tabs>
               {/* Bottom Side+++++++++ */}
-              <CardGroup>
-                <DIV3>
-                  <Container fluid>
-                    <div style={{ width: "23.5em", height: "auto" }}>
-                      <label>Buyer</label>
-                      <Select
-                        placeholder={HeaderData && HeaderData.SalesPersonCode}
-                        options={PrBuyer} // Options to display in the dropdown
-                        onChange={(e) => setSelectedBuyer(e.value)}
-                        displayValue="name" // Property name to display in the dropdown options
-                      />
-                    </div>
-                    <div style={{ width: "23.5rem", height: "auto" }}>
-                      <label>Owner</label>
-                      <Select
-                        placeholder={HeaderData && HeaderData.DocumentsOwner}
-                        options={PrOwner}
-                        onChange={(e) => setSelectedOwner(e.value)} // Options to display in the dropdown
-                        // onSelect={Owner} // Function will trigger on select event
-                        // onRemove={Owner} //Function will trigger on remove event
-                        displayValue="name" // Property name to display in the dropdown options
-                      />
-                    </div>
-                    <div class="form-group">
-                      <div style={{ width: "23.5rem", height: "auto" }}>
-                        <label for="exampleFormControlTextarea1">Remarks</label>
-                        <div style={{ width: "23.5rem" }}>
-                          <textarea
-                            defaultValue={
-                              getcopyfromvalue === "PO"
-                                ? HeaderData &&
-                                  "Based on Purchase Order: " +
-                                    HeaderData.DocEntry +
-                                    ". " +
-                                    HeaderData.Comments
-                                : HeaderData &&
-                                  HeaderData.DocEntry +
-                                    ". " +
-                                    HeaderData.Comments
-                            }
-                            type="text"
-                            class="form-control rounded-0"
-                            id="exampleFormControlTextarea1"
-                            name="Comments"
-                            rows="3"
-                            onChange={(e) => {
-                              setgetcomments(e.target.value);
-                            }}
-                          />{" "}
-                        </div>
-                      </div>
-                    </div>
-                    <br />
-                    <br />
-                    <br />
-                    <br />
-                    {localStorage.getItem("documentcontroller") === "R" ? (
-                      <div>
-                        <Button
-                          style={{ marginLeft: "5%" }}
-                          onClick={() => {
-                            window.location.href = "/Home";
-                          }}
-                        >
-                          OK
-                        </Button>
-                        <Button
-                          variant="secondary"
-                          style={{ marginLeft: "5%" }}
-                          onClick={() => {
-                            window.location.href = "/Home";
-                          }}
-                        >
-                          Cancel
-                        </Button>
-                      </div>
-                    ) : (
-                      <div>
-                        <Button
-                          style={{ marginLeft: "5%" }}
-                          onClick={() => {
-                            Submit_PatchFunc();
-                          }}
-                        >
-                          {ButtonName}
-                        </Button>
+              <div className="main_container">
+                <div className="left">
+                  <div className="header_items_container">
+                    <label>Buyer</label>
+                    <Select
+                      placeholder={HeaderData && HeaderData.SalesPersonCode}
+                      options={PrBuyer} // Options to display in the dropdown
+                      onChange={(e) => setSelectedBuyer(e.value)}
+                      displayValue="name" // Property name to display in the dropdown options
+                    />
+                  </div>
+                  <div className="header_items_container">
+                    <label>Owner</label>
+                    <Select
+                      placeholder={HeaderData && HeaderData.DocumentsOwner}
+                      options={PrOwner}
+                      onChange={(e) => setSelectedOwner(e.value)} // Options to display in the dropdown
+                      // onSelect={Owner} // Function will trigger on select event
+                      // onRemove={Owner} //Function will trigger on remove event
+                      displayValue="name" // Property name to display in the dropdown options
+                    />
+                  </div>
+                  <div className="header_items_container">
+                    <label for="exampleFormControlTextarea1">Remarks</label>
+                    <textarea
+                      defaultValue={
+                        getcopyfromvalue === "PO"
+                          ? HeaderData &&
+                            "Based on Purchase Order: " +
+                              HeaderData.DocEntry +
+                              ". " +
+                              HeaderData.Comments
+                          : HeaderData &&
+                            HeaderData.DocEntry + ". " + HeaderData.Comments
+                      }
+                      type="text"
+                      class="textArea"
+                      id="exampleFormControlTextarea1"
+                      name="Comments"
+                      rows="3"
+                      onChange={(e) => {
+                        setgetcomments(e.target.value);
+                      }}
+                    />{" "}
+                  </div>
+                </div>
 
-                        <Button
-                          style={{ marginLeft: "5%" }}
-                          variant="secondary"
-                          onClick={() => {
-                            window.location.href = "/Home";
+                <div className="right">
+                  <div className="header_items_container">
+                    <label>Net Total </label>
+                    <input
+                      readOnly="readOnly"
+                      type="number"
+                      value={
+                        totalbforeDiscount
+                          ? totalbforeDiscount
+                          : HeaderData &&
+                            (HeaderData.DocTotalFc != 0
+                              ? HeaderData.DocTotalFc +
+                                HeaderData.TotalDiscountFC -
+                                HeaderData.VatSumFc
+                              : HeaderData.DocTotal +
+                                HeaderData.TotalDiscount -
+                                HeaderData.VatSum)
+                      }
+                      // value={totalbforeDiscount}
+                      // placeholder={PQFindDocumentLines && PQFindDocumentLines.DocumentsOwner}
+                      class="input"
+                    />
+                  </div>
+                  <div className="header_items_container">
+                    <label>Discount</label>
+                    <div className="innerpart">
+                      <div className="discountfirst">
+                        <input
+                          type="number"
+                          value={
+                            discountpercent ||
+                            (HeaderData && HeaderData.DiscountPercent)
+                          }
+                          onChange={(e) => {
+                            setdiscountpercent(e.target.value);
+                            setDiscountTotal(
+                              (e.target.value * totalbforeDiscount) / 100
+                            );
                           }}
-                        >
-                          Cancel
-                        </Button>
+                          name="TaxAmount(LC)"
+                        />
                       </div>
-                    )}
-                  </Container>
-                </DIV3>
-                <DIV4>
-                  {/* {ModalHeaderData ? ( */}
-                  {/* null */}
-                  {/* ): */}
-
-                  {/* } */}
-                </DIV4>
-                <DIV3>
-                  <div>
-                    <div style={{ width: "23.5rem", marginLeft: "4rem" }}>
-                      <label style={{ marginTop: "10%" }}>Net Total </label>
-                      <input
-                        readOnly="readOnly"
-                        type="number"
-                        value={
-                          totalbforeDiscount
-                            ? totalbforeDiscount
-                            : HeaderData &&
+                      <div className="discountsecond">
+                        <input
+                          type="number"
+                          // value={DiscountTotal}
+                          onChange={(e) => {
+                            setDiscountTotal(e.target.value);
+                            setdiscountpercent(
+                              (e.target.value / totalbforeDiscount) * 100
+                            );
+                          }}
+                          name="TaxAmount(LC)"
+                          style={{ width: "7rem" }}
+                          value={
+                            DiscountTotal ||
+                            (HeaderData &&
                               (HeaderData.DocTotalFc != 0
-                                ? HeaderData.DocTotalFc +
-                                  HeaderData.TotalDiscountFC -
-                                  HeaderData.VatSumFc
-                                : HeaderData.DocTotal +
-                                  HeaderData.TotalDiscount -
-                                  HeaderData.VatSum)
-                        }
-                        // value={totalbforeDiscount}
-                        // placeholder={PQFindDocumentLines && PQFindDocumentLines.DocumentsOwner}
-                        class="form-control"
-                      />
-                    </div>
-                    <div style={{ marginLeft: "4rem" }}>
-                      <label>Discount</label>
-                      <CardGroup>
-                        <div style={{ width: "11.75rem" }}>
-                          <input
-                            type="number"
-                            value={
-                              discountpercent ||
-                              (HeaderData && HeaderData.DiscountPercent)
-                            }
-                            onChange={(e) => {
-                              setdiscountpercent(e.target.value);
-                              setDiscountTotal(
-                                (e.target.value * totalbforeDiscount) / 100
-                              );
-                            }}
-                            class="form-control"
-                            name="TaxAmount(LC)"
-                          />
-                        </div>
-                        <div style={{ width: "11.75rem" }}>
-                          <input
-                            type="number"
-                            // value={DiscountTotal}
-                            onChange={(e) => {
-                              setDiscountTotal(e.target.value);
-                              setdiscountpercent(
-                                (e.target.value / totalbforeDiscount) * 100
-                              );
-                            }}
-                            class="form-control"
-                            name="TaxAmount(LC)"
-                            value={
-                              DiscountTotal ||
-                              (HeaderData &&
-                                (HeaderData.DocTotalFc != 0
-                                  ? HeaderData.TotalDiscountFC
-                                  : HeaderData.TotalDiscount))
-                            }
-                          />
-                        </div>
-                      </CardGroup>
+                                ? HeaderData.TotalDiscountFC
+                                : HeaderData.TotalDiscount))
+                          }
+                        />
+                      </div>
                     </div>
                   </div>
-                  <div style={{ marginLeft: "4rem" }}>
+                  <div className="header_items_container">
                     <label>DPM</label>
-                    <CardGroup>
-                      <div style={{ width: "11.75rem" }}>
+                    <div className="innerpart">
+                      <div className="discountfirst">
                         <input
                           type="number"
                           name="DPM%"
@@ -3444,8 +3335,9 @@ export default function Invoice() {
                           placeholder="%"
                         />
                       </div>
-                      <div style={{ width: "11.75rem" }}>
+                      <div className="discountsecond">
                         <input
+                          style={{ width: "7rem" }}
                           type="number"
                           name="DPMPKR"
                           class="form-control"
@@ -3466,7 +3358,7 @@ export default function Invoice() {
                           }}
                         />
                       </div>
-                    </CardGroup>
+                    </div>
                   </div>
                   {/* <div style={{width:'23.5rem'}}>
           <label>Freight</label>
@@ -3476,11 +3368,11 @@ export default function Invoice() {
           />
            </div>
           <br /> */}
-                  <div style={{ width: "23.5rem", marginLeft: "4rem" }}>
+                  <div className="header_items_container">
                     <label>Tax</label>
                     <input
                       type="number"
-                      class="form-control"
+                      class="input"
                       // onChange={e => setBottomTax(+e.target.value)}
                       value={
                         gettaxtotal ||
@@ -3494,7 +3386,7 @@ export default function Invoice() {
                     />
                   </div>
                   {/* <button onClick={TotalPaymentDue}>Total</button> */}
-                  <div style={{ width: "23.5rem", marginLeft: "4rem" }}>
+                  <div className="header_items_container">
                     <label>Total Payment Due:</label>
                     <input
                       type="text"
@@ -3508,10 +3400,10 @@ export default function Invoice() {
                             : HeaderData.DocTotal))
                       }
                       placeholder=""
-                      class="form-control"
+                      class="input"
                     />
                   </div>
-                  <div style={{ width: "23.5rem", marginLeft: "4rem" }}>
+                  <div className="header_items_container">
                     <label>Blanace Due:</label>
                     <input
                       type="text"
@@ -3525,11 +3417,90 @@ export default function Invoice() {
                             : HeaderData.DocTotal - HeaderData.PaidToDate))
                       }
                       placeholder="PaidToDateFC"
-                      class="form-control"
+                      class="input"
                     />
                   </div>
-                </DIV3>
-              </CardGroup>
+                </div>
+              </div>
+              {localStorage.getItem("documentcontroller") === "R" ? (
+                <div className="button_main_container">
+                  <div className="button_container">
+                    <button
+                      onClick={() => {
+                        window.location.href = "/Home";
+                      }}
+                      className="form_button"
+                      style={{ backgroundColor: `${redux_response.color}` }}
+                    >
+                      OK
+                    </button>
+                    <button
+                      variant="secondary"
+                      onClick={() => {
+                        window.location.href = "/Home";
+                      }}
+                      className="form_button"
+                      style={{ backgroundColor: `${redux_response.color}` }}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                  <div className="button_container">
+                    <button
+                      style={{ backgroundColor: `${redux_response.color}` }}
+                      className="form_button"
+                      onClick={handleShow}
+                    >
+                      Copy From
+                    </button>{" "}
+                    <button
+                      style={{ backgroundColor: `${redux_response.color}` }}
+                      className="form_button"
+                    >
+                      Copy To
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="button_main_container">
+                  <div className="button_container">
+                    <button
+                      onClick={() => {
+                        Submit_PatchFunc();
+                      }}
+                      className="form_button"
+                      style={{ backgroundColor: `${redux_response.color}` }}
+                    >
+                      {ButtonName}
+                    </button>
+                    <button
+                      variant="secondary"
+                      onClick={() => {
+                        window.location.href = "/Home";
+                      }}
+                      className="form_button"
+                      style={{ backgroundColor: `${redux_response.color}` }}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                  <div className="button_container">
+                    <button
+                      style={{ backgroundColor: `${redux_response.color}` }}
+                      className="form_button"
+                      onClick={handleShow}
+                    >
+                      Copy From
+                    </button>
+                    <button
+                      style={{ backgroundColor: `${redux_response.color}` }}
+                      className="form_button"
+                    >
+                      Copy To
+                    </button>
+                  </div>
+                </div>
+              )}
             </ContextMenuTrigger>
             {cancelbutton ? (
               <>
